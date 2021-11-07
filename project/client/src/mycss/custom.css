@@ -1,0 +1,231 @@
+/* Add space so that items are shown below the navbar*/
+body {
+  padding-top: 70px;
+}
+
+#left-sidebar {
+  height: 87vh;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.color-red {
+  color: red;
+}
+
+.color-green {
+  color: green;
+}
+
+.color-black {
+  color: black;
+}
+
+.color-white {
+  color: white;
+}
+
+/* Style text with italic */
+.italic-text {
+  font-style: italic;
+  text-align: center;
+  font-size : 18px;
+}
+
+/* Top right text */
+.top-right {
+  width      : 45%;
+  height     : 35%;
+  top        : 5%;
+  right      : 3%;
+  max-height : 7.5em !important;
+  line-height: 1.5em !important;
+}
+
+/* Bottom right text */
+.bottom-right {
+  width      : 45%;
+  height     : 35%;
+  bottom     : 5%;
+  right      : 3%;
+  max-height : 7.5em !important;
+  line-height: 1.5em !important;
+}
+
+/* Top left text */
+.top-left {
+  width      : 42%;
+  height     : 27%;
+  top        : 5%;
+  left       : 5%;
+  max-height : 5.2em !important;
+  line-height: 1.3em !important;
+}
+
+/* Center left text */
+.center-left {
+  width      : 42%;
+  height     : 27%;
+  top        : 37%;
+  left       : 5%;
+  max-height : 5.2em !important;
+  line-height: 1.3em !important;
+}
+
+/* Bottom left text */
+.bottom-left {
+  width      : 42%;
+  height     : 27%;
+  top        : 69%;
+  left       : 5%;
+  max-height : 5.2em !important;
+  line-height: 1.3em !important;
+}
+
+/* Style for buttons that allow choosing a color */
+.color-button {
+  position     : relative;
+  border-radius: 30% !important;
+  height       : 28px;
+  width        : 27px;
+  border-color : black !important;
+}
+
+.color-button-black {
+  background: black !important;
+}
+
+.color-button-gray {
+  background: rgb(148, 148, 148) !important;
+}
+
+.color-button-purple {
+  background: rgb(203, 70, 255) !important;
+}
+
+.color-button-lightblue {
+  background: rgb(45, 219, 250) !important;
+}
+
+.color-button-yellow {
+  background: rgb(190, 192, 63) !important;
+}
+
+.color-button-purpleblue {
+  background: rgb(108, 29, 255) !important;
+}
+
+.color-button-blue {
+  background: rgb(33, 48, 250) !important;
+}
+
+.color-button-brown {
+  background: rgb(112, 92, 24) !important;
+}
+
+.color-button-orange {
+  background: rgb(248, 175, 18) !important;
+}
+
+.color-button-red {
+  background: rgb(252, 89, 89) !important;
+}
+
+.color-button-green {
+  background: rgb(31, 192, 31) !important;
+}
+
+.color-button-greengray {
+  background: rgb(109, 141, 109) !important;
+}
+
+.color-button-violet {
+  background: rgb(173, 74, 157) !important;
+}
+
+.color-button-violetblue {
+  background: rgb(92, 76, 165) !important;
+}
+
+.color-button-beige {
+  background: rgb(194, 145, 89) !important;
+}
+
+.color-button-bluegray {
+  background: rgb(120, 166, 204) !important;
+}
+
+.color-button-softviolet {
+  background: rgb(148, 133, 218) !important;
+}
+
+.color-button-white {
+  background: white !important;
+}
+
+.error {
+  color: red;
+}
+
+.pending-requests {
+  background-color: rgb(204, 204, 204) !important;
+}
+
+.accept-button {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.group-badge {
+  font-size: 24px;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  height: 3.5em;
+  margin-bottom: 0.2em;
+}
+
+.landing-page{
+  align-items: center;
+}
+
+.fixed-left-bottom {
+  position     : fixed;
+  min-height: 20vh;
+  right        : 0;
+  bottom       : 0;
+  z-index      : 1030;
+  margin       : 0rem 65rem 8rem 0rem;
+  border-radius: 40% !important;
+}
+
+/*Style the login and logout button*/
+.log-button {
+  color          : #FFFFFF !important;
+  text-decoration: none !important;
+}
+
+/*Center the login form and the image used when there are no memes in the db*/
+.center {
+  margin       : 0;
+  position     : absolute;
+  top          : 50%;
+  left         : 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform    : translate(-50%, -50%);
+}
+
+/*Position for the go to home page button (when the URL is wrong)*/
+.goback-button-position {
+  margin       : 0;
+  position     : absolute;
+  top          : 80%;
+  left         : 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform    : translate(-50%, -50%);
+}
