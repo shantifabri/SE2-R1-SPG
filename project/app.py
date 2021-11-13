@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session
 from flask_bootstrap import Bootstrap
 
 
@@ -23,19 +23,35 @@ class Users(UserMixin, db.Model):
     name = db.Column(db.String(20))
     surname = db.Column(db.String(20))
     email = db.Column(db.String(30), unique=True)
+    role = db.Column(db.String(30))
     password = db.Column(db.String(80))
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(user_id))
+    user = Users.query.get(int(user_id))
+    session["name"] = user.name
+    session["surname"] = user.surname
+    session["email"] = user.email
+    session["role"] = user.role
+    return user
 
 
 
-
+# Index Page used for landing.
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        if session.get("role",None) == "F":
+            return render_template('index_farmer.html')
+        elif session.get("role",None) == "S":
+            return render_template('index_shop.html')
+        elif session.get("role",None) == "A":
+            return render_template('index_admin.html')
+        else:
+            return render_template('index.html')
+    except:
+        return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -61,10 +77,10 @@ def signup():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         # add the user form input which is form.'field'.data into the column which is 'field'
-        new_user = Users(name=form.name.data, email=form.email.data, password=hashed_password)
+        new_user = Users(name=form.name.data, surname=form.surname.data, role=form.role.data, email=form.email.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return 'new user has been created bro!'
+        return redirect(url_for('index'))
 
     return render_template('signup.html', form=form)
 
