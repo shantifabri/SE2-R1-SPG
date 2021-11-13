@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, ProductRequestForm, ClientInsertForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'NOBODY-CAN-GUESS-THIS'
@@ -17,7 +17,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
@@ -26,14 +25,31 @@ class Users(UserMixin, db.Model):
     role = db.Column(db.String(30))
     password = db.Column(db.String(80))
 
+class ProductRequests(db.Model):
+    productrequest_id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer)
+    client_id = db.Column(db.Integer)
+    shop_id = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    timestamp = db.Column(db.String(40))
+
+class Clients(db.Model):
+    client_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    surname = db.Column(db.String(20))
+    email = db.Column(db.String(50))
+    phone = db.Column(db.String(20))
+    wallet = db.Column(db.Float)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     user = Users.query.get(int(user_id))
-    session["name"] = user.name
-    session["surname"] = user.surname
-    session["email"] = user.email
-    session["role"] = user.role
+    # session["name"] = user.name
+    # session["surname"] = user.surname
+    # session["email"] = user.email
+    # session["role"] = user.role
+    session["logged"] = True
     return user
 
 
@@ -42,17 +58,19 @@ def load_user(user_id):
 @app.route('/')
 def index():
     try:
-        if session.get("role",None) == "F":
+        print(current_user.role)
+        if current_user.role == "F":
             return render_template('index_farmer.html')
-        elif session.get("role",None) == "S":
+        elif current_user.role == "S":
             return render_template('index_shop.html')
-        elif session.get("role",None) == "A":
+        elif current_user.role == "A":
             return render_template('index_admin.html')
         else:
             return render_template('index.html')
     except:
         return render_template('index.html')
 
+########### LOGIN AND SIGNUP ROUTES ########################
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -64,7 +82,7 @@ def login():
             # compares the password hash in the db and the hash of the password typed in the form
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('index'))
         return 'invalid username or password'
 
     return render_template('login.html', form=form)
@@ -84,18 +102,45 @@ def signup():
 
     return render_template('signup.html', form=form)
 
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html', email=current_user.email)
-
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+########## FUNCTIONAL ROUTES ######################################
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/productrequest')
+@login_required
+def productrequest():
+    # product_id, client_id, shop_id, quantity, timestamp.
+    time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
+    form = ProductRequestForm()
+    if form.validate_on_submit():
+        productReq = ProductRequests(product_id=form.product_id.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
+        db.session.add(productReq)
+        db.session.commit()
+        return render_template('index.html')
+    return render_template('productrequest.html', form=form)
+
+@app.route('/insertclient')
+@login_required
+def insertclient():
+    # name, surname, email, phone, wallet
+    time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
+    form = ClientInsertForm()
+    if form.validate_on_submit():
+        productReq = ProductRequests(product_id=form.productId.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
+        db.session.add(productReq)
+        db.session.commit()
+        return render_template('index.html')
+    return render_template('productrequest.html', form=form)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
