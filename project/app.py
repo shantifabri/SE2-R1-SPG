@@ -120,39 +120,46 @@ def logout():
 
 ########## FUNCTIONAL ROUTES ######################################
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
+# @app.route('/dashboard')
+# @login_required
+# def dashboard():
+#     return render_template('dashboard.html')
 
 @app.route('/products')
 @login_required
 def products():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
     products = Products.query.all()
     return render_template('products.html',products=products)
 
-@app.route('/singleproduct/<product_id>')
+@app.route('/singleproduct/<product_id>',  methods=['GET','POST'])
 @login_required
 def singleproduct(product_id):
-    product = Products.query.filter_by(product_id=product_id)
-    return render_template('singleproduct.html', product=product)
-
-@app.route('/productrequest')
-@login_required
-def productrequest():
-    # product_id, client_id, shop_id, quantity, timestamp.
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ProductRequestForm()
+    product = Products.query.filter_by(product_id=product_id).all()[0]
     if form.validate_on_submit():
-        productReq = ProductRequests(product_id=form.product_id.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
-        db.session.add(productReq)
-        db.session.commit()
-        return render_template('products.html')
-    return render_template('productrequest.html', form=form)
+        try:
+            print("INSERTING: " + product.name)
+            print(form.email.data)
+            user = Clients.query.filter_by(email=form.email.data).all()[0]
+            productReq = ProductRequests(product_id=product.product_id, client_id=user.client_id, shop_id=current_user.id, quantity=form.quantity.data, timestamp=time)
+            db.session.add(productReq)
+            db.session.commit()
+            return redirect(url_for('products'))
+        except Exception as e:
+            print(e)
+            return render_template('singleproduct.html', product=product, form=form, valid=False)
+    return render_template('singleproduct.html', product=product, form=form, valid=True)
 
 @app.route('/insertclient')
 @login_required
 def insertclient():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
     # name, surname, email, phone, wallet
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
@@ -160,7 +167,7 @@ def insertclient():
         productReq = ProductRequests(product_id=form.productId.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
         db.session.add(productReq)
         db.session.commit()
-        return render_template('index.html')
+        return redirect(url_for('index'))
     return render_template('productrequest.html', form=form)
 
 @app.route('/updatetime')
