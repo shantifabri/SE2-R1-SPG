@@ -24,5 +24,5 @@ class ClientInsertForm(FlaskForm):
     name = StringField('name', validators=[InputRequired(), Length(min=1, max=20)])
     surname = StringField('surname', validators=[InputRequired(), Length(min=1, max=20)])
     email = StringField('email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
-    phone = StringFIeld('phone', validators=[InputRequired(), Length(min=5, max=15)])
+    phone = StringField('phone', validators=[InputRequired(), Length(min=5, max=15)])
 

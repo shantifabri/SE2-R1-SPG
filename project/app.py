@@ -128,7 +128,9 @@ def dashboard():
 @login_required
 def products():
     products = Products.query.all()
-    print(products)
+    for prod in products:
+        print(prod.name)
+
     return render_template('products.html',products=products)
 
 @app.route('/productrequest')
@@ -141,7 +143,7 @@ def productrequest():
         productReq = ProductRequests(product_id=form.product_id.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
         db.session.add(productReq)
         db.session.commit()
-        return render_template('index.html')
+        return render_template('products.html')
     return render_template('productrequest.html', form=form)
 
 @app.route('/insertclient')
