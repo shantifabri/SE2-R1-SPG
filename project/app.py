@@ -66,18 +66,19 @@ def load_user(user_id):
 # Index Page used for landing.
 @app.route('/')
 def index():
-    try:
-        print(current_user.role)
-        if current_user.role == "F":
-            return render_template('index_farmer.html')
-        elif current_user.role == "S":
-            return render_template('index_shop.html')
-        elif current_user.role == "A":
-            return render_template('index_admin.html')
-        else:
-            return render_template('index.html')
-    except:
-        return render_template('index.html')
+    # try:
+    #     print(current_user.role)
+    #     if current_user.role == "F":
+    #         return render_template('index_farmer.html')
+    #     elif current_user.role == "S":
+    #         return render_template('index_shop.html')
+    #     elif current_user.role == "A":
+    #         return render_template('index_admin.html')
+    #     else:
+    #         return render_template('index.html')
+    # except:
+    #     return render_template('index.html')
+    return render_template('index.html')
 
 ########### LOGIN AND SIGNUP ROUTES ########################
 
@@ -159,6 +160,9 @@ def insertclient():
         return render_template('index.html')
     return render_template('productrequest.html', form=form)
 
+@app.route('/updatetime')
+def updatetime():
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
