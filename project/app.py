@@ -41,6 +41,15 @@ class Clients(db.Model):
     phone = db.Column(db.String(20))
     wallet = db.Column(db.Float)
 
+class Products(db.Model):
+    product_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    price = db.Column(db.Float)
+    qty_available = db.Column(db.Integer)
+    qty_requested = db.Column(db.Integer)
+    farmer_id = db.Column(db.Integer)
+    img_url = db.Column(db.String(50))
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -114,6 +123,13 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/products')
+@login_required
+def products():
+    products = Products.query.all()
+    print(products)
+    return render_template('products.html',products=products)
 
 @app.route('/productrequest')
 @login_required
