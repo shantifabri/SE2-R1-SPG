@@ -168,7 +168,7 @@ def insertclient():
         db.session.add(productReq)
         db.session.commit()
         return redirect(url_for('index'))
-    return render_template('productrequest.html', form=form)
+    return render_template('insertclient.html', form=form)
 
 @app.route('/updatetime')
 def updatetime():
