@@ -129,10 +129,13 @@ def dashboard():
 @login_required
 def products():
     products = Products.query.all()
-    for prod in products:
-        print(prod.name)
-
     return render_template('products.html',products=products)
+
+@app.route('/singleproduct/<product_id>')
+@login_required
+def singleproduct(product_id):
+    product = Products.query.filter_by(product_id=product_id)
+    return render_template('singleproduct.html', product=product)
 
 @app.route('/productrequest')
 @login_required
