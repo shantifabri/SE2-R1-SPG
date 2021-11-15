@@ -51,6 +51,8 @@ class Products(db.Model):
     img_url = db.Column(db.String(50))
 
 
+########### LOGIN AND SIGNUP ROUTES ########################
+
 @login_manager.user_loader
 def load_user(user_id):
     user = Users.query.get(int(user_id))
@@ -60,27 +62,6 @@ def load_user(user_id):
     # session["role"] = user.role
     session["logged"] = True
     return user
-
-
-
-# Index Page used for landing.
-@app.route('/')
-def index():
-    # try:
-    #     print(current_user.role)
-    #     if current_user.role == "F":
-    #         return render_template('index_farmer.html')
-    #     elif current_user.role == "S":
-    #         return render_template('index_shop.html')
-    #     elif current_user.role == "A":
-    #         return render_template('index_admin.html')
-    #     else:
-    #         return render_template('index.html')
-    # except:
-    #     return render_template('index.html')
-    return render_template('index.html')
-
-########### LOGIN AND SIGNUP ROUTES ########################
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -125,6 +106,23 @@ def logout():
 # def dashboard():
 #     return render_template('dashboard.html')
 
+# Index Page used for landing.
+@app.route('/')
+def index():
+    # try:
+    #     print(current_user.role)
+    #     if current_user.role == "F":
+    #         return render_template('index_farmer.html')
+    #     elif current_user.role == "S":
+    #         return render_template('index_shop.html')
+    #     elif current_user.role == "A":
+    #         return render_template('index_admin.html')
+    #     else:
+    #         return render_template('index.html')
+    # except:
+    #     return render_template('index.html')
+    return render_template('index.html')
+
 @app.route('/products')
 @login_required
 def products():
@@ -143,8 +141,8 @@ def singleproduct(product_id):
     product = Products.query.filter_by(product_id=product_id).all()[0]
     if form.validate_on_submit():
         try:
-            print("INSERTING: " + product.name)
-            print(form.email.data)
+            # print("INSERTING: " + product.name)
+            # print(form.email.data)
             user = Clients.query.filter_by(email=form.email.data).all()[0]
             productReq = ProductRequests(product_id=product.product_id, client_id=user.client_id, shop_id=current_user.id, quantity=form.quantity.data, timestamp=time)
             db.session.add(productReq)
