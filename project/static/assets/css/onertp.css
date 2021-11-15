@@ -46,6 +46,11 @@ body, ul, li, p, a, label, input, div {
 }
 /* General */
 .logo { font-weight: 500 !important;}
+.form-container { padding-top:20px; padding-bottom:20px; }
+.form-container-spacing { padding-bottom:45px !important; }
+.form-group { padding-bottom:20px; }
+.form-signin-heading{ padding-top:25px; padding-bottom:25px; }
+.control-label{ padding-bottom:5px; }
 .text-warning {  color: #ede861 !important;}
 .text-muted { color: #bcbcbc !important;}
 .text-success { color: #59ab6e !important;}

@@ -1,6 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
-<div class="container">
-    <form method="POST" action="/insertclient">
+<div class="container col-md-6">
+    <form class="form-container form-container-spacing" method="POST" action="/insertclient">
         <h2 class="form-signin-heading">Insert a new Client</h2>
         {{ form.hidden_tag() }} {{ wtf.form_field(form.name) }} {{ wtf.form_field(form.surname) }} {{ wtf.form_field(form.email) }} {{ wtf.form_field(form.phone) }}
         <button class="btn btn-lg btn-success btn-block" type="submit">Insert</button>
