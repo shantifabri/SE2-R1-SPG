@@ -52,6 +52,7 @@ body, ul, li, p, a, label, input, div {
 .form-signin-heading{ padding-top:25px; padding-bottom:25px; }
 .control-label{ padding-bottom:5px; }
 .text-warning {  color: #ede861 !important;}
+.text-danger { color: red !important;}
 .text-muted { color: #bcbcbc !important;}
 .text-success { color: #59ab6e !important;}
 .text-light { color: #cfd6e1 !important;}
