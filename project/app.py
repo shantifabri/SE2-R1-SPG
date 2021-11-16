@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterForm, ProductRequestForm, ClientInsertForm
+from wtforms import ValidationError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'NOBODY-CAN-GUESS-THIS'
@@ -85,9 +86,13 @@ def signup():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         # add the user form input which is form.'field'.data into the column which is 'field'
         new_user = Users(name=form.name.data, surname=form.surname.data, role=form.role.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('index'))
+        # Check the uniqueness for the email
+        if Users.query.filter_by(email=form.email.data).first():
+            return 'That email is taken, please try another'
+        else:
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('index'))
 
     return render_template('signup.html', form=form)
 
