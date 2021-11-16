@@ -73,9 +73,9 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
                 return redirect(url_for('index'))
-        return 'invalid username or password'
+        return render_template('login.html', form=form, valid=False)
 
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, valid=True)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
