@@ -8,7 +8,7 @@
                 <li class="pb-3">
                     <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
                         Food
-                        <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
+                        <em class="fa fa-fw fa-chevron-circle-down mt-1"></em>
                     </a>
                     <ul class="collapse show list-unstyled pl-3">
                         <li><a class="text-decoration-none" href="#">Vegetables</a></li>
@@ -49,10 +49,10 @@
                 <div class="col-md-4">
                     <div class="card mb-4 product-wap rounded-0">
                         <div class="card rounded-0">
-                            <img class="card-img rounded-0 img-fluid" src="static/shop_imgs/{{prod.img_url}}">
+                            <img class="card-img rounded-0 img-fluid" src="static/shop_imgs/{{prod.img_url}}" alt="image of {{prod.name}}">
                             <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                 <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white mt-2" href="{{ url_for('other.singleproduct', product_id = prod.product_id) }}"><i class="fas fa-cart-plus"></i></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="{{ url_for('other.singleproduct', product_id = prod.product_id) }}"><em class="fas fa-cart-plus"></em></a></li>
                                 </ul>
                             </div>
                         </div>
