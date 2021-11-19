@@ -22,10 +22,6 @@ def initialize_extensions(app):
     # Flask-Login configuration
     from project.models import User
 
-    # @login_manager.user_loader
-    # def load_user(user_id):
-    #     return User.query.filter(User.id == int(user_id)).first()
-
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))
