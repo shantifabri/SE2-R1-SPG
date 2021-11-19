@@ -2,10 +2,12 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import users_blueprint
-from .forms import RegisterForm, LoginForm
+from project.forms import RegisterForm, LoginForm
 from project.models import User
 from project import db
+
+from . import users_blueprint
+
 
 ########### LOGIN AND SIGNUP ROUTES ########################
 
