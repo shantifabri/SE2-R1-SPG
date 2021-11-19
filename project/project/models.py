@@ -3,6 +3,7 @@ from datetime import datetime
 from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     surname = db.Column(db.String(20))
@@ -11,6 +12,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(80))
 
 class ProductRequest(db.Model):
+    __tablename__ = "product_requests"
     productrequest_id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer)
     client_id = db.Column(db.Integer)
@@ -19,6 +21,7 @@ class ProductRequest(db.Model):
     timestamp = db.Column(db.String(40))
 
 class Client(db.Model):
+    __tablename__ = "clients"
     client_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     surname = db.Column(db.String(20))
@@ -27,6 +30,7 @@ class Client(db.Model):
     wallet = db.Column(db.Float)
 
 class Product(db.Model):
+    __tablename__ = "products"
     product_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     price = db.Column(db.Float)
