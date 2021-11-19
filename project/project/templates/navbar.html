@@ -33,10 +33,10 @@
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                     {% if current_user.role == 'S' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('products') }}">Products</a>
+                        <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('insertclient') }}">New Client</a>
+                        <a class="nav-link" href="{{ url_for('other.insertclient') }}">New Client</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -61,17 +61,17 @@
                         Welcome {{current_user.name}}
                     </span>
 
-                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('logout') }}">
+                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.logout') }}">
                         Log Out
                         <!-- <i class="fa fa-fw fa-user text-dark mr-3"></i> -->
                         <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
                     </a> {% else %}
-                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('signup') }}">
+                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.signup') }}">
                     <!-- <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> -->
                     Sign Up
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
                 </a>
-                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('login') }}">
+                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.login') }}">
                         Log In
                         <!-- <i class="fa fa-fw fa-user text-dark mr-3"></i> -->
                         <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
