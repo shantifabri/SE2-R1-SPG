@@ -148,11 +148,8 @@
                         <form class="form-container" action="{{ url_for('other.singleproduct', product_id = product.product_id) }}" method="POST">
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">
-                                <div class="col-8">
-                                    {{ form.hidden_tag() }} {{ wtf.form_field(form.email) }}
-                                </div>
                                 <div class="col-4">
-                                    {{ wtf.form_field(form.quantity) }}
+                                    {{ form.hidden_tag() }} {{ wtf.form_field(form.quantity) }}
                                 </div>
                             </div>
                             <div class="row pb-3">
