@@ -40,7 +40,7 @@ def singleproduct(product_id):
             return render_template('singleproduct.html', product=product, form=form, valid=False)
     return render_template('singleproduct.html', product=product, form=form, valid=True)
 
-@other_blueprint.route('/insertclient')
+@other_blueprint.route('/insertclient', methods=['GET','POST'])
 @login_required
 def insertclient():
     if current_user.role != 'S':
@@ -49,7 +49,7 @@ def insertclient():
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
     if form.validate_on_submit():
-        productReq = ProductRequest(product_id=form.productId.data, client_id=form.client_id.data, shop_id=form.shop_id.data, quantity=form.quantity.data, timestamp=time)
+        productReq = Client(name=form.name.data, surname=form.surname.data, email=form.email.data, phone=form.phone.data, wallet=0)
         db.session.add(productReq)
         db.session.commit()
         return redirect(url_for('index'))
