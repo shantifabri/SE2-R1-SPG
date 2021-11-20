@@ -1,9 +1,9 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from project.forms import RegisterForm, LoginForm
-from project.models import User
+from project.models import User, ProductInBasket
 from project import db
 
 from . import users_blueprint
@@ -21,6 +21,11 @@ def login():
             # compares the password hash in the db and the hash of the password typed in the form
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
+                status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.product_id
+                ).all()
+            
+                session["cart_count"] = session["cart_count"] = len(status_counts)
                 return redirect(url_for('index'))
         return render_template('login.html', form=form, valid=False)
 

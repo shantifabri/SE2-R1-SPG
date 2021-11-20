@@ -1,6 +1,7 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import func
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket
 from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm
@@ -31,6 +32,11 @@ def singleproduct(product_id):
             productReq = ProductInBasket(product_id=product.product_id, client_id=current_user.id, quantity=form.quantity.data)
             db.session.add(productReq)
             db.session.commit()
+            status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.product_id
+                ).all()
+            session["cart_count"] = len(status_counts)
+
             return redirect(url_for('other.products'))
         except Exception as e:
             print(e)
