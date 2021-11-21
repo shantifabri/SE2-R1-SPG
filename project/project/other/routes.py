@@ -40,6 +40,14 @@ def singleproduct(product_id):
             return render_template('singleproduct.html', product=product, form=form, valid=False)
     return render_template('singleproduct.html', product=product, form=form, valid=True)
 
+
+@other_blueprint.route('/manageclients', methods=['GET','POST'])
+@login_required
+def manageclients():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+    return render_template('manageclients.html')
+
 @other_blueprint.route('/insertclient', methods=['GET','POST'])
 @login_required
 def insertclient():
