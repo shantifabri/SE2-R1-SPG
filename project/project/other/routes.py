@@ -54,3 +54,7 @@ def insertclient():
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('insertclient.html', form=form)
+
+@other_blueprint.route('/shoppingcart', methods=['GET','POST'])
+def shoppingcart():
+    return render_template('shoppingcart.html')

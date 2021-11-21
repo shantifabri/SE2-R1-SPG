@@ -1,0 +1,132 @@
+{% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<form method="POST" action="/">
+<section class="shopping-cart">
+    <div class="container">
+       <div class="block-heading">
+         <h2>Shopping Cart</h2>
+       </div>
+       <div class="content">
+            <div class="row">
+                <div class="col-md-12 col-lg-8">
+                    <div class="items">
+                        <div class="product">
+                            <div class="row">
+                                <div class="col-md-3">
+                                <a target="_blank" href="" ><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/redonions.jpg">
+                                </a>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="info">
+                                        <div class="row">
+                                            <div class="col-md-5 product-name">
+                                                <div class="product-name">
+                                                    <a class="text-success text-decoration-none" href="#">Test</a>
+                                                    <div class="product-info">
+                                                        <div>Farmer: <span class="value">PippoFarmer</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 offset-md-1 quantity">
+                                                <label for="quantity">Quantity:</label>
+                                                <div class="input-group ">
+                                                <input id="quantity" type="number" min="1" value ="1" class="form-control quantity-input">
+                                                <button class="btn btn-danger input-group-text">x</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 price">
+                                                <span>€2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product">
+                            <div class="row">
+                                <div class="col-md-3">
+                                <a target="_blank" href="" ><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/redonions.jpg">
+                                </a>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="info">
+                                        <div class="row">
+                                            <div class="col-md-5 product-name">
+                                                <div class="product-name">
+                                                    <a class="text-success text-decoration-none" href="#">Test</a>
+                                                    <div class="product-info">
+                                                        <div>Farmer: <span class="value">PippoFarmer</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 offset-md-1 quantity">
+                                                <label for="quantity">Quantity:</label>
+                                                <div class="input-group ">
+
+                                                <input id="quantity" type="number" min="1" value ="1" class="form-control quantity-input">
+                                                <button class="btn btn-danger input-group-text">x</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 price">
+                                                <span>€2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product">
+                            <div class="row">
+                                <div class="col-md-3">
+                                <a target="_blank" href="" ><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/redonions.jpg">
+                                </a>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="info">
+                                        <div class="row">
+                                            <div class="col-md-5 product-name">
+                                                <div class="product-name">
+                                                    <a class="text-success text-decoration-none" href="#">Test</a>
+                                                    <div class="product-info">
+                                                        <div>Farmer: <span class="value">PippoFarmer</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 offset-md-1 quantity">
+                                                <label for="quantity">Quantity:</label>
+                                                <div class="input-group ">
+                                                <input id="quantity" type="number" min="1" value ="1" class="form-control quantity-input">
+                                                <button type="submit" class="btn btn-danger input-group-text">x</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 price">
+                                                <span>€2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-4">
+                    <div class="summary">
+                        <h3>Summary</h3>
+                        <div class="summary-item"><span class="text">Subtotal</span><span class="price">€6</span></div>
+                        <div class="summary-item"><span class="text">Shipping</span><span class="price">€0</span></div>
+                        <div ><span class="text">
+                            <select class="form-select" aria-label="Select Shipping">
+                            <option value="store" selected>Store Pick-Up - 0€</option>
+                            <option value="home">Standard Delivery - 7.50€</option>
+                          </select></div>
+
+                        <div class="summary-item"><span class="text">Total</span><span class="price">€6</span></div>
+                        <button type="button" class="btn btn-success btn-lg btn-block">Checkout</button>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</section>
+</form>
+
+{% endblock %}
