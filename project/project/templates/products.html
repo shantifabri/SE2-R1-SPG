@@ -46,18 +46,19 @@
             </div>
             <div class="row">
                 {% if products %} {% for prod in products %}
+                <!-- prod[0] access to product fields. prod[1] access to user fields -->
                 <div class="col-md-4">
                     <div class="card mb-4 product-wap rounded-0">
                         <div class="card rounded-0">
-                            <img class="card-img rounded-0 img-fluid" src="static/shop_imgs/{{prod.img_url}}" alt="image of {{prod.name}}">
+                            <img class="card-img rounded-0 img-fluid" src="static/shop_imgs/{{prod[0].img_url}}" alt="image of {{prod[0].name}}">
                             <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
                                 <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white mt-2" href="{{ url_for('other.singleproduct', product_id = prod.product_id) }}"><em class="fas fa-cart-plus"></em></a></li>
+                                    <li><a class="btn btn-success text-white mt-2" href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}"><em class="fas fa-cart-plus"></em></a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="card-body">
-                            <a href="{{ url_for('other.singleproduct', product_id = prod.product_id) }}" class="h3 text-decoration-none">{{prod.name}}</a>
+                            <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 text-decoration-none">{{prod[0].name}}</a>
                             <!-- <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                         
                                     </ul>
@@ -70,7 +71,7 @@
                                             <i class="text-muted fa fa-star"></i>
                                         </li>
                                     </ul> -->
-                            <p class="text-center mb-0">Price: € {{'%.2f' % prod.price}} / Kg</p>
+                            <p class="text-center mb-0">Price: € {{'%.2f' % prod[0].price}} / Kg</p>
                         </div>
                     </div>
                 </div>

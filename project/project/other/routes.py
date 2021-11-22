@@ -16,7 +16,13 @@ from . import other_blueprint
 def products():
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
-    products = Product.query.all()
+    # products = Product.query.all()
+    products = db.session.query(
+        Product, 
+        User
+        ).filter(
+            User.id == Product.farmer_id
+        ).all()
     return render_template('products.html',products=products)
 
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
@@ -26,7 +32,14 @@ def singleproduct(product_id):
         return redirect(url_for('index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
-    product = Product.query.filter_by(product_id=product_id).all()[0]
+    product = db.session.query(
+        Product, 
+        User
+        ).filter(
+            Product.product_id == product_id
+        ).filter(
+            User.id == Product.farmer_id
+        ).all()[0]
     if form.validate_on_submit():
         try:
             productReq = ProductInBasket(product_id=product.product_id, client_id=current_user.id, quantity=form.quantity.data)
