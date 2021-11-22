@@ -33,7 +33,8 @@ def singleproduct(product_id):
             db.session.add(productReq)
             db.session.commit()
             status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
-                ).filter(ProductInBasket.client_id == current_user.id).all()
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
+                ).all()
             session["cart_count"] = session["cart_count"] = len(status_counts)
 
             return redirect(url_for('other.products'))
@@ -75,7 +76,8 @@ def updatequantity(pib_id,amount):
         ProductInBasket.query.filter_by(pib_id=pib_id).delete()
         db.session.commit()
         status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
-                ).filter(ProductInBasket.client_id == current_user.id).all()
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
+                ).all()
         session["cart_count"] = session["cart_count"] = len(status_counts)
 
     return redirect(url_for('other.shoppingcart'))

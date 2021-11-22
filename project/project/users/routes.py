@@ -22,7 +22,8 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
-                ).filter(ProductInBasket.client_id == current_user.id).all()
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
+                ).all()
                 session["cart_count"] = session["cart_count"] = len(status_counts)
                 
                 return redirect(url_for('index'))
