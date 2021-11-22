@@ -1,9 +1,10 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import func
 
-from project.models import User, Product, Client, ProductRequest
-from project.forms import ProductRequestForm, ClientInsertForm
+from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm
 from project import db
 
 from . import other_blueprint
@@ -21,20 +22,22 @@ def products():
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
 @login_required
 def singleproduct(product_id):
-    if current_user.role != 'S':
+    if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
-    form = ProductRequestForm()
+    form = AddToCartForm()
     product = Product.query.filter_by(product_id=product_id).all()[0]
     if form.validate_on_submit():
         try:
-            # print("INSERTING: " + product.name)
-            # print(form.email.data)
-            user = Client.query.filter_by(email=form.email.data).all()[0]
-            productReq = ProductRequest(product_id=product.product_id, client_id=user.client_id, shop_id=current_user.id, quantity=form.quantity.data, timestamp=time)
+            productReq = ProductInBasket(product_id=product.product_id, client_id=current_user.id, quantity=form.quantity.data)
             db.session.add(productReq)
             db.session.commit()
-            return redirect(url_for('products'))
+            status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.product_id
+                ).all()
+            session["cart_count"] = len(status_counts)
+
+            return redirect(url_for('other.products'))
         except Exception as e:
             print(e)
             return render_template('singleproduct.html', product=product, form=form, valid=False)
@@ -49,12 +52,16 @@ def insertclient():
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
     if form.validate_on_submit():
-        productReq = Client(name=form.name.data, surname=form.surname.data, email=form.email.data, phone=form.phone.data, wallet=0)
-        db.session.add(productReq)
+        hashed_password = generate_password_hash(form.password.data, method='sha256')
+        # add the user form input which is form.'field'.data into the column which is 'field'
+        new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0)
+        db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('index'))
+
     return render_template('insertclient.html', form=form)
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
     return render_template('shoppingcart.html')
+

@@ -13,7 +13,11 @@ class RegisterForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)])
     surname = StringField('Surname', validators=[InputRequired(), Length(min=1, max=20)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
+    company = StringField('Company', validators=[InputRequired(), Length(min=1, max=80)])
     role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Manager'), ('A', 'Admin')])
+
+class AddToCartForm(FlaskForm):
+    quantity = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
 
 class ProductRequestForm(FlaskForm):
     email = StringField('Client Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
@@ -23,7 +27,7 @@ class ClientInsertForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)])
     surname = StringField('Surname', validators=[InputRequired(), Length(min=1, max=20)])
     email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
-    phone = StringField('Phone', validators=[InputRequired(), Length(min=5, max=15)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
 
 class ProductInsertForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)])

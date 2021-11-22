@@ -10,6 +10,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(30), unique=True)
     role = db.Column(db.String(30))
     password = db.Column(db.String(80))
+    company = db.Column(db.String(40))
+    wallet = db.Column(db.Float)
 
 class ProductRequest(db.Model):
     __tablename__ = "product_requests"
@@ -19,6 +21,20 @@ class ProductRequest(db.Model):
     shop_id = db.Column(db.Integer)
     quantity = db.Column(db.Integer)
     timestamp = db.Column(db.String(40))
+
+class ProductInOrder(db.Model):
+    __tablename__ = "product_in_order"
+    pio_id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer)
+    order_id = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+
+class ProductInBasket(db.Model):
+    __tablename__ = "product_in_basket"
+    pib_id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer)
+    client_id = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
 
 class Client(db.Model):
     __tablename__ = "clients"
@@ -38,3 +54,4 @@ class Product(db.Model):
     qty_requested = db.Column(db.Integer)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
+    date = db.Column(db.String(50))
