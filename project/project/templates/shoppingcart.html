@@ -19,15 +19,22 @@
         });
     })
 
-    function prodQty(amount, productID){
-        alert("amount: " + amount + " productID: "+ productID);
+    function prodQty(amount, productID) {
+        //$.post('/updatequantity/' + productID + '/' + amount)
+        $.ajax({
+            url: '/updatequantity/' + productID + '/' + amount,
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
     }
 
-    function shippingMethod(method){
+    function shippingMethod(method) {
         alert(method)
     }
 
-    function emptyCart(){
+    function emptyCart() {
 
     }
 </script>
@@ -63,8 +70,8 @@
                                                 <div class="col-md-3 offset-md-1 quantity">
                                                     <label for="quantity">Quantity:</label>
                                                     <div class="input-group ">
-                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['product_id']}});" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
-                                                        <button class="btn btn-danger input-group-text"  onClick="prodQty(0);" >x</button>
+                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['pib_id']}});" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
+                                                        <button class="btn btn-danger input-group-text" onClick="prodQty(0,{{val['pib_id']}});">x</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3 price">

@@ -61,6 +61,23 @@ def insertclient():
 
     return render_template('insertclient.html', form=form)
 
+@other_blueprint.route('/updatequantity/<pib_id>/<amount>',  methods=['GET','POST'])
+@login_required
+def updatequantity(pib_id,amount):
+    if current_user.role != 'S' and current_user.role != 'C':
+        return redirect(url_for('index'))
+    amount = int(amount)
+    pib_id = int(pib_id)
+    if amount != 0:
+        a_user = db.session.query(ProductInBasket).filter(ProductInBasket.pib_id == pib_id).one()
+        a_user.quantity = amount
+        db.session.commit()
+    else:
+        ProductInBasket.query.filter_by(pib_id=pib_id).delete()
+        db.session.commit()
+
+    return redirect(url_for('other.shoppingcart'))
+
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
@@ -83,6 +100,7 @@ def shoppingcart():
     for val in q:
         prod = {}
         prod["product_id"] = val[1].product_id
+        prod["pib_id"] = val[0].pib_id
         prod["farmer"] = val[2].company
         prod["price"] = '%.2f' % (val[0].quantity * val[1].price)
         prod["quantity"] = val[0].quantity
