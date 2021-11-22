@@ -42,7 +42,7 @@ def singleproduct(product_id):
         ).all()[0]
     if form.validate_on_submit():
         try:
-            productReq = ProductInBasket(product_id=product.product_id, client_id=current_user.id, quantity=form.quantity.data)
+            productReq = ProductInBasket(product_id=product[0].product_id, client_id=current_user.id, quantity=form.quantity.data)
             db.session.add(productReq)
             db.session.commit()
             status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -158,6 +158,10 @@ def topup():
     if current_user.role != 'S':
         return redirect(url_for('index'))
     form = TopUpForm()
-    
-    return render_template('topup.html', form=form)
+    users = db.session.query(
+        User
+    ).filter(
+        User.role == "C"
+    ).all()
+    return render_template('topup.html', form=form, users=users)
 
