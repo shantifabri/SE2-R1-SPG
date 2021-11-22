@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm
 from project import db
 
 from . import other_blueprint
@@ -42,7 +42,7 @@ def singleproduct(product_id):
         ).all()[0]
     if form.validate_on_submit():
         try:
-            productReq = ProductInBasket(product_id=product.product_id, client_id=current_user.id, quantity=form.quantity.data)
+            productReq = ProductInBasket(product_id=product[0].product_id, client_id=current_user.id, quantity=form.quantity.data)
             db.session.add(productReq)
             db.session.commit()
             status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -140,7 +140,7 @@ def shoppingcart():
         prod["id"] = val[0].pib_id
         total += val[0].quantity * val[1].price
         products.append(prod)
-    vals["subtotal"] = '%.2f' % total   
+    vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
     return render_template('shoppingcart.html', values=vals)
@@ -157,4 +157,11 @@ def manageclients():
 def topup():
     if current_user.role != 'S':
         return redirect(url_for('index'))
-    return render_template('topup.html')
+    form = TopUpForm()
+    users = db.session.query(
+        User
+    ).filter(
+        User.role == "C"
+    ).all()
+    return render_template('topup.html', form=form, users=users)
+

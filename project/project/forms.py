@@ -34,3 +34,5 @@ class ProductInsertForm(FlaskForm):
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01))
     qty_available = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
 
+class TopUpForm(FlaskForm):
+    amount = FloatField('Amount', validators=[InputRequired()], widget=NumberInput(min=0.01))

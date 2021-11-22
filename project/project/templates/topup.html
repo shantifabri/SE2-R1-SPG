@@ -1,4 +1,5 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+
 <head>
   
   <!--vedi se ci devi mettere qualcosa
@@ -12,25 +13,32 @@
 </head>
 
 <body>
-<div class="container col-md-6">
-  <form class="form-container form-container-spacing" method="POST" action="/topup">
-    <h2 class="form-signin-heading">Wallet top-up</h2>
+    <div class="container col-md-6">
+        <!-- <form class="form-container form-container-spacing" method="POST" action="/topup">
+            <h2 class="form-signin-heading">Wallet top-up</h2>
 
-    <div id = "email_back" >
-      Your email is: admin@manager.com
+            <div id="email_back">
+                Your email is: admin@manager.com
+            </div>
+            <div id="output"></div>
+            <p class="output-statement"></p>
+
+            <div id="balance_response">
+                Your balance is: $10
+            </div>
+            <div id="output"></div>
+            <p class="output-statement"></p>
+            {{ form.hidden_tag() }} {{ wtf.form_field(form.amount) }}
+            <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
+        </form> -->
+        <h2>Clients</h2>
+        {% for user in users %}
+        <div class="row">
+            {{user.name}}{{user.name}}{{user.email}}
+        </div>
+        {% endfor %}
     </div>
-    <div id="output"></div>
-    <p class="output-statement">{{output}}</p>
 
-    <div id = "balance_response" >
-      Your balance is: $10
-    </div>
-    <div id="output"></div>
-      <p class="output-statement">{{output}}</p>
-    {{ form.hidden_tag() }} {{ wtf.form_field(form.email) }}
-    <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
-  </form>
-</div>
-<body>
+    <body>
 
-{% endblock %}
+        {% endblock %}

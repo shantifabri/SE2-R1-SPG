@@ -25,7 +25,7 @@ def login():
                 ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
                 ).all()
                 session["cart_count"] = session["cart_count"] = len(status_counts)
-                
+
                 return redirect(url_for('index'))
         return render_template('login.html', form=form, valid=False)
 
