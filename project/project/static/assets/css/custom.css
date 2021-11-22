@@ -72,7 +72,7 @@
 
 .shopping-cart .items .product .info .quantity .quantity-input{
     margin: auto;
-    width: 80px;
+	text-align:right;
 }
 
 .shopping-cart .items .product .info .price{
@@ -123,6 +123,7 @@
 }
 
 @media (min-width: 768px) {
+	
 	.shopping-cart .items .product .info {
 		padding-top: 25px;
 		text-align: left; 
@@ -137,14 +138,17 @@
     .shopping-cart .items .product .info .product-name{
         margin-top:0px;
     }
+	
 
 	.shopping-cart .items .product .info .quantity {
 		text-align: center; 
 	}
 	.shopping-cart .items .product .info .quantity .quantity-input {
 		padding: 4px 10px;
-		text-align: center; 
+		text-align: right; 
+		max-width:80px;
 	}
+	
 }
 /* 1 END OF SHOPPING-CART */
 

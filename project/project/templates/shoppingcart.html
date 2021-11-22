@@ -18,6 +18,18 @@
             });
         });
     })
+
+    function prodQty(amount, productID){
+        alert("amount: " + amount + " productID: "+ productID);
+    }
+
+    function shippingMethod(method){
+        alert(method)
+    }
+
+    function emptyCart(){
+
+    }
 </script>
 
 <form method="POST" action="/">
@@ -51,8 +63,8 @@
                                                 <div class="col-md-3 offset-md-1 quantity">
                                                     <label for="quantity">Quantity:</label>
                                                     <div class="input-group ">
-                                                        <input id="quantity" type="number" onchange="alert($(this).val());" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
-                                                        <button class="btn btn-danger input-group-text">x</button>
+                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['product_id']}});" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
+                                                        <button class="btn btn-danger input-group-text"  onClick="prodQty(0);" >x</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3 price">
@@ -72,7 +84,7 @@
                             <div class="summary-item"><span class="text">Subtotal</span><span class="price">€ {{values['total']}}</span></div>
                             <div class="summary-item"><span class="text">Shipping</span><span class="price">€0</span></div>
                             <div><span class="text">
-                            <select class="form-select" id="shipping-method" onchange="alert($('#shipping-method').val());" aria-label="Select Shipping">
+                            <select class="form-select" id="shipping-method" onchange="shippingMethod($('#shipping-method').val());" aria-label="Select Shipping">
                             <option value="store" selected>Store Pick-Up - 0€</option>
                             <option value="home">Standard Delivery - 7.50€</option>
                           </select></div>
@@ -80,7 +92,7 @@
                         <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{values["total"]}}{% else %}0{% endif %}</span></div>
                             <button type="button" class="btn btn-success btn-lg btn-block">Checkout</button>
 
-                            <button type="button" class="btn btn-danger btn-lg btn-block float-right"><i class="fas fa-trash"></i></button>
+                            <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
