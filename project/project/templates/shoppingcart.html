@@ -1,4 +1,25 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<script>
+    $(function() {
+        $('#env').change(function() {
+            var current_status = $(this).prop('checked');
+            $.ajax({
+                url: "/get_toggled_status",
+                type: "get",
+                data: {
+                    status: current_status
+                },
+                success: function(response) {
+                    $(".status").html(response);
+                },
+                error: function(xhr) {
+                    //Do Something to handle error
+                }
+            });
+        });
+    })
+</script>
+
 <form method="POST" action="/">
     <section class="shopping-cart">
         <div class="container">
