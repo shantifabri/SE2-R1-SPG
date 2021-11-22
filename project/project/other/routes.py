@@ -152,3 +152,9 @@ def manageclients():
         return redirect(url_for('index'))
     return render_template('manageclients.html')
 
+@other_blueprint.route('/topup', methods=['GET','POST'])
+@login_required
+def topup():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+    return render_template('topup.html')
