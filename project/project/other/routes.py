@@ -145,3 +145,10 @@ def shoppingcart():
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
     return render_template('shoppingcart.html', values=vals)
 
+@other_blueprint.route('/manageclients', methods=['GET','POST'])
+@login_required
+def manageclients():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+    return render_template('manageclients.html')
+
