@@ -14,7 +14,7 @@ from . import other_blueprint
 @other_blueprint.route('/products')
 @login_required
 def products():
-    if current_user.role != 'S':
+    if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
     products = Product.query.all()
     return render_template('products.html',products=products)
@@ -63,5 +63,36 @@ def insertclient():
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
-    return render_template('shoppingcart.html')
+    if current_user.role != 'S' and current_user.role != 'C':
+        return redirect(url_for('index'))
+    
+    q = db.session.query(
+        ProductInBasket, 
+        Product, 
+        User
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+            ProductInBasket.product_id == Product.product_id
+        ).all()
+    # print(q)
+    vals = {}
+    products = []
+    # vals["products"] = q
+    total = 0
+    for val in q:
+        prod = {}
+        prod["product_id"] = val[1].product_id
+        prod["farmer"] = val[2].company
+        prod["price"] = '%.2f' % (val[0].quantity * val[1].price)
+        prod["quantity"] = val[0].quantity
+        prod["name"] = val[1].name
+        prod["url"] = val[1].img_url
+        prod["id"] = val[0].pib_id
+        total += val[0].quantity * val[1].price
+        products.append(prod)
+        
+    vals["products"] = products
+    vals["total"] = '%.2f' % total
+    return render_template('shoppingcart.html', values=vals)
 
