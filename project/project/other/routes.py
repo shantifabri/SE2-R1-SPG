@@ -82,11 +82,25 @@ def updatequantity(pib_id,amount):
 
     return redirect(url_for('other.shoppingcart'))
 
+@other_blueprint.route('/updateshipping/<value>',  methods=['GET','POST'])
+@login_required
+def updateshipping(value):
+    if current_user.role != 'S' and current_user.role != 'C':
+        return redirect(url_for('index'))
+
+    if value == "home":
+        session["shipping"] = '%.2f' % 7.50
+    else:
+        session["shipping"] = 0
+
+    return redirect(url_for('other.shoppingcart'))
+
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
     
+    session["shipping"] = session.get("shipping",0)
     q = db.session.query(
         ProductInBasket, 
         Product, 
@@ -113,8 +127,8 @@ def shoppingcart():
         prod["id"] = val[0].pib_id
         total += val[0].quantity * val[1].price
         products.append(prod)
-        
+    vals["subtotal"] = '%.2f' % total   
     vals["products"] = products
-    vals["total"] = '%.2f' % total
+    vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
     return render_template('shoppingcart.html', values=vals)
 
