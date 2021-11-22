@@ -13,7 +13,7 @@
                             <div class="product">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <a target="_blank" href=""><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/{{val['url']}}">
+                                        <a target="_blank" href="{{ url_for('other.singleproduct', product_id = val['product_id']) }}"><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/{{val['url']}}">
                                         </a>
                                     </div>
                                     <div class="col-md-8">
@@ -30,7 +30,7 @@
                                                 <div class="col-md-3 offset-md-1 quantity">
                                                     <label for="quantity">Quantity:</label>
                                                     <div class="input-group ">
-                                                        <input id="quantity" type="number" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
+                                                        <input id="quantity" type="number" onchange="alert($(this).val());" min="1" value="{{val['quantity']}}" class="form-control quantity-input">
                                                         <button class="btn btn-danger input-group-text">x</button>
                                                     </div>
                                                 </div>
@@ -51,13 +51,15 @@
                             <div class="summary-item"><span class="text">Subtotal</span><span class="price">€ {{values['total']}}</span></div>
                             <div class="summary-item"><span class="text">Shipping</span><span class="price">€0</span></div>
                             <div><span class="text">
-                            <select class="form-select" aria-label="Select Shipping">
+                            <select class="form-select" id="shipping-method" onchange="alert($('#shipping-method').val());" aria-label="Select Shipping">
                             <option value="store" selected>Store Pick-Up - 0€</option>
                             <option value="home">Standard Delivery - 7.50€</option>
                           </select></div>
 
                         <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{values["total"]}}{% else %}0{% endif %}</span></div>
                             <button type="button" class="btn btn-success btn-lg btn-block">Checkout</button>
+
+                            <button type="button" class="btn btn-danger btn-lg btn-block float-right"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
