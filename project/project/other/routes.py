@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm
 from project import db
 
 from . import other_blueprint
@@ -140,7 +140,7 @@ def shoppingcart():
         prod["id"] = val[0].pib_id
         total += val[0].quantity * val[1].price
         products.append(prod)
-    vals["subtotal"] = '%.2f' % total   
+    vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
     return render_template('shoppingcart.html', values=vals)
@@ -151,4 +151,13 @@ def manageclients():
     if current_user.role != 'S':
         return redirect(url_for('index'))
     return render_template('manageclients.html')
+
+@other_blueprint.route('/topup', methods=['GET','POST'])
+@login_required
+def topup():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+    form = TopUpForm()
+    
+    return render_template('topup.html', form=form)
 
