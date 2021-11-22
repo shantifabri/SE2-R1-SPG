@@ -56,7 +56,7 @@
                             <option value="home">Standard Delivery - 7.50€</option>
                           </select></div>
 
-                        <div class="summary-item"><span class="text">Total</span><span class="price">€6</span></div>
+                        <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{values["total"]}}{% else %}0{% endif %}</span></div>
                             <button type="button" class="btn btn-success btn-lg btn-block">Checkout</button>
                         </div>
                     </div>
