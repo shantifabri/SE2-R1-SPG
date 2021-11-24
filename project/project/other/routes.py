@@ -3,8 +3,8 @@ from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 
-from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm
+from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm
 from project import db
 
 from . import other_blueprint
@@ -14,7 +14,7 @@ from . import other_blueprint
 @other_blueprint.route('/products')
 @login_required
 def products():
-    if current_user.role != 'S' and current_user.role != 'C':
+    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
         return redirect(url_for('index'))
     # products = Product.query.all()
     products = db.session.query(
@@ -28,7 +28,7 @@ def products():
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
 @login_required
 def singleproduct(product_id):
-    if current_user.role != 'S' and current_user.role != 'C':
+    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
         return redirect(url_for('index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
@@ -113,6 +113,10 @@ def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
     
+    form = CheckOutForm()
+    if session.get("shipping",0) == 0:
+        form.delivery_address.data = "Store"
+        
     session["shipping"] = session.get("shipping",0)
     q = db.session.query(
         ProductInBasket, 
@@ -123,10 +127,8 @@ def shoppingcart():
         ).filter(
             ProductInBasket.product_id == Product.product_id
         ).all()
-    # print(q)
     vals = {}
     products = []
-    # vals["products"] = q
     total = 0
     for val in q:
         prod = {}
@@ -143,7 +145,33 @@ def shoppingcart():
     vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
-    return render_template('shoppingcart.html', values=vals)
+    if form.validate_on_submit() and request.method == "POST":
+        q2 = db.session.query(
+        User
+        ).filter(
+            User.email == form.email.data
+        ).filter(
+            User.role == "C"
+        ).first()
+        if q2 == None:
+            return render_template('shoppingcart.html', values=vals, form=form, valid=False)
+        else:
+            if session.get("shipping",0) == 0:
+                address = "Store"
+            else:
+                address = form.delivery_address.data
+
+            if address != None:
+                new_order = Order(client_id=q2.id, delivery_address=address, requested_delivery_date="", actual_delivery_date="", status="PENDING")
+                db.session.add(new_order)
+                db.session.commit()
+                return redirect(url_for('index'))
+                
+                # order_id = new_order.order_id
+
+
+            
+    return render_template('shoppingcart.html', values=vals, form=form, valid=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
 @login_required
@@ -151,6 +179,13 @@ def manageclients():
     if current_user.role != 'S':
         return redirect(url_for('index'))
     return render_template('manageclients.html')
+
+@other_blueprint.route('/insertproducts', methods=['GET','POST'])
+@login_required
+def insertproducts():
+    if current_user.role != 'F':
+        return redirect(url_for('index'))
+    return render_template('insertproduct.html')
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required

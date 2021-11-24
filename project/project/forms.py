@@ -34,5 +34,9 @@ class ProductInsertForm(FlaskForm):
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01))
     qty_available = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
 
+class CheckOutForm(FlaskForm):
+    delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})
+    email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
+
 class TopUpForm(FlaskForm):
     amount = FloatField('Amount', validators=[InputRequired()], widget=NumberInput(min=0.01))

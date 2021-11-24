@@ -45,7 +45,7 @@
     }
 </script>
 
-<form method="POST" action="/">
+<form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">>
     <section class="shopping-cart">
         <div class="container">
             <div class="block-heading">
@@ -103,7 +103,13 @@
                           </select></div>
 
                         <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{ values["total"] }}{% else %}0{% endif %}</span></div>
-                            <button type="button" class="btn btn-success btn-lg btn-block">Checkout</button>
+                            {% if current_user.role == 'S' %}
+                            <div class="summary-item">
+                                {{ form.hidden_tag() }} {% if session.get("shipping",0) != 0 %} {{ wtf.form_field(form.delivery_address) }} {% endif %}{{ wtf.form_field(form.email) }}</div>
+                            {% if valid == False %}
+                            <div class="summary-item text-danger">The inserted email does not belong to any client!</div>
+                            {% endif %} {% endif %}
+                            <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
 
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
                         </div>

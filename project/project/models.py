@@ -50,8 +50,19 @@ class Product(db.Model):
     product_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     price = db.Column(db.Float)
+    description = db.Column(db.String(500))
     qty_available = db.Column(db.Integer)
     qty_requested = db.Column(db.Integer)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))
+
+class Order(db.Model):
+    __tablename__ = "orders"
+    order_id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer)
+    delivery_address = db.Column(db.String(100))
+    requested_delivery_date = db.Column(db.String(50))
+    actual_delivery_date = db.Column(db.String(50))
+    status = db.Column(db.String(20))
+    

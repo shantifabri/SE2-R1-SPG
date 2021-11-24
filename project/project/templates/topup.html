@@ -1,91 +1,89 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 
-<body> 
+<body>
     <div class="container-fluid col-md-6">
         <p>&nbsp;</p>
-        <h1 style="text-align:center">Top-up Page</h1>
+        <h1 style="text-align:center">Wallets Top-Up</h1>
         <p>&nbsp;</p>
         <div class="container-fluid" id="page-content">
-          <div class="padding">
-              <div class="row container d-flex justify-content-center">
-                  <div class="col-lg-16 grid-margin stretch-card">
-                      <div class="card">
-                          <div class="card-body">
-                              <p>&nbsp;</p>
-                              <h4 class="card-title text-success" style="text-align:center">Clients</h4>
-                              <p>&nbsp;</p>
-                              <form class="form-inline my-2 my-lg-0" style="text-align:center">
-                                <input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search">
-                                <button class="btn btn-outline-success" type="submit" style="display:inline-block">
+            <div class="padding">
+                <div class="row container d-flex justify-content-center">
+                    <div class="col-lg-16 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <p>&nbsp;</p>
+                                <h4 class="card-title text-success" style="text-align:center">Clients</h4>
+                                <p>&nbsp;</p>
+                                <form class="form-inline my-2 my-lg-0" style="text-align:center">
+                                    <input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search">
+                                    <button class="btn btn-outline-success" type="submit" style="display:inline-block">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                   </svg>
                                 </button>
-                              </form>
-                              <p>&nbsp;</p>
-                              <p class="card-description" style="text-align:center"> Please, select the customer you want to top up for</p>
-                              <div class="table-responsive">
-                                  <table class="table" style="text-align:center">
-                                    <thead>
-                                      <tr>
-                                          <th>Name</th>
-                                          <th>Surname</th>
-                                          <th>Email</th>
-                                          <th>Current Balance</th>
-                                          <th>Top-Up</th>
-                                      </tr>
-                                    </thead>
+                                </form>
+                                <p>&nbsp;</p>
+                                <p class="card-description" style="text-align:center"> Please, select the customer you want to top up for</p>
+                                <div class="table-responsive">
+                                    <table class="table" style="text-align:center">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Surname</th>
+                                                <th>Email</th>
+                                                <th>Current Balance</th>
+                                                <th>Top-Up</th>
+                                            </tr>
+                                        </thead>
 
-                                    <tbody>
-                                      {% for user in users %}
-                                        <tr>
-                                            <td>{{user.name}}</td>
-                                            <td>{{user.surname}}</td>
-                                            <td>{{user.email}}</td>
-                                            <td>{{user.wallet}}</td>
-                                            <td>
-                                              <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#{{user.id}}">
+                                        <tbody>
+                                            {% for user in users %}
+                                            <tr>
+                                                <td>{{user.name}}</td>
+                                                <td>{{user.surname}}</td>
+                                                <td>{{user.email}}</td>
+                                                <td>€ {{'%.2f' % user.wallet}}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#{{user.id}}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                                                 </svg>
                                               </button>
-                                            </td>
-                                            <div class="modal fade" id="{{user.id}}" tabindex="-1" role="dialog" aria-hidden="true">
-                                              <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                  <div class="modal-header">
-                                                    <h5 class="modal-title" id="{{user.id}}">Modal title</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                </td>
+                                                <div class="modal fade" id="{{user.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="{{user.id}}">Modal title</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                       <span aria-hidden="true">&times;</span>
                                                     </button>
-                                                  </div>
-                                                  <div class="modal-body">
-                                                    ...
-                                                  </div>
-                                                  <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                                  </div>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                ...
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                <button type="button" class="btn btn-primary">Save changes</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                              </div>
-                                            </div>
-                                        </tr>
-                                      {% endfor %}
-                                    </tbody>
-                                  </table>
-                                  <p>&nbsp;</p>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <p>&nbsp;</p>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <p>&nbsp;</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>&nbsp;</p>
     </div>
-
-    
 
     <body>
 
