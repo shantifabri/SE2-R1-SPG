@@ -62,6 +62,8 @@ class Order(db.Model):
     order_id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer)
     delivery_address = db.Column(db.String(100))
+    home_delivery = db.Column(db.String(2))
+    total = db.Column(db.Float)
     requested_delivery_date = db.Column(db.String(50))
     actual_delivery_date = db.Column(db.String(50))
     status = db.Column(db.String(20))

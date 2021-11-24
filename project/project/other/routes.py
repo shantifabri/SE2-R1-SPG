@@ -2,10 +2,12 @@ from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
+from wtforms.fields import datetime
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm
 from project import db
+import datetime
 
 from . import other_blueprint
 
@@ -48,7 +50,7 @@ def singleproduct(product_id):
             status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
                 ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
                 ).all()
-            session["cart_count"] = session["cart_count"] = len(status_counts)
+            session["cart_count"] = len(status_counts)
 
             return redirect(url_for('other.products'))
         except Exception as e:
@@ -126,6 +128,8 @@ def shoppingcart():
             User.id == Product.farmer_id
         ).filter(
             ProductInBasket.product_id == Product.product_id
+        ).filter(
+            ProductInBasket.client_id == current_user.id
         ).all()
     vals = {}
     products = []
@@ -158,13 +162,26 @@ def shoppingcart():
         else:
             if session.get("shipping",0) == 0:
                 address = "Store"
+                home_delivery = "N"
             else:
                 address = form.delivery_address.data
+                home_delivery = "F"
 
             if address != None:
-                new_order = Order(client_id=q2.id, delivery_address=address, requested_delivery_date="", actual_delivery_date="", status="PENDING")
+                new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING")
                 db.session.add(new_order)
                 db.session.commit()
+                ProductInBasket.query.filter_by(client_id=current_user.id).delete()
+
+                items = []
+                for prod in products:
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id))
+                db.session.bulk_save_objects(items)
+                db.session.commit()
+                status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
+                    ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
+                    ).all()
+                session["cart_count"] = len(status_counts)
                 return redirect(url_for('index'))
                 
                 # order_id = new_order.order_id
