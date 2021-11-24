@@ -165,3 +165,7 @@ def topup():
     ).all()
     return render_template('topup.html', form=form, users=users)
 
+
+@other_blueprint.route('/insertproduct', methods=['GET','POST'])
+def insertproduct():
+    return render_template('insertproduct.html')

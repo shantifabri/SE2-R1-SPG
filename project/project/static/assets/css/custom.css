@@ -42,7 +42,9 @@
 }
 
 .shopping-cart .items{
-	margin: auto;
+	margin-left:15px;
+	margin-right:15px;
+	border-bottom:1px solid #ccc;
 }
 
 .shopping-cart .items .product{
@@ -122,11 +124,16 @@
 	margin-top: 20px;
 }
 
+
 @media (min-width: 768px) {
 	
 	.shopping-cart .items .product .info {
 		padding-top: 25px;
 		text-align: left; 
+	}
+
+	.shopping-cart .items .product .info-insert {
+		padding-top: 0px !important;
 	}
 
 	.shopping-cart .items .product .info .price {
@@ -155,5 +162,11 @@
 /* 2 PRODUCTS PAGE */
 .product-wap .card-img{
 	height:200px;
+}
+
+.addProd{
+	margin:25px;
+	margin-left:0px;
+	color:#fff;
 }
 /* 2 END OF PRODUCTS PAGE */
