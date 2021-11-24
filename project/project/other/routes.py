@@ -5,7 +5,7 @@ from sqlalchemy import func
 from wtforms.fields import datetime
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch
 from project import db
 import datetime
 
@@ -210,12 +210,24 @@ def topup():
     if current_user.role != 'S':
         return redirect(url_for('index'))
     form = TopUpForm()
+    form_search = TopUpSearch()
     users = db.session.query(
         User
     ).filter(
         User.role == "C"
     ).all()
-    return render_template('topup.html', form=form, users=users)
+    if form_search.validate_on_submit:
+        search = form_search.search.data
+        if search == None:
+            search = ""
+        users = db.session.query(
+            User
+        ).filter(
+            User.role == "C"
+        ).filter(
+            User.email.like("%" + search + "%")
+        ).all()
+    return render_template('topup.html', form=form, form_search=form_search, users=users)
 
 
 @other_blueprint.route('/insertproduct', methods=['GET','POST'])

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField, SearchField
 from wtforms.validators import InputRequired, Email, Length
 from wtforms.widgets import NumberInput
 
@@ -40,3 +40,7 @@ class CheckOutForm(FlaskForm):
 
 class TopUpForm(FlaskForm):
     amount = FloatField('Amount', validators=[InputRequired()], widget=NumberInput(min=0.01))
+
+class TopUpSearch(FlaskForm):
+    search = SearchField('', render_kw={'class':'form-control form-inline mr-sm-2','style':'width: 50%; display: inline-block','placeholder':'Search by email'})
+    # class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block"

@@ -14,13 +14,22 @@
                                 <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Clients</h4>
                                 <p>&nbsp;</p>
-                                <form class="form-inline my-2 my-lg-0" style="text-align:center">
-                                    <input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search">
-                                    <button class="btn btn-outline-success" type="submit" style="display:inline-block">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                  </svg>
-                                </button>
+                                <form class="form-inline my-2 my-lg-0" style="text-align:center" action="/topup" method="POST">
+                                    <div class="row ">
+                                        <div class="col-11">
+                                            {{ form_search.hidden_tag() }} {{ wtf.form_field(form_search.search) }}
+                                        </div>
+                                        <div class="col-1">
+                                            <button class="btn btn-outline-success" type="submit" style="display:inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                              </svg>
+                                                </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- <input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" name="email" type="search" placeholder="Search by email" aria-label="Search"> -->
+
+
                                 </form>
                                 <p>&nbsp;</p>
                                 <p class="card-description" style="text-align:center"> Please, select the customer you want to top up for</p>
