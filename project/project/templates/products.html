@@ -58,19 +58,14 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 text-decoration-none">{{prod[0].name}}</a>
-                            <!-- <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                        
-                                    </ul>
-                                    <ul class="list-unstyled d-flex justify-content-center mb-1">
-                                        <li>
-                                            <i class="text-warning fa fa-star"></i>
-                                            <i class="text-warning fa fa-star"></i>
-                                            <i class="text-warning fa fa-star"></i>
-                                            <i class="text-muted fa fa-star"></i>
-                                            <i class="text-muted fa fa-star"></i>
-                                        </li>
-                                    </ul> -->
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 text-decoration-none">{{prod[0].name}}</a>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-success-bold">{{prod[1].company}}</span>
+                                </div>
+                            </div>
                             <p class="text-center mb-0">Price: € {{'%.2f' % prod[0].price}} / Kg</p>
                         </div>
                     </div>
