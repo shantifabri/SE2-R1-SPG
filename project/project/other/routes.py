@@ -230,6 +230,11 @@ def topup():
     return render_template('topup.html', form=form, form_search=form_search, users=users)
 
 
-@other_blueprint.route('/insertproduct', methods=['GET','POST'])
-def insertproduct():
-    return render_template('insertproduct.html')
+@other_blueprint.route('/manageproducts', methods=['GET','POST'])
+def manageproducts():
+    products = db.session.query(
+        Product
+    ).filter(
+        Product.farmer_id == current_user.id
+    ).all()
+    return render_template('manageproducts.html', products=products)
