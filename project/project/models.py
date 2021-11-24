@@ -67,4 +67,10 @@ class Order(db.Model):
     requested_delivery_date = db.Column(db.String(50))
     actual_delivery_date = db.Column(db.String(50))
     status = db.Column(db.String(20))
+    # status is PENDING if the order has just been submitted,
+    # status is ACCEPTED if the order is accepted from the farmer,
+    # status is DELIVERING if the order is delivered from the farmer,
+    # status is CANCELLED if the order has been cancelled (insufficient balance),
+    # status is LODGED if the order has arrived to the pick-up point,
+    # status is DELIVERED if the order has been handed out to the client.
     
