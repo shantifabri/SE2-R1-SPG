@@ -14,19 +14,16 @@ def test_client():
 
 @pytest.fixture(scope='module')
 def init_database(test_client):
-    # Create the database and the database table
     db.create_all()
 
     # Insert user data
-    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='Farmer', password='FlaskIsAwesome', company="Pat's Farm")
+    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password='FlaskIsAwesome', company="Pat's Farm")
     user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='Shop Manager', password='UserPassword', company="")
-    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='Client', password='UserPassword', wallet=30)
+    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password='UserPassword', wallet=30)
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
 
-
-    # Commit the changes for the users
     db.session.commit()
 
     yield  # this is where the testing happens!
