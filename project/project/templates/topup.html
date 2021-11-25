@@ -1,6 +1,39 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 
+<script type="text/javascript">
+    $('#topupModal').on('show.bs.modal', function (event) {
+    console.log(event)
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var recipient = button.data('whatever') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    //modal.find('.modal-title').text('New message to ' + recipient)
+    modal.find('.modal-body p').text(recipient)
+})
+</script>
 <body>
+    <div class="modal fade" id="topupModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="text-align:center" id="topupModal">Top up</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+                <div class="modal-body justify-content-between">
+                    <p style="display:inline-block;">Please, insert the quantity you want to add to the user</p>
+                    <input type="text" name="currency-field" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" style="display:inline-block;" value="" data-type="currency" placeholder="$1,000.00">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid col-md-6">
         <p>&nbsp;</p>
         <h1 style="text-align:center">Wallets Top-Up</h1>
@@ -14,25 +47,21 @@
                                 <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Clients</h4>
                                 <p>&nbsp;</p>
+                                
                                 <form class="form-inline my-2 my-lg-0" style="text-align:center" action="/topup" method="POST">
-                                    <div class="row ">
-                                        <div class="col-11">
-                                            {{ form_search.hidden_tag() }} {{ wtf.form_field(form_search.search) }}
-                                        </div>
-                                        <div class="col-1">
-                                            <button class="btn btn-outline-success" type="submit" style="display:inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                              </svg>
-                                                </button>
-                                        </div>
-                                    </div>
+                                    <!--<input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search"> -->
+                                    {{form_search.hidden_tag()}} {{form_search.search}}
+                                    <button class="btn btn-outline-success" type="submit" style="display:inline-block">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                      </svg>
+                                    </button>
+                                  </form>   
+                                
 
-                                    <!-- <input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" name="email" type="search" placeholder="Search by email" aria-label="Search"> -->
-
-
-                                </form>
                                 <p>&nbsp;</p>
                                 <p class="card-description" style="text-align:center"> Please, select the customer you want to top up for</p>
+                                <p>&nbsp;</p>
                                 <div class="table-responsive">
                                     <table class="table" style="text-align:center">
                                         <thead>
@@ -53,32 +82,13 @@
                                                 <td>{{user.email}}</td>
                                                 <td>€ {{'%.2f' % user.wallet}}</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#{{user.id}}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                                </svg>
-                                              </button>
+                                                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#topupModal" data-whatever="{{user.email}}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                                    </svg>
+                                                </button>
                                                 </td>
-                                                <div class="modal fade" id="{{user.id}}" tabindex="-1" role="dialog" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="{{user.id}}">Modal title</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                      <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                ...
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                <button type="button" class="btn btn-primary">Save changes</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

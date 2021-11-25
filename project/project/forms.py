@@ -42,5 +42,5 @@ class TopUpForm(FlaskForm):
     amount = FloatField('Amount', validators=[InputRequired()], widget=NumberInput(min=0.01))
 
 class TopUpSearch(FlaskForm):
-    search = SearchField('', render_kw={'class':'form-control form-inline mr-sm-2','style':'width: 50%; display: inline-block','placeholder':'Search by email'})
+    search = SearchField('', render_kw={'class':'form-control','style':'width: 50%; display:inline-block','placeholder':'Search by email', 'aria-label':"Search"})
     # class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block"
