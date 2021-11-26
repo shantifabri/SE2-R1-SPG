@@ -12,6 +12,9 @@ import datetime
 from . import other_blueprint
 
 #### routes ####
+@other_blueprint.route('/')
+def index():
+    return render_template('index.html')
 
 @other_blueprint.route('/products')
 @login_required

@@ -18,7 +18,7 @@ def init_database(test_client):
 
     # Insert user data
     user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password='FlaskIsAwesome', company="Pat's Farm")
-    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='Shop Manager', password='UserPassword', company="")
+    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password='UserPassword', company="")
     user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password='UserPassword', wallet=30)
     db.session.add(user1)
     db.session.add(user2)
@@ -30,3 +30,32 @@ def init_database(test_client):
 
     db.drop_all()
 
+@pytest.fixture(scope='function')
+def login_farmer_user(test_client):
+    test_client.post('/login',
+                     data=dict(email='patfarmer@gmail.com', password='FlaskIsAwesome'),
+                     follow_redirects=True)
+
+    yield  # this is where the testing happens!
+
+    test_client.get('/logout', follow_redirects=True)
+
+@pytest.fixture(scope='function')
+def login_employee_user(test_client):
+    test_client.post('/login',
+                     data=dict(email='mattsmith@gmail.com', password='UserPassword'),
+                     follow_redirects=True)
+
+    yield  # this is where the testing happens!
+
+    test_client.get('/logout', follow_redirects=True)
+
+@pytest.fixture(scope='function')
+def login_employee_user(test_client):
+    test_client.post('/login',
+                     data=dict(email='ellaclint@gmail.com', password='UserPassword'),
+                     follow_redirects=True)
+
+    yield  # this is where the testing happens!
+
+    test_client.get('/logout', follow_redirects=True)
