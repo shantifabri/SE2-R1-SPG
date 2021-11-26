@@ -149,7 +149,10 @@ def shoppingcart():
     vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
+
     if form.validate_on_submit() and request.method == "POST":
+        if form.date.data == "":
+            return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=False)
         q2 = db.session.query(
         User
         ).filter(
@@ -157,8 +160,9 @@ def shoppingcart():
         ).filter(
             User.role == "C"
         ).first()
+        
         if q2 == None:
-            return render_template('shoppingcart.html', values=vals, form=form, valid=False)
+            return render_template('shoppingcart.html', values=vals, form=form, valid=False, date=True)
         else:
             if session.get("shipping",0) == 0:
                 address = "Store"
@@ -188,7 +192,7 @@ def shoppingcart():
 
 
             
-    return render_template('shoppingcart.html', values=vals, form=form, valid=True)
+    return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
 @login_required
