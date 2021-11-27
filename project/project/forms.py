@@ -44,7 +44,9 @@ class CheckOutForm(FlaskForm):
     date = StringField('Date', render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
 
 class TopUpForm(FlaskForm):
-    amount = FloatField('Amount', validators=[InputRequired()], widget=NumberInput(min=0.01))
+    amount = FloatField('', validators=[InputRequired()], widget=NumberInput(min=0.01), render_kw={"style":"text-align:center; width:50%; justify-content:between; display:inline-block", "placeholder":"$1,000.00", "value":""})
+    #style="display:inline-block;" value="" data-type="currency" placeholder="$1,000.00"
+    
 
 class TopUpSearch(FlaskForm):
     search = SearchField('', render_kw={'class':'form-control','style':'width: 50%; display:inline-block','placeholder':'Search by email', 'aria-label':"Search"})
