@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField, SearchField
+# from flask_wtf.file import FileField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField, SearchField, FileField
 from wtforms.validators import InputRequired, Email, Length
 from wtforms.widgets import NumberInput
+from wtforms.widgets import TextArea
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Length(min=1, max=30)])
@@ -30,9 +32,11 @@ class ClientInsertForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
 
 class ProductInsertForm(FlaskForm):
-    name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)])
-    price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01))
-    qty_available = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
+    name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
+    price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
+    description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())
+    qty_available = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()], render_kw={"class":"form-control"})
+    image = FileField('Image', render_kw={"class":"upload"})
 
 class CheckOutForm(FlaskForm):
     delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})

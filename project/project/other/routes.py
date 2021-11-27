@@ -1,11 +1,14 @@
 from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
+
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from wtforms.fields import datetime
+import os
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm
 from project import db
 import datetime
 
@@ -236,9 +239,24 @@ def topup():
 
 @other_blueprint.route('/manageproducts', methods=['GET','POST'])
 def manageproducts():
+    form = ProductInsertForm()
     products = db.session.query(
         Product
     ).filter(
         Product.farmer_id == current_user.id
     ).all()
-    return render_template('manageproducts.html', products=products)
+    if form.validate_on_submit and request.method == "POST":
+
+        # filename = secure_filename(form.image.data.filename)
+        filename = form.image.data.filename
+        filenames = filename.split(".")
+        prods = db.session.query(
+            Product
+        ).all()
+        filename = filenames[0] + str(len(prods)) + "." + filenames[1]
+        form.image.data.save("project/static/shop_imgs/" + filename)
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('other.manageproducts'))
+    return render_template('manageproducts.html', products=products, form=form)
