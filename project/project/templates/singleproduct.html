@@ -137,7 +137,7 @@
                             <li>Dolore magna aliqua</li>
                             <li>Excepteur sint</li>
                         </ul>
-
+                        {% if current_user.role == "S" or current_user.role == "C" %}
                         <form class="form-container" action="{{ url_for('other.singleproduct', product_id = product[0].product_id) }}" method="POST">
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">
@@ -151,6 +151,7 @@
                                 </div>
                             </div>
                         </form>
+                        {% endif %}
 
                     </div>
                 </div>

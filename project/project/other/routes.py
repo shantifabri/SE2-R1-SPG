@@ -238,7 +238,10 @@ def topup():
 
 
 @other_blueprint.route('/manageproducts', methods=['GET','POST'])
+@login_required
 def manageproducts():
+    if current_user.role != 'F':
+        return redirect(url_for('index'))
     form = ProductInsertForm()
     products = db.session.query(
         Product
