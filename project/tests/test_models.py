@@ -28,7 +28,6 @@ def test_new_client():
     assert client.password == 'UserPassword'
     assert client.wallet == 145
 
-
 def test_new_product():
     """
     GIVEN a Product model
@@ -99,3 +98,14 @@ def test_new_order():
     assert order.requested_delivery_date == "2021-11-28"
     assert order.actual_delivery_date == "2021-11-29"
     assert order.status == "ACCEPTED"
+
+def test_user_id(new_user):
+    """
+    GIVEN an existing User
+    WHEN the ID of the user is defined to a value
+    THEN check the user ID returns a string (and not an integer) as needed by Flask-WTF
+    """
+    new_user.id = 12
+    assert isinstance(new_user.get_id(), str)
+    assert not isinstance(new_user.get_id(), int)
+    assert new_user.get_id() == '12'

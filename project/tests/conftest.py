@@ -2,6 +2,12 @@ import pytest
 from project import create_app, db
 from project.models import User, Product
 
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User(name='Pat', surname='kennedy', email='patkennedy79@gmail.com', password='FlaskIsAwesome')
+    return user
+
 @pytest.fixture(scope='module')
 def test_client():
     flask_app = create_app('flask_test.cfg')
@@ -26,7 +32,7 @@ def init_database(test_client):
 
     db.session.commit()
 
-    yield  # this is where the testing happens!
+    yield
 
     db.drop_all()
 
@@ -36,7 +42,7 @@ def login_farmer_user(test_client):
                      data=dict(email='patfarmer@gmail.com', password='FlaskIsAwesome'),
                      follow_redirects=True)
 
-    yield  # this is where the testing happens!
+    yield
 
     test_client.get('/logout', follow_redirects=True)
 
@@ -46,16 +52,16 @@ def login_employee_user(test_client):
                      data=dict(email='mattsmith@gmail.com', password='UserPassword'),
                      follow_redirects=True)
 
-    yield  # this is where the testing happens!
+    yield
 
     test_client.get('/logout', follow_redirects=True)
 
 @pytest.fixture(scope='function')
-def login_employee_user(test_client):
+def login_client_user(test_client):
     test_client.post('/login',
                      data=dict(email='ellaclint@gmail.com', password='UserPassword'),
                      follow_redirects=True)
 
-    yield  # this is where the testing happens!
+    yield
 
     test_client.get('/logout', follow_redirects=True)
