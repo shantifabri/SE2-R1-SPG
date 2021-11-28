@@ -19,7 +19,7 @@ class ProductRequest(db.Model):
     product_id = db.Column(db.Integer)
     client_id = db.Column(db.Integer)
     shop_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
     timestamp = db.Column(db.String(40))
 
 class ProductInOrder(db.Model):
@@ -27,14 +27,14 @@ class ProductInOrder(db.Model):
     pio_id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
 
 class ProductInBasket(db.Model):
     __tablename__ = "product_in_basket"
     pib_id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer)
     client_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
 
 class Client(db.Model):
     __tablename__ = "clients"
@@ -51,8 +51,8 @@ class Product(db.Model):
     name = db.Column(db.String(20))
     price = db.Column(db.Float)
     description = db.Column(db.String(500))
-    qty_available = db.Column(db.Integer)
-    qty_requested = db.Column(db.Integer)
+    qty_available = db.Column(db.Float)
+    qty_requested = db.Column(db.Float)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))

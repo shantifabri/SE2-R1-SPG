@@ -84,7 +84,7 @@ def insertclient():
 def updatequantity(pib_id,amount):
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('index'))
-    amount = int(amount)
+    amount = float(amount)
     pib_id = int(pib_id)
     if amount != 0:
         a_user = db.session.query(ProductInBasket).filter(ProductInBasket.pib_id == pib_id).one()

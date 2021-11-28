@@ -19,11 +19,11 @@ class RegisterForm(FlaskForm):
     role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Manager'), ('A', 'Admin')])
 
 class AddToCartForm(FlaskForm):
-    quantity = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
+    quantity = FloatField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
 
 class ProductRequestForm(FlaskForm):
     email = StringField('Client Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
-    quantity = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()])
+    quantity = FloatField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
 
 class ClientInsertForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)])
@@ -35,7 +35,7 @@ class ProductInsertForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
     description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())
-    qty_available = IntegerField('Quantity', widget=NumberInput(min=1, step=1), validators=[InputRequired()], render_kw={"class":"form-control"})
+    qty_available = IntegerField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
     image = FileField('Image', render_kw={"class":"upload"})
 
 class CheckOutForm(FlaskForm):
