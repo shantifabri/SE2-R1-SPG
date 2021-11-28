@@ -44,6 +44,12 @@
 
     }
 </script>
+    <!-- need differ balance and total -->
+    <script>
+        $(document).ready(function(){
+            $('.toast').toast('show');
+        });
+    </script>
 
     <head>
         <!-- Required meta tags -->
@@ -70,6 +76,7 @@
             <div class="block-heading">
                 <h2>Shopping Cart</h2>
             </div>
+
             <div class="content">
                 <div class="row">
                     <div class="col-md-12 col-lg-8">
@@ -109,6 +116,7 @@
                             </div>
                             {% endfor %} {% endif %}
                         </div>
+
                     </div>
                     <div class="col-md-12 col-lg-4">
                         <div class="summary">
@@ -129,6 +137,7 @@
                             <div class="summary-item text-danger">The inserted email does not belong to any client!</div>
                             {% endif %} {% endif %}
 
+
                             <div class="container text-left">
                                 <div class="row justify-content-center">
                                     <h3 class="mb-5 text-center">Select your date</h3>
@@ -138,8 +147,19 @@
                                 </div>
                             </div>
                             <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
-
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
+
+                            <div class="container">
+                                <div class="toast" data-autohide="false">
+                                    <div class="toast-header">
+                                        <strong class="mr-auto">Reminder</strong>
+                                    </div>
+                                    <div class="toast-body">
+                                        Your wallet balance is insufficient
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -154,5 +174,6 @@
     <script src="/static/assets/js/picker.date.js"></script>
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/picker.time.js"></script>
+
 
 {% endblock %}
