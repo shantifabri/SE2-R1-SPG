@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block main %}
+<p>&nbsp;</p>
+
+<div class="container h5" style="justify-content:center; padding: 50px 0;">
+    <div class="row" style="margin: 0 5px; align-items:flex-end; align-items: flex-start; margin-block-end: 0; text-align:center">
+        <div class="column d-flex justify-content-center" style="float: left;
+    width: 50%;
+    padding: 0 10px;">
+
+            <div class="card">
+                <h5 class="card-header text-success">Add a new Client</h5>
+                <div class="card-body">
+                    <p>&nbsp;</p>
+                    <p class="card-text">Fill the form to register a new client to the shop.</p>
+                    <p>&nbsp;</p>
+                    <a href="{{ url_for('other.insertclient') }}" class="btn btn-success">Add Client</a>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="column d-flex justify-content-center" style="float: left;
+    width: 50%;
+    padding: 0 10px;">
+            <div class="card">
+                <h5 class="card-header text-success">Top-up a wallet</h5>
+                <div class="card-body">
+                    <p>&nbsp;</p>
+                    <p class="card-text">Select a client and insert the quantity to top.</p>
+                    <p>&nbsp;</p>
+                    <a href="{{ url_for('other.topup') }}" class="btn btn-success">Top-up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}

@@ -19,7 +19,7 @@ class ProductRequest(db.Model):
     product_id = db.Column(db.Integer)
     client_id = db.Column(db.Integer)
     shop_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
     timestamp = db.Column(db.String(40))
 
 class ProductInOrder(db.Model):
@@ -27,14 +27,14 @@ class ProductInOrder(db.Model):
     pio_id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
 
 class ProductInBasket(db.Model):
     __tablename__ = "product_in_basket"
     pib_id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer)
     client_id = db.Column(db.Integer)
-    quantity = db.Column(db.Integer)
+    quantity = db.Column(db.Float)
 
 class Client(db.Model):
     __tablename__ = "clients"
@@ -50,8 +50,27 @@ class Product(db.Model):
     product_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     price = db.Column(db.Float)
-    qty_available = db.Column(db.Integer)
-    qty_requested = db.Column(db.Integer)
+    description = db.Column(db.String(500))
+    qty_available = db.Column(db.Float)
+    qty_requested = db.Column(db.Float)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))
+
+class Order(db.Model):
+    __tablename__ = "orders"
+    order_id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer)
+    delivery_address = db.Column(db.String(100))
+    home_delivery = db.Column(db.String(2))
+    total = db.Column(db.Float)
+    requested_delivery_date = db.Column(db.String(50))
+    actual_delivery_date = db.Column(db.String(50))
+    status = db.Column(db.String(20))
+    # status is PENDING if the order has just been submitted,
+    # status is ACCEPTED if the order is accepted from the farmer,
+    # status is DELIVERING if the order is delivered from the farmer,
+    # status is CANCELLED if the order has been cancelled (insufficient balance),
+    # status is LODGED if the order has arrived to the pick-up point,
+    # status is DELIVERED if the order has been handed out to the client.
+    

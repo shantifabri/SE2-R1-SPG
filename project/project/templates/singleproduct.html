@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-lg-5 mt-5">
                 <div class="card mb-3">
-                    <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Card image cap" id="product-detail">
+                    <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Card image cap" id="product-detail">
                 </div>
                 <div class="row">
                     <!--Start Controls-->
@@ -25,17 +25,17 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                 </div>
@@ -47,17 +47,17 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                 </div>
@@ -69,17 +69,17 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                     <div class="col-4">
                                         <a href="#">
-                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product.img_url}}" alt="Product Image">
+                                            <img class="card-img img-fluid" src="/static/shop_imgs/{{product[0].img_url}}" alt="Product Image">
                                         </a>
                                     </div>
                                 </div>
@@ -103,15 +103,15 @@
             <div class="col-lg-7 mt-5">
                 <div class="card">
                     <div class="card-body">
-                        <h1 class="h2">{{product.name}}</h1>
-                        <p class="h3 py-2">€ {{product.price}} / Kg</p>
+                        <h1 class="h2">{{product[0].name}}</h1>
+                        <p class="h3 py-2">€ {{'%.2f' % product[0].price}} / Kg</p>
 
                         <ul class="list-inline">
                             <li class="list-inline-item">
                                 <h6>Farmer:</h6>
                             </li>
                             <li class="list-inline-item">
-                                <p class="text-muted"><strong>Easy Farmer</strong></p>
+                                <p class="text-muted"><strong>{{product[1].company}}</strong></p>
                             </li>
                         </ul>
 
@@ -126,6 +126,14 @@
                                 <p class="text-muted"><strong>Yellow / Purple potatoes</strong></p>
                             </li>
                         </ul>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h6>Avaliable Quantity :</h6>
+                            </li>
+                            <li class="list-inline-item">
+                                <p class="text-muted"><strong>{{product[0].qty_available - product[0].qty_requested}} Kg</strong></p>
+                            </li>
+                        </ul>
 
                         <h6>Specification:</h6>
                         <ul class="list-unstyled pb-3">
@@ -137,8 +145,8 @@
                             <li>Dolore magna aliqua</li>
                             <li>Excepteur sint</li>
                         </ul>
-
-                        <form class="form-container" action="{{ url_for('other.singleproduct', product_id = product.product_id) }}" method="POST">
+                        {% if current_user.role == "S" or current_user.role == "C" %}
+                        <form class="form-container" action="{{ url_for('other.singleproduct', product_id = product[0].product_id) }}" method="POST">
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">
                                 <div class="col-4">
@@ -147,10 +155,11 @@
                             </div>
                             <div class="row pb-3">
                                 <div class="col d-grid">
-                                    <button type="submit" class="btn btn-success btn-lg" name="submit" value="buy">Buy</button>
+                                    <button type="submit" class="btn btn-success btn-lg" name="submit" value="buy">Add to Cart</button>
                                 </div>
                             </div>
                         </form>
+                        {% endif %}
 
                     </div>
                 </div>

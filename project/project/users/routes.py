@@ -22,10 +22,10 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
-                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.product_id
+                ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
                 ).all()
-            
                 session["cart_count"] = session["cart_count"] = len(status_counts)
+
                 return redirect(url_for('index'))
         return render_template('login.html', form=form, valid=False)
 
@@ -37,6 +37,7 @@ def signup():
     form = RegisterForm()
 
     if form.validate_on_submit():
+        print("submitted")
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         # add the user form input which is form.'field'.data into the column which is 'field'
         new_user = User(name=form.name.data, surname=form.surname.data, role=form.role.data, email=form.email.data, password=hashed_password, company=form.company.data, wallet=0)

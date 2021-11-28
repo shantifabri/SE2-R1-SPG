@@ -1,0 +1,5 @@
+$(function() {
+
+   $('#pick-date').pickadate();
+
+});

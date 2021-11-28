@@ -36,26 +36,37 @@
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.insertclient') }}">New Client</a>
+                        <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.shoppingcart') }}">Cart</a>
+                        <a class="nav-link" href="">About us</a>
+                    </li>
+                    {% endif %} {% if current_user.role == 'F' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="">About us</a>
                     </li>
                     {% endif %}
 
                 </ul>
             </div>
             <div class="navbar align-self-center d-flex">
-    
-     
+
+
                 {% if current_user.is_authenticated %}
                 <span class="nav-icon position-relative text-decoration-none text-success">
                         Welcome {{current_user.name}}
-                    </span>
-                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.logout') }}">
-                        <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
+                    </span> {% if current_user.role == "S" or current_user.role == "C" %}
+                <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('other.shoppingcart') }}">
+                    <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">{{session["cart_count"]}}</span>
-                    </a>
+                </a>
+                {% endif %}
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.logout') }}">
                         Log Out
                         <!-- <i class="fa fa-fw fa-user text-dark mr-3"></i> -->
