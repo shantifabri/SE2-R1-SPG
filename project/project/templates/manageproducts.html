@@ -20,6 +20,20 @@
         });
     })
 
+    var id;
+    var name;
+    var desc;
+    var price;
+    var qty;
+
+    function submituser(i, n, d, p, q){
+        id = i;
+        name = n;
+        desc = d;
+        price = p;
+        qty = q;
+    }
+
     function emptyProduct(productId) {
 
     }
@@ -79,8 +93,8 @@
                                             </div>
                                             <div class="col-md-4 align-self-end">
                                                 <div class="form-group ">
-                                                    <button type="button" onclick="" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
-                                                    <button type="button" onclick="emptyProduct({{prod.product_id}})" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
+                                                    <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -179,13 +193,87 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-info">Save</button>
-                    <!-- <button type="button" data-dismiss="modal" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button> -->
                 </div>
             </div>
         </div>
     </form>
 </div>
 <!-- MODAL END-->
+
+<!-- MODAL FOR PRODUCT EDIT -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <form method="POST" action="/manageproducts" enctype="multipart/form-data">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>New Product</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group ">
+                                                        <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                                                        <!-- <input type="text" class="form-control" placeholder="Ex.  Potatoes"> -->
+                                                        {{form_edit.name}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group  ">
+                                                        <label>Product Quantity</label>
+                                                        <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
+                                                        {{form_edit.qty_available}}
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Product Price €/Kg</label>
+                                                        <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
+                                                        {{form_edit.price}}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <div class="form-group col-xs-12">
+                                                        <label>Product Description</label>
+                                                        <!-- <textarea class="form-control" rows="4" placeholder="Insert a description"></textarea> -->
+                                                        {{form_edit.description}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+
+                                                </div>
+                                                <div class="col-md-4 align-self-end">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- MODAL END -->
 <style>
     .modal-backdrop {
         display: none;

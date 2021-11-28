@@ -8,7 +8,7 @@ from wtforms.fields import datetime
 import os
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm
 from project import db
 import datetime
 
@@ -252,12 +252,18 @@ def manageproducts():
     if current_user.role != 'F':
         return redirect(url_for('index'))
     form = ProductInsertForm()
+    form_edit = ProductEditForm()
     products = db.session.query(
         Product
     ).filter(
         Product.farmer_id == current_user.id
     ).all()
-    if form.validate_on_submit and request.method == "POST":
+    
+    if form_edit.validate_on_submit() and request.method == "POST":
+        print(form_edit.name.data)
+        pass
+
+    if form.validate_on_submit() and request.method == "POST":
 
         # filename = secure_filename(form.image.data.filename)
         filename = form.image.data.filename
@@ -271,4 +277,4 @@ def manageproducts():
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
-    return render_template('manageproducts.html', products=products, form=form)
+    return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)

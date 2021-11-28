@@ -38,6 +38,12 @@ class ProductInsertForm(FlaskForm):
     qty_available = IntegerField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
     image = FileField('Image', render_kw={"class":"upload"})
 
+class ProductEditForm(FlaskForm):
+    name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
+    price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
+    description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())
+    qty_available = IntegerField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
+
 class CheckOutForm(FlaskForm):
     delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})
     email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
