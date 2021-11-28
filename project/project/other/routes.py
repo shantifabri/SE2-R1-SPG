@@ -223,7 +223,16 @@ def topup():
     ).filter(
         User.role == "C"
     ).all()
-    if form_search.validate_on_submit:
+
+    if form.validate_on_submit():
+        # print(form.email.data)
+        db.session.query(
+            User
+        ).filter(User.email == form.email.data
+        ).update({"wallet": (User.wallet + form.amount.data)})
+        db.session.commit()
+
+    if form_search.validate_on_submit():
         search = form_search.search.data
         if search == None:
             search = ""

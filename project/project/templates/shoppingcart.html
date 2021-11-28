@@ -45,26 +45,26 @@
     }
 </script>
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/assets/css/default.css">
-    <link rel="stylesheet" href="/static/assets/css/default.date.css">
+        <link rel="stylesheet" href="/static/assets/css/default.css">
+        <link rel="stylesheet" href="/static/assets/css/default.date.css">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/static/assets/css//bootstrap.min.css">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/static/assets/css//bootstrap.min.css">
 
-    <!-- Style -->
-    <link rel="stylesheet" href="/static/assets/css/style.css">
+        <!-- Style -->
+        <link rel="stylesheet" href="/static/assets/css/style.css">
 
-</head>
+    </head>
 
-<form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST" enctype="multipart/form-data">>
+<form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">>
     <section class="shopping-cart">
         <div class="container">
             <div class="block-heading">
@@ -132,13 +132,12 @@
                             <div class="container text-left">
                                 <div class="row justify-content-center">
                                     <h3 class="mb-5 text-center">Select your date</h3>
-                                    <!-- <div class="form-group"> -->
-                                    <!-- <input type="text" class="form-control" id="pick-date" placeholder="Pick a date"> -->
-                                    {{form.date}}
-                                    <!-- </div> -->
-                                    {% if date == False %}
-                                    <div class="summary-item text-danger">The inserted date is not valid!</div>
-                                    {% endif %}
+                                        <!-- <div class="form-group"> -->
+                                            <!-- <input type="text" class="form-control" id="pick-date" placeholder="Pick a date"> -->
+                                            {{form.date}}
+                                        <!-- </div> -->
+                                        {% if date %}
+                                        <div class="summary-item text-danger">The inserted date is not valid!</div>
                                 </div>
                             </div>
                             <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
@@ -153,10 +152,10 @@
 </form>
 
 
-<script src="/static/assets/js/popper.min.js"></script>
-<script src="/static/assets/js/picker.js"></script>
-<script src="/static/assets/js/picker.date.js"></script>
-<script src="/static/assets/js/main.js"></script>
-<script src="/static/assets/js/picker.time.js"></script>
+    <script src="/static/assets/js/popper.min.js"></script>
+    <script src="/static/assets/js/picker.js"></script>
+    <script src="/static/assets/js/picker.date.js"></script>
+    <script src="/static/assets/js/main.js"></script>
+    <script src="/static/assets/js/picker.time.js"></script>
 
 {% endblock %}

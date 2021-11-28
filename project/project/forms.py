@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 # from flask_wtf.file import FileField
-from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField, SearchField, FileField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, FloatField, SearchField, FileField, HiddenField
 from wtforms.validators import InputRequired, Email, Length
 from wtforms.widgets import NumberInput
 from wtforms.widgets import TextArea
@@ -44,7 +44,8 @@ class CheckOutForm(FlaskForm):
     date = StringField('Date', render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
 
 class TopUpForm(FlaskForm):
-    amount = FloatField('', validators=[InputRequired()], widget=NumberInput(min=0.01), render_kw={"style":"text-align:center; width:50%; justify-content:between; display:inline-block", "placeholder":"$1,000.00", "value":""})
+    email = HiddenField('Email')
+    amount = FloatField('', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"style":"text-align:center; width:50%; justify-content:between; display:inline-block", "placeholder":"€1,000.00", "value":""})
     #style="display:inline-block;" value="" data-type="currency" placeholder="$1,000.00"
     
 
