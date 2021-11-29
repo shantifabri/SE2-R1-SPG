@@ -20,7 +20,7 @@ def index():
 @login_required
 def products():
     if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     # products = Product.query.all()
     products = db.session.query(
         Product, 
@@ -34,7 +34,7 @@ def products():
 @login_required
 def singleproduct(product_id):
     if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
     product = db.session.query(
@@ -65,7 +65,7 @@ def singleproduct(product_id):
 @login_required
 def insertclient():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     # name, surname, email, phone, wallet
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
@@ -75,7 +75,7 @@ def insertclient():
         new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
 
     return render_template('insertclient.html', form=form)
 
@@ -83,7 +83,7 @@ def insertclient():
 @login_required
 def updatequantity(pib_id,amount):
     if current_user.role != 'S' and current_user.role != 'C':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     amount = int(amount)
     pib_id = int(pib_id)
     if amount != 0:
@@ -104,7 +104,7 @@ def updatequantity(pib_id,amount):
 @login_required
 def updateshipping(value):
     if current_user.role != 'S' and current_user.role != 'C':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
 
     if value == "home":
         session["shipping"] = '%.2f' % 7.50
@@ -116,7 +116,7 @@ def updateshipping(value):
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     
     form = CheckOutForm()
     if session.get("shipping",0) == 0:
@@ -185,7 +185,7 @@ def shoppingcart():
                     ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
                     ).all()
                 session["cart_count"] = len(status_counts)
-                return redirect(url_for('index'))
+                return redirect(url_for('other.index'))
                 
                 # order_id = new_order.order_id
 
@@ -204,14 +204,14 @@ def manageclients():
 @login_required
 def insertproducts():
     if current_user.role != 'F':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required
 def topup():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     form = TopUpForm()
     form_search = TopUpSearch()
     users = db.session.query(
