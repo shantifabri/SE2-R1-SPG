@@ -10,7 +10,8 @@ function submituser(recp){
   //$("#currency-field").val("$1,000.00");
   var modal=$(this)
   //Please, insert the quantity you want to add to the user
-  modal.find('.modal-title').text('Top-up wallet for client: ' + recipient)
+  modal.find('.modal-title').text('Top-up wallet for the client')
+  modal.find('.modal-mail').text(recipient)
   document.getElementById('email').value = recipient
 })
 </script>
@@ -27,7 +28,7 @@ function submituser(recp){
                 <form class="form-topup" method="POST" action="/topup">
 
                 <div class="modal-body justify-content-between" style="text-align:center">
-                    <p>&nbsp;</p>
+                    <p><h3 class="modal-mail"></h3></p>
                     <p style="display:inline-block;" id="modText">Please, insert the amount you want to add to the user wallet.</p>
                     <p>&nbsp;</p>
                     <!--<input type="text" name="currency-field" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" style="display:inline-block;" value="" data-type="currency" placeholder="$1,000.00">-->
