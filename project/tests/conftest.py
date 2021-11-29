@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash
 import pytest
 from project import create_app, db
 from project.models import User, Product
@@ -5,7 +6,7 @@ from project.models import User, Product
 
 @pytest.fixture(scope='module')
 def new_user():
-    user = User(name='Pat', surname='kennedy', email='patkennedy79@gmail.com', password='FlaskIsAwesome')
+    user = User(name='Pat', surname='kennedy', email='patkennedy79@gmail.com', password='FlaskIsAwesome', role='S')
     return user
 
 @pytest.fixture(scope='module')
@@ -23,9 +24,9 @@ def init_database(test_client):
     db.create_all()
 
     # Insert user data
-    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password='FlaskIsAwesome', company="Pat's Farm")
-    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password='UserPassword', company="")
-    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password='UserPassword', wallet=30)
+    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm")
+    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="")
+    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30)
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
