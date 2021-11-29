@@ -113,6 +113,18 @@ def updateshipping(value):
 
     return redirect(url_for('other.shoppingcart'))
 
+@other_blueprint.route('/updatestatus/<order_id>',  methods=['GET','POST'])
+@login_required
+def updatestatus(order_id):
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+
+    order = db.session.query(Order).filter(Order.order_id == order_id).one()
+    order.status = "DELIVERED"
+    db.session.commit()
+
+    return redirect(url_for('other.manageorders'))
+
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
@@ -218,9 +230,12 @@ def insertproducts():
 def manageorders():
     if current_user.role != 'S':
         return redirect(url_for('index'))
-    orders=db.session.query(
-        Order
-    ).all()
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).all()
     return render_template('manageorders.html', orders=orders)
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
