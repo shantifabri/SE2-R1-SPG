@@ -70,9 +70,25 @@
 
     </head>
 
-
+    
 <form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">
     <section class="shopping-cart">
+        {% if balance == False %}
+    <!-- <div class="float-right" style="position:absolute;"> -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong class="me-auto">Warning Reminder</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                Your wallet balance is insufficient
+              </div>
+            </div>
+          </div>
+    {% endif %}
         <div class="container">
             <div class="block-heading">
                 <h2>Shopping Cart</h2>
@@ -155,8 +171,10 @@
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
                             
                             {% if balance == False %}
-                            <div class="float-right" style="position:absolute;">
-                                <div class="toast" data-autohide="false">
+                            <!-- <div class="float-right" style="position:absolute;"> -->
+                            <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                                <!-- <div class="toast" data-autohide="false"> -->
+                                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
                                         <strong class="mr-auto">Reminder</strong>
                                     </div>
