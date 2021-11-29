@@ -31,10 +31,11 @@
         <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="onertp_main_nav">
             <div class="flex-fill">
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
-                    {% if current_user.role == 'S' %}
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
+                    {% if current_user.role == 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
                     </li>
