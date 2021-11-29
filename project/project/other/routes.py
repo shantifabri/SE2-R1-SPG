@@ -213,6 +213,16 @@ def insertproducts():
         return redirect(url_for('index'))
     return render_template('insertproduct.html')
 
+@other_blueprint.route('/manageorders', methods=['GET', 'POST'])
+@login_required
+def manageorders():
+    if current_user.role != 'S':
+        return redirect(url_for('index'))
+    orders=db.session.query(
+        Order
+    ).all()
+    return render_template('manageorders.html', orders=orders)
+
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required
 def topup():

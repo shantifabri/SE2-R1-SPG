@@ -15,6 +15,9 @@ function submituser(recp){
   document.getElementById('email').value = recipient
 })
 </script>
+<style>
+    tr:nth-child(even) {background-color: #d6f0c7;}
+</style>
 <body>
     <div class="modal fade" id="topupModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -28,6 +31,7 @@ function submituser(recp){
                 <form class="form-topup" method="POST" action="/topup">
 
                 <div class="modal-body justify-content-between" style="text-align:center">
+                    <p>&nbsp;</p>
                     <p><h3 class="modal-mail"></h3></p>
                     <p style="display:inline-block;" id="modText">Please, insert the amount you want to add to the user wallet.</p>
                     <p>&nbsp;</p>
@@ -114,6 +118,5 @@ function submituser(recp){
         <p>&nbsp;</p>
     </div>
 
-    <body>
-
-        {% endblock %}
+<body>
+{% endblock %}
