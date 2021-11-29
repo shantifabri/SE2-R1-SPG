@@ -70,13 +70,13 @@
 
     </head>
 
+
 <form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">
     <section class="shopping-cart">
         <div class="container">
             <div class="block-heading">
                 <h2>Shopping Cart</h2>
             </div>
-
             <div class="content">
                 <div class="row">
                     <div class="col-md-12 col-lg-8">
@@ -146,15 +146,16 @@
                                             <!-- <input type="text" class="form-control" id="pick-date" placeholder="Pick a date"> -->
                                             {{form.date}}
                                         <!-- </div> -->
-                                        {% if date %}
+                                        {% if date == False %}
                                         <div class="summary-item text-danger">The inserted date is not valid!</div>
                                         {% endif %}
                                 </div>
                             </div>
                             <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
-
-                            <div class="container">
+                            
+                            {% if balance == False %}
+                            <div class="float-right" style="position:absolute;">
                                 <div class="toast" data-autohide="false">
                                     <div class="toast-header">
                                         <strong class="mr-auto">Reminder</strong>
@@ -164,6 +165,7 @@
                                     </div>
                                 </div>
                             </div>
+                            {% endif %}
 
                         </div>
                     </div>

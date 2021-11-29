@@ -165,7 +165,7 @@ def shoppingcart():
         ).first()
         
         if q2 == None:
-            return render_template('shoppingcart.html', values=vals, form=form, valid=False, date=True)
+            return render_template('shoppingcart.html', values=vals, form=form, valid=False, date=True, balance=True)
         else:
             if session.get("shipping",0) == 0:
                 address = "Store"
@@ -189,13 +189,15 @@ def shoppingcart():
                     ).filter(ProductInBasket.client_id == current_user.id).group_by(ProductInBasket.pib_id
                     ).all()
                 session["cart_count"] = len(status_counts)
+                if float(vals["total"]) > q2.wallet:
+                    print("Insufficient Balance")
+                    return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=False)
+                print("Sufficient Balance")
                 return redirect(url_for('index'))
                 
                 # order_id = new_order.order_id
-
-
-            
-    return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True)
+      
+    return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
 @login_required
