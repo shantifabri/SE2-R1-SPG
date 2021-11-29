@@ -57,6 +57,9 @@ div {
 
 /* General */
 
+.btn-info{
+    color:#fff;
+}
 .logo {
     font-weight: 500 !important;
 }

@@ -60,47 +60,51 @@
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="form-group ">
-                                                    <label>Product Name</label> {{prod.name}}
+                                                    <label class="descTitle">Product Name:&nbsp</label>{{prod.name}}
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label>Available Quantity</label> {{prod.qty_available}}
+                                                    <label class="descTitle">Available Quantity:&nbsp</label> {{prod.qty_available}}
                                                 </div>
 
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label>Requested Quantity</label> {{prod.qty_requested}}
+                                                    <label class="descTitle">Requested Quantity:&nbsp</label> {{prod.qty_requested}}
                                                 </div>
 
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label>Product Price </label> {{'%.2f' %prod.price}}€/Kg
+                                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod.price}}€/Kg
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-7">
-                                                <div class="form-group col-xs-12">
-                                                    <label>Product Description</label> {{prod.description}}
+                                            <div class="col-md-12">
+                                                <div class="form-group col-xs-12 descRow" >
+                                                    <label class="descTitle">Product Description:&nbsp</label> {{prod.description}}
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
 
                                             </div>
-                                            <div class="col-md-4 align-self-end">
-                                                <div class="form-group ">
-                                                    <button type="button" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
-                                                    <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
-                                                </div>
+                                          
+                                        </div>
+                                        <div class="col-md-12 align-self-end">
+                                            <div class="form-group ">
+                                                <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
+                                                <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
+                                
                             </div>
+                      
                             {% endfor %}
                         </div>
                     </div>
@@ -134,12 +138,7 @@
                             <div class="items">
                                 <div class="product">
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <!-- <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/upload_placeholder.jpg"> -->
-                                            <!-- </a> -->
-                                            {{form.image}}
-                                        </div>
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group ">
@@ -182,6 +181,13 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="col-md-12">
+                                            <!-- <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/upload_placeholder.jpg"> -->
+                                            <!-- </a> -->
+                                            <label>Product Image</label><br>
+                                            {{form.image}}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -214,7 +220,7 @@
                             <div class="items">
                                 <div class="product">
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group ">

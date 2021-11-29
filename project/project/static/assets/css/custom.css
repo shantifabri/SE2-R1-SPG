@@ -170,6 +170,15 @@
 	color:#fff;
 }
 
+.descTitle{
+	font-weight:bold !important;
+}
+.descRow{
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	overflow: hidden;
+}
+
 @media (min-width: 576px){
 .modal-dialog {
 	max-width:700px !important;
