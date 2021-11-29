@@ -1,11 +1,14 @@
 from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user
+
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from wtforms.fields import datetime
+import os
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm
 from project import db
 import datetime
 
@@ -84,7 +87,7 @@ def insertclient():
 def updatequantity(pib_id,amount):
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('other.index'))
-    amount = int(amount)
+    amount = float(amount)
     pib_id = int(pib_id)
     if amount != 0:
         a_user = db.session.query(ProductInBasket).filter(ProductInBasket.pib_id == pib_id).one()
@@ -152,7 +155,10 @@ def shoppingcart():
     vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
+
     if form.validate_on_submit() and request.method == "POST":
+        if form.date.data == "":
+            return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=False)
         q2 = db.session.query(
         User
         ).filter(
@@ -160,8 +166,9 @@ def shoppingcart():
         ).filter(
             User.role == "C"
         ).first()
+        
         if q2 == None:
-            return render_template('shoppingcart.html', values=vals, form=form, valid=False)
+            return render_template('shoppingcart.html', values=vals, form=form, valid=False, date=True)
         else:
             if session.get("shipping",0) == 0:
                 address = "Store"
@@ -191,7 +198,7 @@ def shoppingcart():
 
 
             
-    return render_template('shoppingcart.html', values=vals, form=form, valid=True)
+    return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
 @login_required
@@ -219,7 +226,16 @@ def topup():
     ).filter(
         User.role == "C"
     ).all()
-    if form_search.validate_on_submit:
+
+    if form.validate_on_submit():
+        # print(form.email.data)
+        db.session.query(
+            User
+        ).filter(User.email == form.email.data
+        ).update({"wallet": (User.wallet + form.amount.data)})
+        db.session.commit()
+
+    if form_search.validate_on_submit():
         search = form_search.search.data
         if search == None:
             search = ""
@@ -234,10 +250,34 @@ def topup():
 
 
 @other_blueprint.route('/manageproducts', methods=['GET','POST'])
+@login_required
 def manageproducts():
+    if current_user.role != 'F':
+        return redirect(url_for('index'))
+    form = ProductInsertForm()
+    form_edit = ProductEditForm()
     products = db.session.query(
         Product
     ).filter(
         Product.farmer_id == current_user.id
     ).all()
-    return render_template('manageproducts.html', products=products)
+    
+    if form_edit.validate_on_submit() and request.method == "POST":
+        print(form_edit.name.data)
+        pass
+
+    if form.validate_on_submit() and request.method == "POST":
+
+        # filename = secure_filename(form.image.data.filename)
+        filename = form.image.data.filename
+        filenames = filename.split(".")
+        prods = db.session.query(
+            Product
+        ).all()
+        filename = filenames[0] + str(len(prods)) + "." + filenames[1]
+        form.image.data.save("project/static/shop_imgs/" + filename)
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('other.manageproducts'))
+    return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
