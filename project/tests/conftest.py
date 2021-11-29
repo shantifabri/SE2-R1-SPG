@@ -23,15 +23,22 @@ def test_client():
 def init_database(test_client):
     db.create_all()
 
-    # Insert user data
+    # Insert User data
     user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm")
     user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="")
     user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30)
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
-
     db.session.commit()
+
+    # Insert Product data
+    prod1 = Product(name="Bananas", price=1, description="Bananas from Ecuador", qty_available=14, qty_requested=2, farmer_id=1, img_url="https://www.kroger.com/product/images/xlarge/front/0000000004011", date="2021-11-24")
+    prod2 = Product(name="Potatoes", price=4, description="The best potatoes", qty_available=11, qty_requested=0, farmer_id=1, img_url="", date="2021-11-24")
+    db.session.add(prod1)
+    db.session.add(prod2)
+    db.session.commit()
+
 
     yield
 
