@@ -1,0 +1,93 @@
+{% extends "base.html" %} {% block main %}
+<div class="container py-5">
+    <div class="row">
+
+        <div class="col-lg-3">
+            <h1 class="h2 pb-4">Categories</h1>
+            <ul class="list-unstyled onertp-accordion">
+                <li class="pb-3">
+                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
+                        Food
+                        <em class="fa fa-fw fa-chevron-circle-down mt-1"></em>
+                    </a>
+                    <ul class="collapse show list-unstyled pl-3">
+                        <li><a class="text-decoration-none" href="#">Vegetables</a></li>
+                        <li><a class="text-decoration-none" href="#">Fruits</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-inline shop-top-Vegetablesu pb-3 pt-1">
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none mr-3" href="#">All</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none mr-3" href="#">Vegetables</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none" href="#">Fruits</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 pb-4">
+                    <div class="d-flex">
+                        <select class="form-control">
+                            <option>Featured</option>
+                            <option>A to Z</option>
+                            <option>Item</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% if products %} {% for prod in products %}
+                <!-- prod[0] access to product fields. prod[1] access to user fields -->
+                <div class="col-md-4">
+                    <div class="card mb-4 product-wap rounded-0">
+                        <div class="card rounded-0">
+                            <img class="card-img rounded-0 img-fluid" src="static/shop_imgs/{{prod[0].img_url}}" alt="image of {{prod[0].name}}">
+                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                <ul class="list-unstyled">
+                                    <li><a class="btn btn-success text-white mt-2" href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}"><em class="fas fa-cart-plus"></em></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 text-decoration-none">{{prod[0].name}}</a>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-success-bold">{{prod[1].company}}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-center mb-0">Price: € {{'%.2f' % prod[0].price}} / Kg</p>
+                            <p class="text-center mb-0">Available Qty: {{prod[0].qty_available - prod[0].qty_requested}} Kg</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %} {% endif %}
+                <!-- <div div="row">
+                <ul class="pagination pagination-lg justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#" tabindex="-1">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link rounded-0 shadow-sm border-top-0 border-left-0 text-dark" href="#">3</a>
+                    </li>
+                </ul>
+            </div> -->
+            </div>
+
+        </div>
+    </div>
+    {% endblock %}

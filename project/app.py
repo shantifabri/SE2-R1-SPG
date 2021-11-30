@@ -7,9 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterForm
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'NOBODY-CAN-GUESS-THIS'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# app = Flask(__name__)
+# app.config['SECRET_KEY'] = 'NOBODY-CAN-GUESS-THIS'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 Bootstrap(app)
 db = SQLAlchemy(app)
@@ -81,5 +81,13 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
+from project import create_app
+from flask import render_template
+
+app = create_app('flask.cfg')
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000, host=('0.0.0.0'))
+

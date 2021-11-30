@@ -1,0 +1,204 @@
+{% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<script>
+    $(function() {
+        $('#env').change(function() {
+            var current_status = $(this).prop('checked');
+            $.ajax({
+                url: "/get_toggled_status",
+                type: "get",
+                data: {
+                    status: current_status
+                },
+                success: function(response) {
+                    $(".status").html(response);
+                },
+                error: function(xhr) {
+                    //Do Something to handle error
+                }
+            });
+        });
+    })
+
+    function prodQty(amount, productID) {
+        //$.post('/updatequantity/' + productID + '/' + amount)
+        $.ajax({
+            url: '/updatequantity/' + productID + '/' + amount,
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
+    }
+
+    function shippingMethod(value) {
+        $.ajax({
+            url: '/updateshipping/' + value,
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
+    }
+
+    function emptyCart() {
+
+    }
+</script>
+    <!-- need differ balance and total -->
+    <script>
+        $(document).ready(function(){
+            $('.toast').toast('show');
+        });
+    </script>
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="/static/assets/css/default.css">
+        <link rel="stylesheet" href="/static/assets/css/default.date.css">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/static/assets/css//bootstrap.min.css">
+
+        <!-- Style -->
+        <link rel="stylesheet" href="/static/assets/css/style.css">
+
+    </head>
+
+    
+<form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">
+    <section class="shopping-cart">
+        {% if balance == False %}
+    <!-- <div class="float-right" style="position:absolute;"> -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong class="me-auto">Warning Reminder</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                Your wallet balance is insufficient
+              </div>
+            </div>
+          </div>
+    {% endif %}
+        <div class="container">
+            <div class="block-heading">
+                <h2>Shopping Cart</h2>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12 col-lg-8">
+                        <div class="items">
+                            {% if values %} {% for val in values["products"] %}
+                            <div class="product">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <a target="_blank" href="{{ url_for('other.singleproduct', product_id = val['product_id']) }}"><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/{{val['url']}}">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="info">
+                                            <div class="row">
+                                                <div class="col-md-5 product-name">
+                                                    <div class="product-name">
+                                                        <a class="text-success text-decoration-none" href="{{ url_for('other.singleproduct', product_id = val['product_id']) }}">{{val['name']}}</a>
+                                                        <div class="product-info">
+                                                            <div>Farmer: <span class="value">{{val['farmer']}}</span></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 offset-md-1 quantity">
+                                                    <label for="quantity">Quantity:</label>
+                                                    <div class="input-group ">
+                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['pib_id']}});" min="0.1" step="0.1" value="{{val['quantity']}}" class="form-control quantity-input">
+                                                        <button class="btn btn-danger input-group-text" onClick="prodQty(0,{{val['pib_id']}});">x</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 price">
+                                                    <span>€ {{val['price']}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %} {% endif %}
+                            <!-- <button class="btn btn-success input-group-text float-right">UPDATE QUANTITY</button> -->
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 col-lg-4">
+                        <div class="summary">
+                            <h3>Summary</h3>
+                            <div class="summary-item"><span class="text">Subtotal</span><span class="price">€ {{values['subtotal']}}</span></div>
+                            <div class="summary-item"><span class="text">Shipping</span><span class="price">€ {{session.get("shipping",0)}}</span></div>
+                            <div><span class="text">
+                            <select class="form-select" id="shipping-method" onchange="shippingMethod($('#shipping-method').val());" aria-label="Select Shipping">
+                            <option value="store" {% if session.get("shipping",0) == 0 %}selected{% endif %}>Store Pick-Up - 0€</option>
+                            <option value="home" {% if session.get("shipping",0) != 0 %}selected{% endif %}>Standard Delivery - 7.50€</option>
+                          </select></div>
+
+                        <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{ values["total"] }}{% else %}0{% endif %}</span></div>
+                            {% if current_user.role == 'S' %}
+                            <div class="summary-item">
+                                {{ form.hidden_tag() }} {% if session.get("shipping",0) != 0 %} {{ wtf.form_field(form.delivery_address) }} {% endif %}{{ wtf.form_field(form.email) }}</div>
+                            {% if valid == False %}
+                            <div class="summary-item text-danger">The inserted email does not belong to any client!</div>
+                            {% endif %} {% endif %}
+
+
+                            <div class="container text-left">
+                                <div class="row justify-content-center">
+                                    <h3 class="mb-5 text-center">Select your date</h3>
+                                        <!-- <div class="form-group"> -->
+                                            <!-- <input type="text" class="form-control" id="pick-date" placeholder="Pick a date"> -->
+                                            {{form.date}}
+                                        <!-- </div> -->
+                                        {% if date == False %}
+                                        <div class="summary-item text-danger">The inserted date is not valid!</div>
+                                        {% endif %}
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
+                            <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
+                            
+                            {% if balance == False %}
+                            <!-- <div class="float-right" style="position:absolute;"> -->
+                            <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                                <!-- <div class="toast" data-autohide="false"> -->
+                                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <strong class="mr-auto">Reminder</strong>
+                                    </div>
+                                    <div class="toast-body">
+                                        Your wallet balance is insufficient
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+
+    <script src="/static/assets/js/popper.min.js"></script>
+    <script src="/static/assets/js/picker.js"></script>
+    <script src="/static/assets/js/picker.date.js"></script>
+    <script src="/static/assets/js/main.js"></script>
+    <script src="/static/assets/js/picker.time.js"></script>
+
+
+{% endblock %}
