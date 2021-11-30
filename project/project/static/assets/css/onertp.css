@@ -57,6 +57,9 @@ div {
 
 /* General */
 
+.btn-info{
+    color:#fff;
+}
 .logo {
     font-weight: 500 !important;
 }
@@ -105,6 +108,11 @@ div {
 
 .text-success-bold {
     color: #59ab6e;
+    font-weight: 500 !important;
+}
+
+.text-black-bold {
+    color: #535353;
     font-weight: 500 !important;
 }
 

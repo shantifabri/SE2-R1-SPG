@@ -47,7 +47,7 @@ class ProductEditForm(FlaskForm):
 class CheckOutForm(FlaskForm):
     delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})
     email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
-    date = StringField('Date', render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
+    date = StringField('Date', validators=[InputRequired()], render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
 
 class TopUpForm(FlaskForm):
     email = HiddenField('Email')
