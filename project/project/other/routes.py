@@ -8,7 +8,7 @@ from wtforms.fields import datetime
 import os
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm
+from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
 import datetime
 
@@ -133,7 +133,14 @@ def shoppingcart():
     if current_user.role != 'S' and current_user.role != 'C':
         return redirect(url_for('other.index'))
     
-    form = CheckOutForm()
+    
+    if current_user.role == "C":
+        form = CheckOutClientForm()
+        form.email.data = current_user.email
+    else:
+        form = CheckOutForm()
+    
+    
     if session.get("shipping",0) == 0:
         form.delivery_address.data = "Store"
         
@@ -167,6 +174,12 @@ def shoppingcart():
     vals["subtotal"] = '%.2f' % total
     vals["products"] = products
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
+
+
+    if request.method == "POST":
+        print(form.email.data)
+        print(form.delivery_address.data)
+        print(form.date.data)
 
     if form.validate_on_submit() and request.method == "POST":
         if form.date.data == "":

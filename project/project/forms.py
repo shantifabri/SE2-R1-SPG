@@ -49,6 +49,11 @@ class CheckOutForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
     date = StringField('Date', validators=[InputRequired()], render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
 
+class CheckOutClientForm(FlaskForm):
+    delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})
+    email = StringField('Email', validators=[Email(message="Invalid Email"), Length(min=6, max=30)])
+    date = StringField('Date', validators=[InputRequired()], render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
+
 class TopUpForm(FlaskForm):
     email = HiddenField('Email')
     amount = FloatField('', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"style":"text-align:center; width:50%; justify-content:between; display:inline-block", "placeholder":"€1,000.00", "value":""})

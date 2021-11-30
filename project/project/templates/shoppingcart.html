@@ -147,9 +147,10 @@
                           </select></div>
 
                         <div class="summary-item"><span class="text">Total</span><span class="price">€ {% if values %}{{ values["total"] }}{% else %}0{% endif %}</span></div>
-                            {% if current_user.role == 'S' %}
+                            
                             <div class="summary-item">
-                                {{ form.hidden_tag() }} {% if session.get("shipping",0) != 0 %} {{ wtf.form_field(form.delivery_address) }} {% endif %}{{ wtf.form_field(form.email) }}</div>
+                                {{ form.hidden_tag() }} {% if session.get("shipping",0) != 0 %} {{ wtf.form_field(form.delivery_address) }} {% endif %}
+                                {% if current_user.role == 'S' %}{{ wtf.form_field(form.email) }}</div>
                             {% if valid == False %}
                             <div class="summary-item text-danger">The inserted email does not belong to any client!</div>
                             {% endif %} {% endif %}
