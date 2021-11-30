@@ -23,6 +23,10 @@ jobs:
       - name: Running Tests and Create env variables
         working-directory: ./project
         run: python -m pytest -v  --cov --cov-report=xml --cov-report=html
+      - uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: htmlcov
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
