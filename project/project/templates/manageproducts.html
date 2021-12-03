@@ -144,7 +144,7 @@
                                                     <div class="form-group ">
                                                         <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
                                                         <!-- <input type="text" class="form-control" placeholder="Ex.  Potatoes"> -->
-                                                        {{form.name}}
+                                                        {{ form.csrf_token() }}{{form.name}}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">

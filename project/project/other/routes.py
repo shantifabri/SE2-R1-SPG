@@ -14,6 +14,8 @@ import datetime
 
 from . import other_blueprint
 
+api_key = "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"
+
 #### routes ####
 @other_blueprint.route('/')
 def index():
@@ -120,7 +122,7 @@ def updateshipping(value):
 @login_required
 def updatestatus(order_id):
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
 
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = "DELIVERED"
@@ -232,7 +234,7 @@ def shoppingcart():
 @login_required
 def manageclients():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     return render_template('manageclients.html')
 
 @other_blueprint.route('/insertproducts', methods=['GET','POST'])
@@ -246,7 +248,7 @@ def insertproducts():
 @login_required
 def manageorders():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     orders = db.session.query(
         Order,  
         User
@@ -294,7 +296,7 @@ def topup():
 @login_required
 def manageproducts():
     if current_user.role != 'F':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     form = ProductInsertForm()
     form_edit = ProductEditForm()
     products = db.session.query(
@@ -302,13 +304,9 @@ def manageproducts():
     ).filter(
         Product.farmer_id == current_user.id
     ).all()
-    
-    if form_edit.validate_on_submit() and request.method == "POST":
-        print(form_edit.name.data)
-        pass
 
-    if form.validate_on_submit() and request.method == "POST":
-
+    if form.validate() and request.method == "POST":
+        print("INSERTING")
         # filename = secure_filename(form.image.data.filename)
         filename = form.image.data.filename
         filenames = filename.split(".")
@@ -322,3 +320,18 @@ def manageproducts():
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
     return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
+
+@other_blueprint.route('/farmerorders', methods=['GET', 'POST'])
+@login_required
+def farmerorders():
+    if current_user.role != 'F':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).filter(
+            
+        ).all()
+    return render_template('farmerorders.html', orders=orders)

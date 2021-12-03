@@ -31,10 +31,11 @@
         <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="onertp_main_nav">
             <div class="flex-fill">
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
-                    
+                    {% if current_user.role != 'M' and current_user.role != 'W' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
+                    {% endif %}
                     {% if current_user.role == 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
@@ -42,13 +43,37 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
                     </li>
-                    {% endif %} {% if current_user.role == 'F' %}
+                    {% endif %}
+                    {% if current_user.role == 'F' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Products</a>
                     </li>
-                    {% endif %}{% if current_user.role != 'S' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.role == 'C' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.manageproducts') }}">Profile</a>
+                    </li>
+                    {% endif %}
+                        <!-- {% if current_user.role != 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="">About us</a>
+                    </li>
+                    {% endif %}  -->
+
+                    {% if current_user.role == 'W' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="">Orders</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.role == 'M' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="">Orders</a>
                     </li>
                     {% endif %}
 
