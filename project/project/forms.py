@@ -39,6 +39,7 @@ class ProductInsertForm(FlaskForm):
     image = FileField('Image', validators=[InputRequired()], render_kw={"class":"upload"})
 
 class ProductEditForm(FlaskForm):
+    product_id = HiddenField('Product Id')
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
     description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())

@@ -318,6 +318,14 @@ def manageproducts():
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
+    
+    if form_edit.validate() and request.method == "POST":
+        db.session.query(
+            Product
+        ).filter(Product.product_id == form_edit.product_id.data
+        ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
+        db.session.commit()
+    
     return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
 
 @other_blueprint.route('/farmerorders', methods=['GET', 'POST'])
