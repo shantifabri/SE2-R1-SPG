@@ -204,7 +204,13 @@ def shoppingcart():
                 home_delivery = "F"
 
             if address != None:
-                new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING")
+                balance = True
+                if float(vals["total"]) > q2.wallet - q2.pending_amount:
+                    balance = False
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING CANCELLATION")
+                else:
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING")
+                # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
                 db.session.commit()
                 ProductInBasket.query.filter_by(client_id=current_user.id).delete()
@@ -219,12 +225,11 @@ def shoppingcart():
                     ).all()
                 session["cart_count"] = len(status_counts)
 
-                if float(vals["total"]) > q2.wallet:
-                    print("Insufficient Balance")
-                    return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=False)
-                print("Sufficient Balance")
+                if not balance:
+                    # Send an email to the user to remind to top-up the wallet
+                    return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=balance)
 
-                return redirect(url_for('other.index'))                
+                return redirect(url_for('other.index'))
                 # order_id = new_order.order_id
       
     return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
@@ -305,7 +310,6 @@ def manageproducts():
     ).all()
 
     if form.validate() and request.method == "POST":
-        print("INSERTING")
         # filename = secure_filename(form.image.data.filename)
         filename = form.image.data.filename
         filenames = filename.split(".")
@@ -333,23 +337,10 @@ def manageproducts():
 def farmerorders():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
-    # orders = db.session.query(
-    #     Order,  
-    #     User,
-    #     ProductInOrder,
-    #     Product
-    #     ).filter(
-    #         User.id == Order.client_id
-    #     ).filter(
-    #         Order.order_id == ProductInOrder.order_id
-    #     ).filter(
-    #         Product.product_id == ProductInOrder.product_id
-    #     ).filter(
-    #         Product.farmer_id == current_user.id
-    #     ).group_by(Order.order_id,Order.client_id,Order.delivery_address,Order.requested_delivery_date).all()
+
     orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
             (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
             on products.product_id = a.product_id
-            where farmer_id = ''' + str(current_user.id) + ''';''')).all()
+            where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
     print(orders)
     return render_template('farmerorders.html', orders=orders)

@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(80))
     company = db.Column(db.String(40))
     wallet = db.Column(db.Float)
+    pending_amount = db.Column(db.Float)
 
 class ProductRequest(db.Model):
     __tablename__ = "product_requests"
@@ -69,8 +70,10 @@ class Order(db.Model):
     actual_delivery_date = db.Column(db.String(50))
     status = db.Column(db.String(20))
     # status is PENDING if the order has just been submitted,
-    # status is ACCEPTED if the order is accepted from the farmer,
-    # status is DELIVERING if the order is delivered from the farmer,
+    # status is INSUFFICIENT FUNDS if the wallet is not enough to pay the order,
+    # status is CONFIRMED if the order is confirmed from the farmer,
+    # status is WAREHOUSED if the order is delivered from the farmer,
+    # status is BAGGED if the warehouse worker has prepared the bag with the goods,
     # status is CANCELLED if the order has been cancelled (insufficient balance),
     # status is LODGED if the order has arrived to the pick-up point,
     # status is DELIVERED if the order has been handed out to the client.
