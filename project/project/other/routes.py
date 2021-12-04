@@ -15,8 +15,6 @@ import datetime
 
 from . import other_blueprint
 
-# api_key = "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"
-
 #### routes ####
 @other_blueprint.route('/')
 def index():
