@@ -28,6 +28,7 @@ class ProductInOrder(db.Model):
     product_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer)
     quantity = db.Column(db.Float)
+    confirmed = db.Column(db.Integer)
 
 class ProductInBasket(db.Model):
     __tablename__ = "product_in_basket"

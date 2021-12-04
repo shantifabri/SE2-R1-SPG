@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from wtforms.fields import datetime
+from sqlalchemy.sql import text
 import os
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
@@ -14,7 +15,7 @@ import datetime
 
 from . import other_blueprint
 
-api_key = "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"
+# api_key = "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"
 
 #### routes ####
 @other_blueprint.route('/')
@@ -212,7 +213,7 @@ def shoppingcart():
 
                 items = []
                 for prod in products:
-                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id))
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False))
                 db.session.bulk_save_objects(items)
                 db.session.commit()
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -326,12 +327,23 @@ def manageproducts():
 def farmerorders():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
-    orders = db.session.query(
-        Order,  
-        User
-        ).filter(
-            User.id == Order.client_id
-        ).filter(
-            
-        ).all()
+    # orders = db.session.query(
+    #     Order,  
+    #     User,
+    #     ProductInOrder,
+    #     Product
+    #     ).filter(
+    #         User.id == Order.client_id
+    #     ).filter(
+    #         Order.order_id == ProductInOrder.order_id
+    #     ).filter(
+    #         Product.product_id == ProductInOrder.product_id
+    #     ).filter(
+    #         Product.farmer_id == current_user.id
+    #     ).group_by(Order.order_id,Order.client_id,Order.delivery_address,Order.requested_delivery_date).all()
+    orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
+            (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
+            on products.product_id = a.product_id
+            where farmer_id = ''' + str(current_user.id) + ''';''')).all()
+    print(orders)
     return render_template('farmerorders.html', orders=orders)

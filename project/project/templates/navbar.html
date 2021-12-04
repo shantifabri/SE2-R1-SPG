@@ -35,24 +35,21 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
-                    {% endif %}
-                    {% if current_user.role == 'S' %}
+                    {% endif %} {% if current_user.role == 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
                     </li>
-                    {% endif %}
-                    {% if current_user.role == 'F' %}
+                    {% endif %} {% if current_user.role == 'F' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.farmerorders') }}">Manage Orders</a>
                     </li>
-                    {% endif %}
-                    {% if current_user.role == 'C' %}
+                    {% endif %} {% if current_user.role == 'C' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Orders</a>
                     </li>
@@ -60,7 +57,7 @@
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">Profile</a>
                     </li>
                     {% endif %}
-                        <!-- {% if current_user.role != 'S' %}
+                    <!-- {% if current_user.role != 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="">About us</a>
                     </li>
@@ -70,8 +67,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="">Orders</a>
                     </li>
-                    {% endif %}
-                    {% if current_user.role == 'M' %}
+                    {% endif %} {% if current_user.role == 'M' %}
                     <li class="nav-item">
                         <a class="nav-link" href="">Orders</a>
                     </li>
