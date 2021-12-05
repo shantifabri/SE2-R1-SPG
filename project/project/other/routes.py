@@ -374,6 +374,10 @@ def managerorders():
         ).all()
     return render_template('managerorders.html', orders=orders)
 
+
+@other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
+def farmerorderslist():
+    return render_template('farmerorderslist.html')
 ################## AUTOCOMPLETE ROUTES ##############################
 # @app.route('/autocomplete', methods=['GET'])
 # def autocomplete():

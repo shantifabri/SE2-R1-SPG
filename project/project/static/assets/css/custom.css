@@ -186,3 +186,48 @@
 }
 }
 /* 2 END OF PRODUCTS PAGE */
+
+/* 3 START OF TABLE */
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.badge {
+    font-weight: bold !important;
+	padding: 5px 10px;
+
+	font-size:0.64em !important;
+    text-transform: uppercase;
+    min-width: 19px;
+}
+
+
+.badge-danger {
+    color: #fff;
+    background-color: #d92550;
+}
+
+.badge-info {
+    color: #fff;
+    background-color: #16aaff;
+}
+
+.badge-success {
+    color: #fff;
+    background-color: #3ac47d;
+}
+
+.badge-warning {
+    color: #212529;
+    background-color: #f7b924;
+}
+
+.widget-content-left{
+	display:inline-block;
+	height:100%;
+}
+
+.widget-content-left .rounded-circle{
+	margin-right:15px;
+}
