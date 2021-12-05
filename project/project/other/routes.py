@@ -345,6 +345,22 @@ def farmerorders():
     print(orders)
     return render_template('farmerorders.html', orders=orders)
 
+@other_blueprint.route('/clientorders', methods=['GET', 'POST'])
+@login_required
+def clientorders():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).filter(
+            User.id == current_user.id
+        ).all()
+    return render_template('clientorders.html', orders=orders)
+
 @other_blueprint.route('/managerorders', methods=['GET', 'POST'])
 @login_required
 def managerorders():
