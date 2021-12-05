@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, url_for, session
+from flask import render_template, request, flash, redirect, url_for, session, jsonify
 from flask_login import login_user, current_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +7,7 @@ from sqlalchemy import func
 from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
+import json
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -127,7 +128,7 @@ def updatestatus(order_id):
     order.status = "DELIVERED"
     db.session.commit()
 
-    return redirect(url_for('other.manageorders'))
+    return redirect(url_for('other.shoporders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -248,9 +249,9 @@ def insertproducts():
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
-@other_blueprint.route('/manageorders', methods=['GET', 'POST'])
+@other_blueprint.route('/shoporders', methods=['GET', 'POST'])
 @login_required
-def manageorders():
+def shoporders():
     if current_user.role != 'S':
         return redirect(url_for('other.index'))
     orders = db.session.query(
@@ -259,7 +260,7 @@ def manageorders():
         ).filter(
             User.id == Order.client_id
         ).all()
-    return render_template('manageorders.html', orders=orders)
+    return render_template('shoporders.html', orders=orders)
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required
@@ -342,5 +343,53 @@ def farmerorders():
             (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
             on products.product_id = a.product_id
             where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
-    print(orders)
     return render_template('farmerorders.html', orders=orders)
+
+@other_blueprint.route('/clientorders', methods=['GET', 'POST'])
+@login_required
+def clientorders():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).filter(
+            User.id == current_user.id
+        ).all()
+    return render_template('clientorders.html', orders=orders)
+
+@other_blueprint.route('/managerorders', methods=['GET', 'POST'])
+@login_required
+def managerorders():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).all()
+    return render_template('managerorders.html', orders=orders)
+
+################## AUTOCOMPLETE ROUTES ##############################
+# @app.route('/autocomplete', methods=['GET'])
+# def autocomplete():
+#     search = request.args.get('q')
+#     results = getComplete(search,session['env'])
+#     return jsonify(matching_results=results)
+
+@other_blueprint.route('/autocompletemail', methods=['GET','POST'])
+@login_required
+def autocompletemail():
+    search = request.args.get('q')
+    mails = db.session.query(User).from_statement(text("""select * from users
+    where email like '%""" + str(search) + """%' and role = 'C' """)).all()
+    results = []
+    for mail in mails:
+        results.append(mail.email)
+
+    return jsonify(matching_results=results)
+    # return "pogu"

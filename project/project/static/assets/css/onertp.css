@@ -380,6 +380,11 @@ div {
     height: 6px;
 }
 
+.iconbar {
+    width: 48px;
+    height: 48px;
+}
+
 @media (min-width: 576px) {
     .onerspg-carousel .h1 {
         font-size: 1em !important;
