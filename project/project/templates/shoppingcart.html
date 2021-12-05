@@ -1,5 +1,25 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet">
+    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
 <script>
+    $(function() {
+        $("#autocompletemail").autocomplete({
+            source:function(request, response) {
+                $.getJSON("{{url_for('other.autocompletemail')}}",{
+                    q: request.term, // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    response(data.matching_results); // matching_results from jsonify
+                });
+            },
+            minLength: 1,
+            delay: 200,
+            select: function(event, ui) {
+                console.log(ui.item.value); // not in your question, but might help later
+            }
+        });
+    })
+
     $(function() {
         $('#env').change(function() {
             var current_status = $(this).prop('checked');
