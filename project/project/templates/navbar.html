@@ -40,7 +40,7 @@
                         <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.shoporders') }}">Manage Orders</a>
                     </li>
                     {% endif %} {% if current_user.role == 'F' %}
                     <li class="nav-item">
@@ -69,7 +69,7 @@
                     </li>
                     {% endif %} {% if current_user.role == 'M' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="">Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.managerorders') }}">Orders</a>
                     </li>
                     {% endif %}
 
@@ -81,7 +81,7 @@
                 {% if current_user.is_authenticated %}
                 <span class="nav-icon position-relative text-decoration-none text-success">
                         Welcome {{current_user.name}}
-                    </span> {% if current_user.role == "S" or current_user.role == "C" %}
+                    </span> <img class="nav-icon iconbar" src="/static/icons/{{current_user.role}}.png">{% if current_user.role == "S" or current_user.role == "C" %}
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('other.shoppingcart') }}">
                     <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">{{session["cart_count"]}}</span>
@@ -95,6 +95,7 @@
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.signup') }}">
                     <!-- <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> -->
                     Sign Up
+                    
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
                 </a>
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.login') }}">

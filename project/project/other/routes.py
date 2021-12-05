@@ -127,7 +127,7 @@ def updatestatus(order_id):
     order.status = "DELIVERED"
     db.session.commit()
 
-    return redirect(url_for('other.manageorders'))
+    return redirect(url_for('other.shoporders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -248,9 +248,9 @@ def insertproducts():
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
-@other_blueprint.route('/manageorders', methods=['GET', 'POST'])
+@other_blueprint.route('/shoporders', methods=['GET', 'POST'])
 @login_required
-def manageorders():
+def shoporders():
     if current_user.role != 'S':
         return redirect(url_for('other.index'))
     orders = db.session.query(
@@ -259,7 +259,7 @@ def manageorders():
         ).filter(
             User.id == Order.client_id
         ).all()
-    return render_template('manageorders.html', orders=orders)
+    return render_template('shoporders.html', orders=orders)
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required
@@ -344,3 +344,16 @@ def farmerorders():
             where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
     print(orders)
     return render_template('farmerorders.html', orders=orders)
+
+@other_blueprint.route('/managerorders', methods=['GET', 'POST'])
+@login_required
+def managerorders():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).all()
+    return render_template('managerorders.html', orders=orders)
