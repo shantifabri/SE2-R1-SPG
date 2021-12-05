@@ -57,8 +57,16 @@ div {
 
 /* General */
 
+.table{
+    vertical-align:middle;
+}
 .btn-info{
     color:#fff;
+}
+.btn-floating{
+    position:fixed;
+    bottom:20px;
+    right:2px;
 }
 .logo {
     font-weight: 500 !important;
@@ -151,7 +159,9 @@ div {
     color: #fff;
 }
 
-
+.mproduct-image-container{
+    margin-bottom:10px;
+}
 /* Nav */
 
 #onertp_nav_top {
@@ -282,7 +292,7 @@ div {
 
 /* Carousel Brand */
 
-.tempaltemo-carousel .h1 {
+.onerspg-carousel .h1 {
     font-size: .5em !important;
     color: #000 !important;
 }
@@ -318,35 +328,35 @@ div {
 
 /* Footer */
 
-#tempaltemo_footer a {
+#onerspg_footer a {
     color: #dcdde1;
 }
 
-#tempaltemo_footer a:hover {
+#onerspg_footer a:hover {
     color: #68bb7d;
 }
 
-#tempaltemo_footer ul.footer-link-list li {
+#onerspg_footer ul.footer-link-list li {
     padding-top: 10px;
 }
 
-#tempaltemo_footer ul.footer-icons li {
+#onerspg_footer ul.footer-icons li {
     width: 2.6em;
     height: 2.6em;
     line-height: 2.6em;
 }
 
-#tempaltemo_footer ul.footer-icons li:hover {
+#onerspg_footer ul.footer-icons li:hover {
     background-color: #cfd6e1;
     transition: .5s;
 }
 
-#tempaltemo_footer ul.footer-icons li:hover i {
+#onerspg_footer ul.footer-icons li:hover i {
     color: #212934;
     transition: .5s;
 }
 
-#tempaltemo_footer .border-light {
+#onerspg_footer .border-light {
     border-color: #2d343f !important;
 }
 
@@ -359,11 +369,10 @@ div {
 
 /* Small devices (landscape phones, 576px and up)*/
 
-.product-wap .h3,
 .product-wap li,
 .product-wap i,
 .product-wap p {
-    font-size: 12px !important;
+    font-size: 1em !important;
 }
 
 .product-wap .product-color-dot {
@@ -372,7 +381,7 @@ div {
 }
 
 @media (min-width: 576px) {
-    .tempaltemo-carousel .h1 {
+    .onerspg-carousel .h1 {
         font-size: 1em !important;
     }
 }

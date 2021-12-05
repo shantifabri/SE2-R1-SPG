@@ -48,10 +48,9 @@
         inputs[5].value = d
     }
 
-    function emptyProduct(productId) {
 
-    }
 </script>
+
 
 <form method="POST" action="/manageproducts">
     <section class="shopping-cart">
@@ -66,7 +65,7 @@
                             {% for prod in products %}
                             <div class="product">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" class="mproduct-image-container" >
                                         <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}">
                                         </a>
                                     </div>
@@ -127,7 +126,7 @@
                         <div class="col-md-12">
                             <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
 
-                            <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-info btn-lg btn-block float-right addProd"><i class="fas fa-plus"></i></button>
+                            <button type="button" data-toggle="modal" s data-target="#addModal" class="btn-floating btn btn-info btn-lg btn-block float-right addProd"><i class="fas fa-plus"></i></button>
 
                         </div>
                     </div>

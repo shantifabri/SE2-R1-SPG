@@ -61,6 +61,7 @@
 .shopping-cart .items .product .info .product-name{
 	font-weight: 600;
     margin-top:10px;
+	margin-bottom:2px;
 }
 
 .shopping-cart .items .product .info .product-name .product-info{
