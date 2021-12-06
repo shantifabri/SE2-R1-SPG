@@ -1,0 +1,147 @@
+{% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<!--FARMER-ONLY PAGE in which he adds products -->
+<script>
+    $(function() {
+        $('#env').change(function() {
+            var current_status = $(this).prop('checked');
+            $.ajax({
+                url: "/get_toggled_status",
+                type: "get",
+                data: {
+                    status: current_status
+                },
+                success: function(response) {
+                    $(".status").html(response);
+                },
+                error: function(xhr) {
+                    //Do Something to handle error
+                }
+            });
+        });
+    })
+
+    /*$(document).on('show.bs.modal', '#editModal', function() {
+        //$("#currency-field").val("$1,000.00");
+        var inputs = document.getElementById("edit-form").elements;
+        console.log(name);
+        inputs[1].value = name;
+    })*/
+
+    var id;
+    var name;
+    var desc;
+    var price;
+    var qty;
+
+    function submituser(i, n, d, p, q) {
+        id = i;
+        name = n;
+        desc = d;
+        price = p;
+        qty = q;
+        var inputs = document.getElementById("edit-form").elements;
+        console.log(inputs);
+        inputs[1].value = i;
+        inputs[2].value = n;
+        inputs[3].value = q;
+        inputs[4].value = p;
+        inputs[5].value = d
+    }
+
+
+</script>
+
+
+<form method="POST" action="/manageproducts">
+    <section class="shopping-cart">
+        <div class="container">
+            <div class="block-heading">
+                <h2>Manage Farmer Submission</h2>
+            </div>
+           <div class="container"><h3>Farmer: CHANGE</h3></div> 
+            <br>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            {% for prod in products %}
+                            <div class="product">
+                                <div class="row">
+                                    <div class="col-md-3" class="mproduct-image-container" >
+                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group ">
+                                                    <label class="descTitle">Product Name:&nbsp</label>{{prod.name}}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group  ">
+                                                    <label class="descTitle">Available Quantity:&nbsp</label> {{prod.qty_available}}
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group  ">
+                                                    <label class="descTitle">Requested Quantity:&nbsp</label> {{prod.qty_requested}}
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod.price}}€/Kg
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group col-xs-12 descRow">
+                                                    <label class="descTitle">Product Description:&nbsp</label> {{prod.description}}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+
+                                            </div>
+
+                                        </div>
+                                   
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row addProd">
+                        <div class="col-md-12">
+                            <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
+
+                            <button type="button" class="btn-floating btn btn-success btn-lg btn-block float-right acceptReq-Floating"><i class="fas fa-check"></i></button>
+                            <button type="button" class="btn-floating btn btn-danger btn-lg btn-block float-right trashReq-Floating"><i class="fas fa-trash"></i></button>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+
+
+<style>
+    .modal-backdrop {
+        display: none;
+    }
+</style>
+
+{% endblock %}
