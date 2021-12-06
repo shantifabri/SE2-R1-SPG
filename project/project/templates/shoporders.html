@@ -13,8 +13,16 @@
     }
 </script>
 <style>
-    tr:nth-child(even) {
+    tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
+    }
+    tr {
+        text-align: center;
+        height: 53.6px;
+    }
+    th {
+        text-align: center;
+        height: 53.6px;
     }
 </style>
 
@@ -35,11 +43,14 @@
                                 <p class="card-description" style="text-align:center"> Please, select the order you want to hand out</p>
                                 <p>&nbsp;</p>
                                 <p>&nbsp;</p>
-                                <div class="table-responsive">
-                                    <table class="table" style="text-align:center;">
+                                <div class="container-fluid nolateral tb-spacing">
+                                    <div class="row">
+                                        <div class="main-card mb-3 card">
+                                            <div class="table-responsive">
+                                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Order Id</th>
+                                                <th class="nomobile">Order Id</th>
                                                 <th>Client Id</th>
                                                 <th>Shipping Location</th>
                                                 <th>Requested Delivery Date</th>
@@ -51,7 +62,7 @@
                                         <tbody>
                                             {% for order in orders %}
                                             <tr>
-                                                <td>{{order[0].order_id}}</td>
+                                                <td class="text-muted nomobile">#{{order[0].order_id}}</td>
                                                 <td>{{order[1].email}}</td>
                                                 <td>{{order[0].delivery_address}}</td>
                                                 <td>{{order[0].requested_delivery_date[0:10]}}</td>
@@ -67,7 +78,11 @@
                                                 </button> {% elif order[0].status == "PENDING CANCELLATION" %}
                                                     <button onClick="" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
                                                     Balance Reminder
-                                                </button> {% else %}
+                                                </button> 
+                                                {% elif order[0].status=="PENDING" %}<div class="badge badge-warning">{{order[0].status}}</div>
+                                                {% elif order[0].status=="DELIVERED" or order[0].status=="DELIVERING" %}<div class="badge badge-success">{{order[0].status}}</div>
+                                                {% elif order[0].status=="CANCELLED" %}<div class="badge badge-danger">{{order[0].status}}</div>
+                                                {% else %}
                                                     <span class="text-black-bold">{{order[0].status}}</span> {% endif %}
                                                 </td>
                                             </tr>

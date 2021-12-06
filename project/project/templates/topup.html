@@ -16,8 +16,16 @@
     })
 </script>
 <style>
-    tr:nth-child(even) {
+    tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
+    }
+    tr {
+        text-align: center;
+        height: 53.6px;
+    }
+    th {
+        text-align: center;
+        height: 53.6px;
     }
 </style>
 
@@ -80,8 +88,11 @@
                                 <p>&nbsp;</p>
                                 <p class="card-description" style="text-align:center"> Please, select the customer you want to top up for</p>
                                 <p>&nbsp;</p>
-                                <div class="table-responsive">
-                                    <table class="table" style="text-align:center">
+                                <div class="container-fluid nolateral tb-spacing">
+                                    <div class="row">
+                                        <div class="main-card mb-3 card">
+                                            <div class="table-responsive">
+                                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
