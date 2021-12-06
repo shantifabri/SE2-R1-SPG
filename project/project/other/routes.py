@@ -378,6 +378,41 @@ def managerorders():
 @other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
 def farmerorderslist():
     return render_template('farmerorderslist.html')
+
+@other_blueprint.route('/farmerorderconfirm', methods=['GET', 'POST'])
+def farmerorderconfirm():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    form = ProductInsertForm()
+    form_edit = ProductEditForm()
+    products = db.session.query(
+        Product
+    ).filter(
+        Product.farmer_id == 9
+    ).all()
+
+    if form.validate() and request.method == "POST":
+        # filename = secure_filename(form.image.data.filename)
+        filename = form.image.data.filename
+        filenames = filename.split(".")
+        prods = db.session.query(
+            Product
+        ).all()
+        filename = filenames[0] + str(len(prods)) + "." + filenames[1]
+        form.image.data.save("project/static/shop_imgs/" + filename)
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('other.manageproducts'))
+    
+    if form_edit.validate() and request.method == "POST":
+        db.session.query(
+            Product
+        ).filter(Product.product_id == form_edit.product_id.data
+        ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
+        db.session.commit()
+    
+    return render_template('farmerorderconfirm.html', products=products, form=form, form_edit=form_edit)
 ################## AUTOCOMPLETE ROUTES ##############################
 # @app.route('/autocomplete', methods=['GET'])
 # def autocomplete():

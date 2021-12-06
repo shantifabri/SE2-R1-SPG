@@ -171,6 +171,19 @@
 	color:#fff;
 }
 
+.trashReq-Floating{
+	margin:25px;
+	margin-left:0px;
+	color:#fff;
+}
+
+.acceptReq-Floating{
+	margin:25px;
+	margin-left:0px;
+	margin-right:85px;
+	color:#fff;
+}
+
 .descTitle{
 	font-weight:bold !important;
 }
