@@ -1,7 +1,5 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
-<link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet">
-    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+    
 <script>
     $(function() {
         $("#autocompletemail").autocomplete({
@@ -71,24 +69,6 @@
         });
     </script>
 
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
-
-        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
-
-        <link rel="stylesheet" href="/static/assets/css/default.css">
-        <link rel="stylesheet" href="/static/assets/css/default.date.css">
-
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="/static/assets/css//bootstrap.min.css">
-
-        <!-- Style -->
-        <link rel="stylesheet" href="/static/assets/css/style.css">
-
-    </head>
 
     
 <form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">

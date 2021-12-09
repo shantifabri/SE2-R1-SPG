@@ -244,3 +244,11 @@
 .widget-content-left .rounded-circle{
 	margin-right:15px;
 }
+
+/* 3 END OF TABLE */
+
+/*4 START OF CALENDAR */
+.picker__frame{
+	bottom:auto !important;
+	
+}

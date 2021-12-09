@@ -69,20 +69,27 @@
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" align="center">
                                 <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Clients</h4>
                                 <p>&nbsp;</p>
-
-                                <form class="form-inline my-2 my-lg-0" style="text-align:center" action="/topup" method="POST">
-                                    <!--<input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search"> -->
+								
+		<div class="col-md-6 text-center">						
+  <form class="form-inline my-2 my-lg-0" style="text-align:center" action="/topup" method="POST">
+                                   <div class="input-group"> <!--<input class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block" type="search" placeholder="Search by email" aria-label="Search"> -->
                                     {{form_search.hidden_tag()}} {{form_search.search}}
-                                    <button class="btn btn-outline-success" id="btn1" type="submit" style="display:inline-block">
+											    <div class="input-group-postpend">
+
+                                    <button class="btn btn-search input-group-text btn-outline-success" id="btn1" type="submit" style="display:inline-block">
                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                       </svg>
                                     </button>
+									</div>
+									</div>
                                 </form>
+								</div>
+							
 
 
                                 <p>&nbsp;</p>
