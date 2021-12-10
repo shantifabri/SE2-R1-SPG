@@ -16,10 +16,12 @@
     tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
     }
+    
     tr {
         text-align: center;
         height: 53.6px;
     }
+    
     th {
         text-align: center;
         height: 53.6px;
@@ -48,57 +50,64 @@
                                         <div class="main-card mb-3 card">
                                             <div class="table-responsive">
                                                 <table class="align-middle mb-0 table table-borderless table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th class="nomobile">Order Id</th>
-                                                <th>Client Id</th>
-                                                <th>Shipping Location</th>
-                                                <th>Requested Delivery Date</th>
-                                                <th>Total Amount</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="nomobile">Order Id</th>
+                                                            <th>Client Id</th>
+                                                            <th>Shipping Location</th>
+                                                            <th>Requested Delivery Date</th>
+                                                            <th>Total Amount</th>
+                                                            <th>Status</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
 
-                                        <tbody>
-                                            {% for order in orders %}
-                                            <tr>
-                                                <td class="text-muted nomobile">#{{order[0].order_id}}</td>
-                                                <td>{{order[1].email}}</td>
-                                                <td>{{order[0].delivery_address}}</td>
-                                                <td>{{order[0].requested_delivery_date[0:10]}}</td>
-                                                <td>€ {{'%.2f' % order[0].total}}</td>
-                                                <td>
-                                                    {% if order[0].status == "LODGED" %}
-                                                    <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
-                                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-check" viewBox="0 0 16 16">
-                                                        <path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                                                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
-                                                      </svg> -->
+                                                    <tbody>
+                                                        {% for order in orders %}
+                                                        <tr>
+                                                            <td class="text-muted nomobile">#{{order[0].order_id}}</td>
+                                                            <td>{{order[1].email}}</td>
+                                                            <td>{{order[0].delivery_address}}</td>
+                                                            <td>{{order[0].requested_delivery_date[0:10]}}</td>
+                                                            <td>€ {{'%.2f' % order[0].total}}</td>
+                                                            <td>
+                                                                {% if order[0].status == "LODGED" %}
+                                                                <div class="badge badge-warning">{{order[0].status}}</div>
+                                                                {% elif order[0].status == "PENDING CANCELLATION" %}
+                                                                <div class="badge badge-warning">{{order[0].status}}</div> {% elif order[0].status=="PENDING" %}
+                                                                <div class="badge badge-warning">{{order[0].status}}</div>
+                                                                {% elif order[0].status=="DELIVERED" or order[0].status=="DELIVERING" %}
+                                                                <div class="badge badge-success">{{order[0].status}}</div>
+                                                                {% elif order[0].status=="CANCELLED" %}
+                                                                <div class="badge badge-danger">{{order[0].status}}</div>
+                                                                {% else %}
+                                                                <span class="text-black-bold">{{order[0].status}}</span> {% endif %}
+                                                            </td>
+
+                                                            <td>
+                                                                {% if order[0].status == "LODGED" %}
+                                                                <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
                                                       Hand Out
                                                 </button> {% elif order[0].status == "PENDING CANCELLATION" %}
-                                                    <button onClick="" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
-                                                    Balance Reminder
-                                                </button> 
-                                                {% elif order[0].status=="PENDING" %}<div class="badge badge-warning">{{order[0].status}}</div>
-                                                {% elif order[0].status=="DELIVERED" or order[0].status=="DELIVERING" %}<div class="badge badge-success">{{order[0].status}}</div>
-                                                {% elif order[0].status=="CANCELLED" %}<div class="badge badge-danger">{{order[0].status}}</div>
-                                                {% else %}
-                                                    <span class="text-black-bold">{{order[0].status}}</span> {% endif %}
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    <p>&nbsp;</p>
+                                                                <button onClick="" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
+                                                    Remind
+                                                </button> {% else %}
+                                                                <span class="text-black-bold"></span> {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <p>&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <p>&nbsp;</p>
                 </div>
-            </div>
-        </div>
-        <p>&nbsp;</p>
-    </div>
 
-    <body>
-        {% endblock %}
+                <body>
+                    {% endblock %}
