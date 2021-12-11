@@ -29,7 +29,7 @@
 <body>
     <div class="container-fluid col-md-12">
         <p>&nbsp;</p>
-        <h1 style="text-align:center">Prepare Orders Bags</h1>
+        <h1 style="text-align:center">Prepare Order Bags</h1>
         <p>&nbsp;</p>
         <div class="container-fluid" id="page-content">
             <div class="padding">
@@ -72,9 +72,10 @@
                                                                 {{order[0].requested_delivery_date[0:10]}}</td>
                                                             <td class="text-center">€ {{'%.2f' % order[0].total}}</td>
                                                             <td class="text-center">
-                                                                Ready to Bag
+                                                                {% if order[0].status == "WAREHOUSED" %}Ready to Bag{% else %}<div class="badge badge-success">{{order[0].status}}</div>{% endif %}
                                                             </td>
                                                             <td>
+                                                                {% if order[0].status == "WAREHOUSED" %}
                                                                 <button onClick="updateStatus({{order[0].order_id}});"
                                                                     type="button" class="btn btn-outline-success">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -86,6 +87,7 @@
                                                                             d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
                                                                     </svg>
                                                                 </button>
+                                                                {% endif %}
                                                             </td>
                                                         </tr>
                                                         {% endfor %}

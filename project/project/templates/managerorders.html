@@ -3,8 +3,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     function updateStatus(orderId) {
-        var status = "WAREHOUSED";
-        var redirect = "manageorders"
+        var status = "DELIVERING";
+        var redirect = "managerorders"
         $.ajax({
             url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
