@@ -2,9 +2,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     function updateStatus(orderId) {
-        //$.post('/updatequantity/' + productID + '/' + amount)
+        var status = "CONFIRMED";
         $.ajax({
-            url: '/updatestatus/' + orderId,
+            url: '/updatestatus/' + orderId + '/' + status,
             type: "post",
             success: function(data) {
                 location.reload(true);

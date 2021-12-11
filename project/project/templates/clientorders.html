@@ -29,18 +29,17 @@
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <p>&nbsp;</p>
+                                <!-- <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Check your Orders</h4>
                                 <p>&nbsp;</p>
                                 <p class="card-description" style="text-align:center">You can change quantities, delivery address and delivery date</p>
                                 <p>&nbsp;</p>
-                                <p>&nbsp;</p>
+                                <p>&nbsp;</p> -->
                                 <div class="table-responsive">
                                     <table class="table" style="text-align:center;">
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
-                                                <th>Client Id</th>
                                                 <th>Shipping Location</th>
                                                 <th>Requested Delivery Date</th>
                                                 <th>Total Amount</th>
@@ -49,13 +48,12 @@
                                         </thead>
 
                                         <tbody>
-                                            {% for order in orders %}
+                                            {% for order in client_orders.keys() %}
                                             <tr>
-                                                <td>{{order[0].order_id}}</td>
-                                                <td>{{order[1].email}}</td>
-                                                <td>{{order[0].delivery_address}}</td>
-                                                <td>{{order[0].requested_delivery_date[0:10]}}</td>
-                                                <td>€ {{'%.2f' % order[0].total}}</td>
+                                                <td>{{client_orders[order]["Order"].order_id}}</td>
+                                                <td>{{client_orders[order]["Order"].delivery_address}}</td>
+                                                <td>{{client_orders[order]["Order"].requested_delivery_date[0:10]}}</td>
+                                                <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
                                                 <td>
                                                     <button type="button" onclick="" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                                 </td>
@@ -73,6 +71,64 @@
         </div>
         <p>&nbsp;</p>
     </div>
+
+    <!-- MODAL FOR PRODUCT EDIT -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <form method="POST" action="/manageproducts" id="edit-form">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Order n.</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group ">
+                                                        <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group  ">
+                                                        <label>Product Quantity</label>
+                                                        <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label>Product Price €/Kg</label>
+                                                        <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- MODAL END -->
 
     <body>
         {% endblock %}

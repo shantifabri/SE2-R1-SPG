@@ -69,11 +69,13 @@ class Order(db.Model):
     requested_delivery_date = db.Column(db.String(50))
     actual_delivery_date = db.Column(db.String(50))
     status = db.Column(db.String(20))
+
     # status is PENDING if the order has just been submitted,
     # status is PENDING CANCELLATION if the wallet is not enough to pay the order,
     # status is CONFIRMED if the order is confirmed from the farmer,
-    # status is WAREHOUSED if the order is delivered from the farmer,
-    # status is BAGGED if the warehouse worker has prepared the bag with the goods,
+    # status is WAREHOUSED if the order is delivered from the farmer and confirmed by the warehouse manager,
+    # status is PREPARED if the warehouse worker has prepared the bag with the goods,
     # status is CANCELLED if the order has been cancelled (insufficient balance),
+    # status is DELIVERING if the order has been delivered from the warehouse,
     # status is LODGED if the order has arrived to the pick-up point,
-    # status is DELIVERED if the order has been handed out to the client.
+    # status is DELIVERED if the order has been handed out to the client or delivered to the client address.
