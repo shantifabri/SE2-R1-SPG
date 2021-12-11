@@ -3,8 +3,9 @@
 <script>
     function updateStatus(orderId) {
         var status = "CONFIRMED";
+        var redirect = "farmerorders"
         $.ajax({
-            url: '/updatestatus/' + orderId + '/' + status,
+            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
             success: function(data) {
                 location.reload(true);

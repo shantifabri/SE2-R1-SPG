@@ -4,8 +4,9 @@
 <script>
     function updateStatus(orderId) {
         var status = "WAREHOUSED";
+        var redirect = "manageorders"
         $.ajax({
-            url: '/updatestatus/' + orderId + '/' + status,
+            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
             success: function(data) {
                 location.reload(true);

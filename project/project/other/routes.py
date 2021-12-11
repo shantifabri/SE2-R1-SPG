@@ -132,17 +132,15 @@ def updateshipping(value):
 
     return redirect(url_for('other.shoppingcart'))
 
-@other_blueprint.route('/updatestatus/<order_id>/<status>',  methods=['GET','POST'])
+@other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect>',  methods=['GET','POST'])
 @login_required
-def updatestatus(order_id,status):
-    if current_user.role != 'S':
-        return redirect(url_for('other.index'))
+def updatestatus(order_id,status,redirect):
 
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = status
     db.session.commit()
-
-    return redirect(url_for('other.shoporders'))
+    redirect = 'other.' + str(redirect)
+    return redirect(url_for(redirect))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():

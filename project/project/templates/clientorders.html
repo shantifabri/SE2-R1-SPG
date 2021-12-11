@@ -3,8 +3,10 @@
 <script>
     function updateStatus(orderId) {
         //$.post('/updatequantity/' + productID + '/' + amount)
+        var status = "AKAKA"
+        var redirect = "clientorders"
         $.ajax({
-            url: '/updatestatus/' + orderId,
+            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
             success: function(data) {
                 location.reload(true);
