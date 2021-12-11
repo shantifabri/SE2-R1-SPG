@@ -29,7 +29,7 @@
 <body>
     <div class="container-fluid col-md-12">
         <p>&nbsp;</p>
-        <h1 style="text-align:center">Manage Orders</h1>
+        <h1 style="text-align:center">Check Deliverable Orders</h1>
         <p>&nbsp;</p>
         <div class="container-fluid" id="page-content">
             <div class="padding">
@@ -37,13 +37,6 @@
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <p>&nbsp;</p>
-                                <h4 class="card-title text-success" style="text-align:center">Orders Confirmation</h4>
-                                <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center"> Please, select the orders you
-                                    want to confirm</p>
-                                <p>&nbsp;</p>
-                                <p>&nbsp;</p>
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
                                         <div class="main-card mb-3 card">
@@ -53,11 +46,12 @@
                                                     <thead>
                                                         <tr>
                                                             <th class="text-center nomobile">Order ID</th>
-                                                            <th class="text-center">Client ID</th>
+                                                            <th class="text-center">Client</th>
                                                             <th class="text-center">Shipping Location</th>
                                                             <th class="text-center">Requested Delivery Date</th>
                                                             <th class="text-center">Total Amount</th>
                                                             <th class="text-center">Status</th>
+                                                            <th></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -70,27 +64,12 @@
                                                             <td class="text-center">
                                                                 {{order[0].requested_delivery_date[0:10]}}</td>
                                                             <td class="text-center">€ {{'%.2f' % order[0].total}}</td>
-                                                            <td class="text-center">
-                                                                {% if order[0].status == "LODGED" %}
-                                                                <button onClick="updateStatus({{order[0].order_id}});"
-                                                                    type="button" class="btn btn-outline-success">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                        height="16" fill="currentColor"
-                                                                        class="bi bi-bag-check" viewBox="0 0 16 16">
-                                                                        <path fill-rule="evenodd"
-                                                                            d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
-                                                                        <path
-                                                                            d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                                                                    </svg>
+                                                            <td><div class="badge badge-success">{{order[0].status}}</div></td>
+                                                            <td>
+                                                                {% if order[0].status == "PREPARED" %}
+                                                                <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
+                                                                    <i class="fas fa-check-double"></i>
                                                                 </button>
-                                                                {% elif order[0].status=="PENDING" %}
-                                                                <div class="badge badge-warning">{{order[0].status}}</div>
-                                                                {% elif order[0].status=="DELIVERED" or order[0].status=="DELIVERING" %}
-                                                                <div class="badge badge-success">{{order[0].status}}</div>
-                                                                {% elif order[0].status=="CANCELLED" or order[0].status=="PENDING CANCELLATION" %}
-                                                                <div class="badge badge-danger">{{order[0].status}}</div>
-                                                                {% else %}
-                                                                <span>{{order[0].status}}</span>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>

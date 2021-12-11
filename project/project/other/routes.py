@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from sqlalchemy import func
+from sqlalchemy import func,or_
 from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
@@ -190,11 +190,6 @@ def shoppingcart():
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
 
 
-    if request.method == "POST":
-        print(form.email.data)
-        print(form.delivery_address.data)
-        print(form.date.data)
-
     if form.validate_on_submit() and request.method == "POST":
         if form.date.data == "":
             return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=False)
@@ -220,9 +215,9 @@ def shoppingcart():
                 balance = True
                 if float(vals["total"]) > q2.wallet - q2.pending_amount:
                     balance = False
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING CANCELLATION")
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date",datetime.datetime.now()))
                 else:
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING")
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date",datetime.datetime.now()))
                 # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
                 db.session.commit()
@@ -350,10 +345,22 @@ def farmerorders():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
 
-    orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
-            (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
-            on products.product_id = a.product_id
-            where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
+    # orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
+    #         (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
+    #         on products.product_id = a.product_id
+    #         where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
+    orders = db.session.query(Order,ProductInOrder,Product,User
+    ).filter(
+        Order.order_id == ProductInOrder.order_id
+    ).filter(
+        ProductInOrder.product_id == Product.product_id
+    ).filter(
+        Order.client_id == User.id
+    ).filter(
+        Product.farmer_id == current_user.id
+    ).filter(
+        Order.status == "PENDING"
+    ).all()
     return render_template('farmerorders.html', orders=orders)
 
 @other_blueprint.route('/clientorders', methods=['GET', 'POST'])
@@ -437,6 +444,8 @@ def managerorders():
         User
         ).filter(
             User.id == Order.client_id
+        ).filter(
+            or_(Order.status == "PREPARED", Order.status == "DELIVERING")
         ).all()
     return render_template('managerorders.html', orders=orders)
 

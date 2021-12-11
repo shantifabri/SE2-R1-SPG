@@ -69,6 +69,7 @@ class Order(db.Model):
     requested_delivery_date = db.Column(db.String(50))
     actual_delivery_date = db.Column(db.String(50))
     status = db.Column(db.String(20))
+    order_date = db.Column(db.String(50))
 
     # status is PENDING if the order has just been submitted,
     # status is PENDING CANCELLATION if the wallet is not enough to pay the order,
