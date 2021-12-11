@@ -42,9 +42,10 @@
                             <option>Item</option>
                         </select>-->
       <div class="input-group">
-        <input type="text" class="form-control" id="searchbar" placeholder="Search">
+        <form action="/products" method="POST">
+        {{form.csrf_token}}{{form.search}}
 		    <div class="input-group-postpend">
-			<button class="btn btn-success btn-search input-group-text"><i class="fa fa-search" aria-hidden="true"></i>
+			<button class="btn btn-success btn-search input-group-text" type="submit"><i class="fa fa-search" aria-hidden="true"></i>
 			</button>
 			</div>
       </div>

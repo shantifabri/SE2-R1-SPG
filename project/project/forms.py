@@ -64,3 +64,6 @@ class TopUpForm(FlaskForm):
 class TopUpSearch(FlaskForm):
     search = SearchField('', render_kw={'class':'form-control','style':'width: 50%; display:inline-block','placeholder':'Search by email', 'aria-label':"Search"})
     # class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block"
+
+class ProductSearch(FlaskForm):
+    search = StringField('', render_kw={'id':'searchbar','placeholder':'Search', 'aria-label':"Search"})

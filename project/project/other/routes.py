@@ -8,9 +8,10 @@ from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
 import json
+import pandas as pd
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
+from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
 import datetime
 
@@ -21,19 +22,32 @@ from . import other_blueprint
 def index():
     return render_template('index.html')
 
-@other_blueprint.route('/products')
+@other_blueprint.route('/products', methods=['GET','POST'])
 @login_required
 def products():
     if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
         return redirect(url_for('other.index'))
-    # products = Product.query.all()
+    form = ProductSearch()
     products = db.session.query(
         Product, 
         User
         ).filter(
             User.id == Product.farmer_id
         ).all()
-    return render_template('products.html',products=products)
+    if form.validate_on_submit():
+        if form.search.data == None:
+            search = ""
+        products = db.session.query(
+            Product,
+            User
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+
+            Product.name.like("%" + form.search.data + "%")
+        ).all()
+    
+    return render_template('products.html',products=products,form=form)
 
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
 @login_required
@@ -366,26 +380,52 @@ def clientorders():
         ).filter(
             ProductInOrder.order_id == Order.order_id
         ).all()
+    order_query = db.session.query(
+        Order,  
+        User,  
+        ProductInOrder,
+        Product
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+            Order.client_id == current_user.id
+        ).filter(
+            ProductInOrder.product_id == Product.product_id
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).statement
+    
+    df = pd.read_sql(order_query, db.session.bind)
+    # print(df.columns)
+    # df = df[['name_1','company','qty_available','img_url','total','status','order_id','quantity','price']]
+    # print(df)
 
     for order in orders:
-        print(order)
-        print(str(order[0].order_id) + " " + order[3].name + " " + str(order[2].quantity))
-        prod["name"] = order[3].name
+        prod = {}
+        id = str(order[0].order_id)
+        print(id + " " + order[3].name + " " + str(order[2].quantity))
+        prod["name"] = str(order[3].name)
         prod["product_id"] = order[3].product_id
-        prod["price"] = order[3].price
+        prod["price"] = str(order[3].price)
         prod["qty_available"] = order[3].qty_available
         prod["qty_requested"] = order[3].qty_requested
-        prod["order_qty"] = order[2].quantity
+        prod["order_qty"] = str(order[2].quantity)
         prod["farmer"] = order[1].company
-        # print(prod)
-        if order[0].order_id in client_orders.keys():
-            client_orders[order[0].order_id]["Products"].append(prod)
+        prod["img_url"] = order[3].img_url
+
+        if id in list(client_orders.keys()):
+            print("APPEND")
+            client_orders[id]["Products"].append(prod)
         else:
-            client_orders[order[0].order_id] = {}
-            client_orders[order[0].order_id]["Order"] = order[0]
-            client_orders[order[0].order_id]["Products"] = []
-            client_orders[order[0].order_id]["Products"].append(prod)
-        # print(client_orders[order[0].order_id])
+            print("NEW")
+            client_orders[id] = {}
+            client_orders[id]["Order"] = order[0]
+            client_orders[id]["Products"] = []
+            client_orders[id]["Products"].append(prod)
+        print(client_orders[id]["Products"])
+        # print(client_orders[order[0].order_id]["Products"])
+        # print(prod)
+        # print(client_orders[id])
     # print(client_orders)
     return render_template('clientorders.html', orders=orders, client_orders=client_orders)
 
