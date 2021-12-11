@@ -36,13 +36,12 @@
         {% include "navbar.html" %}
     </header>
     <main>
+        <button class="btn btn-danger" style="position:fixed;right:0px;top:50%;z-index:1000;"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
         {% block main %}{% endblock %}
+
+        
     </main>
-    <footer class="bg-dark" id="onerspg_footer">
-        <div class="container">
-            {% include "footer.html" %}
-        </div>
-    </footer>
+
 
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
