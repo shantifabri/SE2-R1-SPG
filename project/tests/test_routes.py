@@ -205,3 +205,73 @@ def test_single_product_page_post(test_client, init_database, login_employee_use
                                 follow_redirects=True)
     assert response.status_code == 200
     assert b"Categories" in response.data
+
+def test_manage_clients_page_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/manageclients' page is requested (GET) and employee is logged in
+    THEN check that the response is valid
+    """
+    response = test_client.get('/manageclients')
+    assert response.status_code == 200
+    assert b"Add a new Client" in response.data
+    assert b"Top-up a wallet" in response.data
+
+def test_manage_clients_page_not_logged(test_client, init_database):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/manageclients' page is requested (GET) and user is not logged in
+    THEN check that it redirects to login and the response is valid
+    """
+    response = test_client.get('/manageclients', follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Add a new Client" not in response.data
+    assert b"Top-up a wallet" not in response.data
+    assert b"Please log in" in response.data
+
+    assert request.path == url_for('users.login')
+
+def test_manage_clients_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/manageclients' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/manageclients', follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Add a new Client" not in response.data
+    assert b"Top-up a wallet" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_insert_clients_page_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/insertclient' page is requested (GET) and user is logged as employee
+    THEN check that the response is valid
+    """
+    response = test_client.get('/insertclient')
+    assert response.status_code == 200
+    assert b"Insert a new Client" in response.data
+    assert b"Name" in response.data
+
+def test_insert_clients_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/insertclient' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index the response is valid
+    """
+    response = test_client.get('/insertclient',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Insert a new Client" not in response.data
+
+    assert request.path == url_for('other.index')
+
+
+def test_insert_clients_page_post_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/insertclient' page is posted to (POST) and user is logged as employee
+    THEN check that the response is valid
+    """
+    pass
