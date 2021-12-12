@@ -28,7 +28,15 @@
 	 
         <link rel="stylesheet" href="/static/assets/css/default.css">
         <link rel="stylesheet" href="/static/assets/css/default.date.css">
-
+        <script src="/static/assets/js/popper.min.js"></script>
+        <script src="/static/assets/js/picker.js"></script>
+        <script src="/static/assets/js/picker.date.js"></script>
+        <script src="/static/assets/js/picker.time.js"></script>
+<script>
+   $( document ).ready(function() {
+        $('.pick-date-global').pickadate();
+    });
+</script>
 </head>
 
 <body>
@@ -36,10 +44,10 @@
         {% include "navbar.html" %}
     </header>
     <main>
-        <button class="btn btn-danger" style="position:fixed;right:0px;top:50%;z-index:1000;"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
+        <div class="wrapper">
+            <button class="btn btn-danger pick-date-global" id="calendar-slide"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
+        </div>
         {% block main %}{% endblock %}
-
-        
     </main>
 
 
