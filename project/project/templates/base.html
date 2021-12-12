@@ -34,7 +34,13 @@
         <script src="/static/assets/js/picker.time.js"></script>
 <script>
    $( document ).ready(function() {
-        $('.pick-date-global').pickadate();
+        $('.pick-date-global').pickadate({
+onSet: function(context) {
+//console.log('Debug:', context)
+console.log($(".picker__day").attr("aria-label"));
+}
+});
+
     });
 </script>
 </head>
