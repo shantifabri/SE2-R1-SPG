@@ -53,7 +53,7 @@
                             <div class="product">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}">
+                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}" alt="images for shopping." />
                                         </a>
                                     </div>
                                     <div class="col-md-8">
@@ -95,8 +95,8 @@
                                         </div>
                                         <div class="col-md-12 align-self-end">
                                             <div class="form-group ">
-                                                <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
-                                                <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
+                                                <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><em class="fas fa-trash"></em></button>
+                                                <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><em class="fas fa-edit"></em></button>
                                             </div>
                                         </div>
                                     </div>
@@ -113,7 +113,7 @@
                         <div class="col-md-12">
                             <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
 
-                            <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-info btn-lg btn-block float-right addProd"><i class="fas fa-plus"></i></button>
+                            <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-info btn-lg btn-block float-right addProd"><em class="fas fa-plus"></em></button>
 
                         </div>
                     </div>
