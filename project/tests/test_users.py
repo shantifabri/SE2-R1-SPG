@@ -83,7 +83,6 @@ def test_valid_signup(test_client, init_database):
     assert b'Email' not in response.data
     assert b'Log In' in response.data
 
-
 def test_invalid_signup(test_client, init_database):
     """
     GIVEN a Flask application configured for testing

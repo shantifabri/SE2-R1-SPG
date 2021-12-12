@@ -259,7 +259,7 @@ def test_insert_clients_page_unauthorized_logged(test_client, init_database, log
     """
     GIVEN a Flask application configured for testing
     WHEN the '/insertclient' page is requested (GET) and user is logged as unauthorized role
-    THEN check that it redirects to index the response is valid
+    THEN check that it redirects to index and the response is valid
     """
     response = test_client.get('/insertclient',  follow_redirects=True)
     assert response.status_code == 200
@@ -267,11 +267,71 @@ def test_insert_clients_page_unauthorized_logged(test_client, init_database, log
 
     assert request.path == url_for('other.index')
 
-
 def test_insert_clients_page_post_logged_employee(test_client, init_database, login_employee_user):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/insertclient' page is posted to (POST) and user is logged as employee
+    THEN check that the response is valid and redirects to index
+    """
+    response = test_client.post('/insertclient',
+                                data=dict(name='Donald', surname='Johnson', email='donaldjohnson@yahoo.com', password='FlaskIsGreat'),
+                                follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Manage Clients" in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_topup_page_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/topup' page is requested (GET) and user is logged as employee
     THEN check that the response is valid
     """
-    pass
+    response = test_client.get('/topup')
+    assert response.status_code == 200
+    assert b"Wallets Top-Up" in response.data
+    assert b"Clients" in response.data
+    assert b"Please, select the customer you want to top up for" in response.data
+    assert b"ellaclint@gmail.com" in response.data
+    assert b"emagow@gmail.com" in response.data
+    assert b"30.00" in response.data #client's initial value
+    
+def test_topup_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/topup' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/topup',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Wallets Top-Up" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_topup_page_search_post_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/topup' page is posted to as search (POST) and user is logged as employee
+    THEN check that the response is valid and searches correctly
+    """
+    response = test_client.post('/topup',
+                                data=dict(search='ella'))
+    assert response.status_code == 200
+    assert b"ellaclint@gmail.com" in response.data
+    assert b"emagow@gmail.com" not in response.data
+
+def test_topup_page_wallet_post_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/topup' page is posted to as wallet amount (POST) and user is logged as employee
+    THEN check that the response is valid and wallet updates correctly
+    """
+    response = test_client.post('/topup',
+                                data=dict(email='ellaclint@gmail.com', amount=2))
+    assert response.status_code == 200
+    assert b"ellaclint@gmail.com" in response.data
+    assert b"emagow@gmail.com" in response.data
+    assert b"32.00" in response.data #client's updated value
+    assert b"30.00" not in response.data #client's initial value
+
+

@@ -27,14 +27,16 @@ def init_database(test_client):
     user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm")
     user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="")
     user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30)
-    user4 = User(name='John', surname='Doe', email='johndoe@gmail.com', role='W', password=generate_password_hash('UserPassword', method='sha256'), company="")
-    user5 = User(name='Paul', surname='Right', email='paulright@gmail.com', role='M', password=generate_password_hash('UserPassword', method='sha256'), company="")
+    user4 = User(name='Ema', surname='Gow ', email='emagow@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=10)
+    user5 = User(name='John', surname='Doe', email='johndoe@gmail.com', role='W', password=generate_password_hash('UserPassword', method='sha256'), company="")
+    user6 = User(name='Paul', surname='Right', email='paulright@gmail.com', role='M', password=generate_password_hash('UserPassword', method='sha256'), company="")
 
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
     db.session.add(user4)
     db.session.add(user5)
+    db.session.add(user6)
     db.session.commit()
 
     # Insert Product data
