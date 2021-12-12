@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from sqlalchemy import func,or_
+from sqlalchemy import func,or_,and_
 from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
@@ -467,6 +467,19 @@ def workerorders():
 @other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
 def farmerorderslist():
     return render_template('farmerorderslist.html')
+
+@other_blueprint.route('/farmerconfirmation', methods=['GET', 'POST'])
+def farmerconfirmation():
+    if current_user.role != 'F':
+        return redirect(url_for('other.index'))
+    products = db.session.query(Product,ProductInOrder,User,Order,func.sum(ProductInOrder.quantity).label('quantity')
+    ).filter(
+        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id)
+    ).group_by(
+        Product.product_id,Product.name,Product.img_url,Product.price
+    ).all()
+    print(products)
+    return render_template('farmerconfirmation.html',products=products)
 
 @other_blueprint.route('/farmerorderconfirm', methods=['GET', 'POST'])
 def farmerorderconfirm():
