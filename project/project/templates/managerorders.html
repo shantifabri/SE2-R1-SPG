@@ -52,7 +52,7 @@
                                                             <th class="text-center">Actual Delivery</th>
                                                             <th class="text-center">Total Amount</th>
                                                             <th class="text-center">Status</th>
-                                                            <th></th>
+                                                            <th class="text-center"></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -66,7 +66,7 @@
                                                                 {{order[0].requested_delivery_date[0:10]}}</td>
                                                             <td class="text-center">{{order[0].actual_delivery_date[0:10]}}</td>
                                                             <td class="text-center">€ {{'%.2f' % order[0].total}}</td>
-                                                            <td><div class="badge badge-success">{{order[0].status}}</div></td>
+                                                            <td class="text-center"><div class="badge badge-success">{{order[0].status}}</div></td>
                                                             <td>
                                                                 {% if order[0].status == "PREPARED" %}
                                                                 <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
