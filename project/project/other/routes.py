@@ -24,7 +24,6 @@ def index():
 def products():
     if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
         return redirect(url_for('other.index'))
-    # products = Product.query.all()
     products = db.session.query(
         Product, 
         User
@@ -223,8 +222,7 @@ def shoppingcart():
                     return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=False)
                 print("Sufficient Balance")
 
-                return redirect(url_for('other.index'))                
-                # order_id = new_order.order_id
+                return redirect(url_for('other.index'))
       
     return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
 
@@ -309,7 +307,6 @@ def manageproducts():
 
     if form.validate_on_submit() and request.method == "POST":
 
-        # filename = secure_filename(form.image.data.filename)
         filename = form.image.data.filename
         filenames = filename.split(".")
         prods = db.session.query(
