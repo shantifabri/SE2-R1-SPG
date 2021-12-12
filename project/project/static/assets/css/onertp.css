@@ -186,6 +186,11 @@ div {
 .mproduct-image-container{
     margin-bottom:10px;
 }
+
+#searchbar{
+	border-top-left-radius:4px;
+	border-bottom-left-radius:4px;
+}
 /* Nav */
 
 #onertp_nav_top {
