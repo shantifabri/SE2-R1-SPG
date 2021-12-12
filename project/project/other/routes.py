@@ -240,6 +240,17 @@ def insertproducts():
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
+@other_blueprint.route('/confirmarrivals', methods=['GET', 'POST'])
+@login_required
+def confirmarrivals():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(ProductInOrder,Product,User).from_statement(text('''select * from users join 
+            (select p.farmer_id from products p join product_in_order pio on pio.product_id = p.product_id)u
+            on users.id = u.farmer_id
+            ''')).all()
+    return render_template('confirmarrivals.html', orders=orders)
+
 @other_blueprint.route('/manageorders', methods=['GET', 'POST'])
 @login_required
 def manageorders():
