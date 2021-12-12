@@ -334,4 +334,52 @@ def test_topup_page_wallet_post_logged_employee(test_client, init_database, logi
     assert b"32.00" in response.data #client's updated value
     assert b"30.00" not in response.data #client's initial value
 
+def test_shop_orders_page_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/shoporders' page is requested (GET) and user is logged as employee
+    THEN check that the response is valid
+    """
+    response = test_client.get('/shoporders')
+    assert response.status_code == 200
+    assert b"Orders handout" in response.data
+    assert b"Please, select the order you want to hand out" in response.data
+    assert b"Hand Out" in response.data
+    assert b"DELIVERED" not in response.data
 
+def test_shop_orders_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/shoporders' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/shoporders',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Orders handout" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_update_status_logged_employee(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updatestatus/<order_id>' page is posted to (POST) and user is logged as employee
+    THEN check that the response is valid, it updates order status and redirects to orders
+    """
+    response = test_client.post('/updatestatus/1',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Hand Out" not in response.data
+    assert b"DELIVERED" in response.data
+
+    assert request.path == url_for('other.shoporders')
+
+def test_update_status_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updatestatus/<order_id>' page is posted to (POST) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.post('/updatestatus/1',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Orders handout" not in response.data
+
+    assert request.path == url_for('other.index')
