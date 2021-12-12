@@ -206,6 +206,7 @@ def test_single_product_page_post(test_client, init_database, login_employee_use
     assert response.status_code == 200
     assert b"Categories" in response.data
 
+# Shop Employee Routes
 def test_manage_clients_page_logged_employee(test_client, init_database, login_employee_user):
     """
     GIVEN a Flask application configured for testing
@@ -383,3 +384,33 @@ def test_update_status_unauthorized_logged(test_client, init_database, login_far
     assert b"Orders handout" not in response.data
 
     assert request.path == url_for('other.index')
+
+# Farmer Routes
+def test_manage_products_page_logged_farmer(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/manageproducts' page is requested (GET) and user is logged as farmer
+    THEN check that the response is valid
+    """
+    response = test_client.get('/manageproducts')
+    assert response.status_code == 200
+    assert b"Manage Products" in response.data
+
+
+def test_manage_products_page_unauthorized_logged(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/manageproducts' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/manageproducts',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Manage Products" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_manage_products_post_new_logged_farmer(test_client, init_database, login_farmer_user):
+    pass
+
+def test_manage_products_post_edit_logged_farmer(test_client, init_database, login_farmer_user):
+    pass
