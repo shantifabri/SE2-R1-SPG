@@ -8,7 +8,6 @@ from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
 import json
-import pandas as pd
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -497,22 +496,21 @@ def managerorders():
 
     return render_template('managerorders.html', orders=orders)
 
-@other_blueprint.route('/sendmail', methods=['GET', 'POST'])
+@other_blueprint.route('/sendmail/<email>/<subject>/<msg>', methods=['GET', 'POST'])
 @login_required
-def sendmail():
+def sendmail(email,subject,msg):
     if current_user.role != 'M':
         return redirect(url_for('other.index'))
     SENDGRID_API_KEY = "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"
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     from_email = Email("Solidarity.purchase@gmail.com")
-    to_email = To("dingzhily@gmail.com")
-    subject = "Notice for balance on SPG2"
-    content = Content("text/plain", "Dear customer, your balance is not enough, please contact your manager to top up! Need to change the email address to current email!")
+    to_email = To(email)
+    content = Content("text/plain", msg)
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     print(response.status_code)
 
-    return render_template('managerorders.html')
+    # return render_template('managerorders.html')
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
 @login_required
