@@ -12,6 +12,18 @@
             }
         });
     }
+
+    function sendReminder(email, order_id) {
+        var subject = "DELIVERED";
+        var msg = "Dear User, your balance is not sufficient, please top it up as soon as possible or your order with the id: " + order_id + " is going to be cancelled!"
+        $.ajax({
+            url: '/sendmail/' + email + '/' + subject + '/' + msg,
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
+    }
 </script>
 <style>
     tbody tr:nth-child(odd) {
@@ -69,7 +81,7 @@
                                                             <td class="text-muted nomobile">#{{order[0].order_id}}</td>
                                                             <td>{{order[1].email}}</td>
                                                             <td>{{order[0].delivery_address}}</td>
-                                                            <td>{{order[0].requested_delivery_date[0:10]}}</td>
+                                                            <td>{{order[0].requested_delivery_date}}</td>
                                                             <td>€ {{'%.2f' % order[0].total}}</td>
                                                             <td>
                                                                 {% if order[0].status == "LODGED" %}
@@ -90,7 +102,7 @@
                                                                 <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
                                                       Hand Out
                                                 </button> {% elif order[0].status == "PENDING CANCELLATION" %}
-                                                                <button onClick="" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
+                                                                <button onClick="sendReminder({{order[1].email}},{{order[0].order_id}});" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
                                                     Remind
                                                 </button> {% else %}
                                                                 <span class="text-black-bold"></span> {% endif %}

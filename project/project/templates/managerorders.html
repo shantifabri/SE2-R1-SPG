@@ -14,7 +14,7 @@
         });
     }
 </script>
-<script>
+<!-- <script>
     function sendmail(){
         $.ajax({
             url:'/sendmail',
@@ -24,14 +24,16 @@
             }
         });
     }
-</script>
+</script> -->
 <style>
     tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
     }
+    
     tr {
         height: 53.6px;
     }
+    
     td {
         height: 53.6px;
     }
@@ -52,8 +54,7 @@
                                     <div class="row">
                                         <div class="main-card mb-3 card">
                                             <div class="table-responsive">
-                                                <table
-                                                    class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th class="text-center nomobile">Order ID</th>
@@ -74,19 +75,20 @@
                                                             <td class="text-center">{{order[1].email}}</td>
                                                             <td class="text-center">{{order[0].delivery_address}}</td>
                                                             <td class="text-center">
-                                                                {{order[0].requested_delivery_date[0:10]}}</td>
-                                                            <td class="text-center">{{order[0].actual_delivery_date[0:10]}}</td>
+                                                                {{order[0].requested_delivery_date}}</td>
+                                                            <td class="text-center">{{order[0].actual_delivery_date}}</td>
                                                             <td class="text-center">€ {{'%.2f' % order[0].total}}</td>
-                                                            <td class="text-center"><div class="badge badge-success">{{order[0].status}}</div></td>
+                                                            <td class="text-center">
+                                                                <div class="badge badge-success">{{order[0].status}}</div>
+                                                            </td>
                                                             <td>
                                                                 {% if order[0].status == "PREPARED" %}
                                                                 <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
                                                                     <i class="fas fa-shipping-fast"></i>
-                                                                </button>
-                                                                {% endif %}
-                                                                <button onClick="sendmail();" type="button" class="btn btn-outline-success">
+                                                                </button> {% endif %}
+                                                                <!-- <button onClick="sendmail();" type="button" class="btn btn-outline-success">
                                                                     <i class="fas fa-wallet"></i>
-                                                                </button>
+                                                                </button> -->
                                                             </td>
                                                         </tr>
                                                         {% endfor %}
