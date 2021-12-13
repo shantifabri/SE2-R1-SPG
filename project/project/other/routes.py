@@ -23,10 +23,9 @@ def index():
     return render_template('index.html')
 
 @other_blueprint.route('/products', methods=['GET','POST'])
-@login_required
 def products():
-    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
+    #     return redirect(url_for('other.index'))
     form = ProductSearch()
     products = db.session.query(
         Product, 
@@ -50,10 +49,9 @@ def products():
     return render_template('products.html',products=products,form=form)
 
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
-@login_required
 def singleproduct(product_id):
-    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
+    #     return redirect(url_for('other.index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
     product = db.session.query(
@@ -345,10 +343,6 @@ def farmerorders():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
 
-    # orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
-    #         (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
-    #         on products.product_id = a.product_id
-    #         where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()
     orders = db.session.query(Order,ProductInOrder,Product,User
     ).filter(
         Order.order_id == ProductInOrder.order_id
@@ -360,6 +354,8 @@ def farmerorders():
         Product.farmer_id == current_user.id
     ).filter(
         Order.status == "PENDING"
+    ).filter(
+        ProductInOrder.confirmed == False
     ).all()
     return render_template('farmerorders.html', orders=orders)
 
