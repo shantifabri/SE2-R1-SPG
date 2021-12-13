@@ -8,7 +8,6 @@ from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
 import json
-import pandas as pd
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
