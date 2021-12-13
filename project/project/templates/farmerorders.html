@@ -1,11 +1,9 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
-    function updateStatus(orderId) {
-        var status = "CONFIRMED";
-        var redirect = "farmerorders"
+    function confirmOrder(order_id,pio_id,product_id) {
         $.ajax({
-            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
+            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id,
             type: "post",
             success: function(data) {
                 location.reload(true);
@@ -61,10 +59,14 @@
                                                 <td>{{order[1].quantity}} Kg</td>
                                                 <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
                                                 <td>
+                                                    {% if order[1].confirmed == False %}
                                                     <span class="text-black-bold">{{order[0].status}}</span>
+                                                    {% else %}
+                                                    <span class="text-black-bold">CONFIRMED</span>
+                                                    {% endif %}
                                                 </td>
-                                                <td>{% if order[0].status == "PENDING" %}
-                                                    <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
+                                                <td>{% if order[1].confirmed == False %}
+                                                    <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
                                                     <i class="fas fa-check-double"></i>
                                                 </button>{% endif %}</td>
                                             </tr>

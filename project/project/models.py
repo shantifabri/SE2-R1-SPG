@@ -55,6 +55,8 @@ class Product(db.Model):
     description = db.Column(db.String(500))
     qty_available = db.Column(db.Float)
     qty_requested = db.Column(db.Float)
+    qty_confirmed = db.Column(db.Float)
+    qty_warehoused = db.Column(db.Float)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))

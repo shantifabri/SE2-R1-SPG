@@ -133,12 +133,38 @@ def updateshipping(value):
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
-
+    if current_user.role != 'F':
+        return redirect(url_for('other.index'))
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = status
     db.session.commit()
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
+
+@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>',  methods=['GET','POST'])
+@login_required
+def confirmorder(order_id,pio_id,product_id):
+
+    order = db.session.query(Order).filter(Order.order_id == order_id).one()
+    pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    # order.status = status
+    qty_remaining = product.qty_available - product.qty_confirmed
+    if pio.quantity > qty_remaining:
+        pio.quantity = qty_remaining
+    product.qty_confirmed += pio.quantity
+    pio.confirmed = True
+    products = db.session.query(
+        ProductInOrder
+        ).filter(
+            ProductInOrder.order_id == order_id
+        ).filter(
+            ProductInOrder.confirmed == False
+        ).all()
+    if len(products) == 0:
+        order.status = 'CONFIRMED'
+    db.session.commit()
+    return redirect(url_for('other.farmerorders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -323,7 +349,7 @@ def manageproducts():
         ).all()
         filename = filenames[0] + str(len(prods)) + "." + filenames[1]
         form.image.data.save("project/static/shop_imgs/" + filename)
-        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
@@ -354,8 +380,8 @@ def farmerorders():
         Product.farmer_id == current_user.id
     ).filter(
         Order.status == "PENDING"
-    ).filter(
-        ProductInOrder.confirmed == False
+    # ).filter(
+    #     ProductInOrder.confirmed == False
     ).all()
     return render_template('farmerorders.html', orders=orders)
 
