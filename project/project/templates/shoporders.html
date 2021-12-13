@@ -7,20 +7,22 @@
         $.ajax({
             url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
-            success: function(data) {
+            success: function (data) {
                 location.reload(true);
             }
         });
     }
 
     function sendReminder(email, order_id) {
-        var subject = "DELIVERED";
-        var msg = "Dear User, your balance is not sufficient, please top it up as soon as possible or your order with the id: " + order_id + " is going to be cancelled!"
+        var subject = "Insufficient Balance Reminder";
+        var msg = "Dear User, your balance is not sufficient to complete the order "+order_id+', please make sure to charge your wallet. Thanks, \nSPG Team.'
         $.ajax({
             url: '/sendmail/' + email + '/' + subject + '/' + msg,
             type: "post",
-            success: function(data) {
+            success: function (data) {
                 location.reload(true);
+                //await new Promise(r => setTimeout(r, 5000));
+                $('#exampleModal').modal('show');
             }
         });
     }
@@ -29,12 +31,12 @@
     tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
     }
-    
+
     tr {
         text-align: center;
         height: 53.6px;
     }
-    
+
     th {
         text-align: center;
         height: 53.6px;
@@ -42,6 +44,24 @@
 </style>
 
 <body>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Done</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Your reminder was successfully sent.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="container-fluid col-md-12">
         <p>&nbsp;</p>
         <h1 style="text-align:center">Manage Orders</h1>
@@ -55,14 +75,16 @@
                                 <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Orders handout</h4>
                                 <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center"> Please, select the order you want to hand out</p>
+                                <p class="card-description" style="text-align:center"> Please, select the order you want
+                                    to hand out</p>
                                 <p>&nbsp;</p>
                                 <p>&nbsp;</p>
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
                                         <div class="main-card mb-3 card">
                                             <div class="table-responsive">
-                                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                                <table
+                                                    class="align-middle mb-0 table table-borderless table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th class="nomobile">Order Id</th>
@@ -85,26 +107,37 @@
                                                             <td>€ {{'%.2f' % order[0].total}}</td>
                                                             <td>
                                                                 {% if order[0].status == "LODGED" %}
-                                                                <div class="badge badge-warning">{{order[0].status}}</div>
+                                                                <div class="badge badge-warning">{{order[0].status}}
+                                                                </div>
                                                                 {% elif order[0].status == "PENDING CANCELLATION" %}
-                                                                <div class="badge badge-warning">{{order[0].status}}</div> {% elif order[0].status=="PENDING" %}
-                                                                <div class="badge badge-warning">{{order[0].status}}</div>
+                                                                <div class="badge badge-warning">{{order[0].status}}
+                                                                </div> {% elif order[0].status=="PENDING" %}
+                                                                <div class="badge badge-warning">{{order[0].status}}
+                                                                </div>
                                                                 {% elif order[0].status=="DELIVERED" or order[0].status=="DELIVERING" %}
-                                                                <div class="badge badge-success">{{order[0].status}}</div>
+                                                                <div class="badge badge-success">{{order[0].status}}
+                                                                </div>
                                                                 {% elif order[0].status=="CANCELLED" %}
-                                                                <div class="badge badge-danger">{{order[0].status}}</div>
+                                                                <div class="badge badge-danger">{{order[0].status}}
+                                                                </div>
                                                                 {% else %}
-                                                                <span class="text-black-bold">{{order[0].status}}</span> {% endif %}
+                                                                <span class="text-black-bold">{{order[0].status}}</span>
+                                                                {% endif %}
                                                             </td>
 
                                                             <td>
                                                                 {% if order[0].status == "LODGED" %}
-                                                                <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
-                                                      Hand Out
-                                                </button> {% elif order[0].status == "PENDING CANCELLATION" %}
-                                                                <button onClick="sendReminder({{order[1].email}},{{order[0].order_id}});" type="button" class="btn btn-outline-success"><!--This button has to send a reminder to the user.-->
-                                                    Remind
-                                                </button> {% else %}
+                                                                <button onClick="updateStatus({{order[0].order_id}})"
+                                                                    type="button" class="btn btn-outline-success">
+                                                                    Hand Out
+                                                                </button>
+                                                                {% elif order[0].status == "PENDING CANCELLATION" %}
+                                                                <button data-toggle="modal" data-target="#exampleModal"
+                                                                    onClick="sendReminder('{{order[1].email}}',{{order[0].order_id}})"
+                                                                    type="button" class="btn btn-outline-success">
+                                                                    <!--This button has to send a reminder to the user.-->
+                                                                    Remind
+                                                                </button> {% else %}
                                                                 <span class="text-black-bold"></span> {% endif %}
                                                             </td>
                                                         </tr>

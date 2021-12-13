@@ -8,6 +8,7 @@ from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
 import json
+import base64
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -445,11 +446,6 @@ def clientorders():
         ).filter(
             ProductInOrder.order_id == Order.order_id
         ).statement
-    
-    df = pd.read_sql(order_query, db.session.bind)
-    # print(df.columns)
-    # df = df[['name_1','company','qty_available','img_url','total','status','order_id','quantity','price']]
-    # print(df)
 
     for order in orders:
         prod = {}
@@ -499,18 +495,15 @@ def managerorders():
 @other_blueprint.route('/sendmail/<email>/<subject>/<msg>', methods=['GET', 'POST'])
 @login_required
 def sendmail(email,subject,msg):
-    if current_user.role != 'M':
-        return redirect(url_for('other.index'))
-    SENDGRID_API_KEY = "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"
-    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    
     from_email = Email("Solidarity.purchase@gmail.com")
     to_email = To(email)
     content = Content("text/plain", msg)
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     print(response.status_code)
-
-    # return render_template('managerorders.html')
+    print(email)
+    return redirect(url_for('other.shoporders'))
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
 @login_required
