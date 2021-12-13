@@ -144,8 +144,6 @@ def confirmarrivals():
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
-    if current_user.role != 'F':
-        return redirect(url_for('other.index'))
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = status
     db.session.commit()
