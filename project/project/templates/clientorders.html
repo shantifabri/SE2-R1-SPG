@@ -86,28 +86,29 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="row">
-                                                    <img src="static/shop_imgs/{{product['img_url']}}"/>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-4" style="padding-bottom:25px;"><img class="img-fluid" src="static/shop_imgs/{{product['img_url']}}"/></div>
+                                                    <div class="col-md-8">      <div class="col-md-12">
                                                         <div class="form-group ">
-                                                            <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
-                                                                {{product["name"]}}
+                                                            <label>Product Name:</label>
+                                                               <b>{{product["name"]}}</b> 
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-12">
                                                         <div class="form-group  ">
-                                                            <label>Product Quantity</label>
-                                                            {{product["order_qty"]}} Kg
+                                                            <label>Product Quantity:</label>
+                                                            <b>{{product["order_qty"]}} Kg</b>
                                                             <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
                                                         </div>
 
                                                     </div>
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label>Product Price €/Kg</label>
-                                                            {{product["price"]}}
+                                                            <label>Product Price €/Kg:</label>
+                                                           <b> {{product["price"]}}</b>
                                                             <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
-                                                        </div>
+                                                        </div></div>
+                                              
                                                     </div>
                                                 </div>
 
