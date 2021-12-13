@@ -2,32 +2,31 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <script type="text/javascript">
-
     var r;
     //var r2;
-    
+
     function submitO(recp) {
         r = recp;
-        
+
         //var button = $(event.relatedTarget) // Button that triggered the modal
         //r2 = button.data('whatever')
     }
-    $(document).on('show.bs.modal', '#arrivalModal', function () {
+    $(document).on('show.bs.modal', '#arrivalModal', function() {
         var modal = $(this)
-        //modal.find('.modal-title').text('Please, check the following arrivals for the farmer '+r1+ ' '+r2);
-        
+            //modal.find('.modal-title').text('Please, check the following arrivals for the farmer '+r1+ ' '+r2);
+
     });
 </script>
 <style>
     tbody tr:nth-child(odd) {
         background-color: #d6f0c7;
     }
-
+    
     tr {
         text-align: center;
         height: 53.6px;
     }
-
+    
     th {
         text-align: center;
         height: 53.6px;
@@ -111,16 +110,13 @@
 
 
                                 <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center"> Please, select the farmer whose
-                                    products you
-                                    want to confirm the arrival of.</p>
+                                <p class="card-description" style="text-align:center"> Please, select the farmer whose products you want to confirm the arrival of.</p>
                                 <p>&nbsp;</p>
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
                                         <div class="main-card mb-3 card">
                                             <div class="table-responsive">
-                                                <table
-                                                    class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th class="text-center">Farmer Company</th>
@@ -137,17 +133,8 @@
                                                             <td class="text-center">{{farmer[2].name}}</td>
                                                             <td class="text-center">{{farmer[2].surname}}</td>
                                                             <td class="text-center">
-                                                                <button type="button" class="btn btn-outline-success"
-                                                                    onclick="submitO('{{farmer[2].name}}'+'_'+'{{farmer[2].surname}}');"
-                                                                    data-toggle="modal" data-target="#arrivalModal{{farmer[2].id}}">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                        height="16" fill="currentColor"
-                                                                        class="bi bi-check-circle" viewBox="0 0 16 16">
-                                                                        <path
-                                                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                                        <path
-                                                                            d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
-                                                                    </svg>
+                                                                <button type="button" class="btn btn-outline-success" onclick="submitO('{{farmer[2].name}}'+'_'+'{{farmer[2].surname}}');" data-toggle="modal" data-target="#arrivalModal{{farmer[2].id}}">
+                                                                    <i class="fas fa-eye"></i>
                                                                 </button>
                                                             </td>
                                                         </tr>
