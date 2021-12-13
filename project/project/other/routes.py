@@ -130,6 +130,16 @@ def updateshipping(value):
 
     return redirect(url_for('other.shoppingcart'))
 
+@other_blueprint.route('/confirmarrivals', methods=['GET', 'POST'])
+@login_required
+def confirmarrivals():
+    orders = db.session.query(ProductInOrder,Product,User
+    ).filter(
+        and_(ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id)
+    ).all()
+    print(orders)
+    return render_template('confirmarrivals.html', orders=orders)
+
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
