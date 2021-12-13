@@ -3,21 +3,19 @@
 
 <script type="text/javascript">
 
-    var r1;
-    var r2;
-
+    var r;
+    //var r2;
+    
     function submitO(recp) {
-        r1 = recp;
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        r2 = button.data('whatever')
+        r = recp;
+        
+        //var button = $(event.relatedTarget) // Button that triggered the modal
+        //r2 = button.data('whatever')
     }
     $(document).on('show.bs.modal', '#arrivalModal', function () {
-        //$("#currency-field").val("$1,000.00");
         var modal = $(this)
-        modal.find('.modal-title').text('Please, check the following arrivals')
-        console.log(toString(r1));
-        console.log(toString(r2));
-        //modal.find('.modal-mail').text(recipient)
+        //modal.find('.modal-title').text('Please, check the following arrivals for the farmer '+r1+ ' '+r2);
+        
     });
 </script>
 <style>
@@ -37,11 +35,12 @@
 </style>
 
 <body>
-    <div class="modal fade" id="arrivalModal" tabindex="-1" role="dialog" aria-hidden="true">
+    {% for farmerproduct in farmerproducts %}
+    <div class="modal fade" id="arrivalModal{{farmerproduct}}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" style="text-align:center"></h5>
+                    <h5 class="modal-title" style="text-align:center">Please, check the following arrivals for the farmer</h5>
                     <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -55,22 +54,21 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center nomobile">Product Name</th>
-                                        <th class="text-center">Requested Quantity</th>
+                                        <th class="text-center">Confirmed Quantity</th>
                                         <th class="text-center">Check Arrival</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    {% for order in orders %}
+                                    {% for product in farmerproducts[farmerproduct] %}
+
                                     <tr>
-                                        <td class="text-center text-muted nomobile">
-                                            #{{order[0].order_id}}</td>
-                                        <td class="text-center">{{order[1].name}}</td>
+                                        <td class="text-center">{{product.name}}</td>
+                                        <td class="text-center">{{product.quantity}}</td>
 
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-outline-success"
-                                                onclick="submitO('{{order[2]}}');" data-toggle="modal"
-                                                data-target="#arrivalModal" data-whatever="{{order}}">
+                                            <!--button type="button" class="btn btn-outline-success" data-toggle="modal"
+                                                data-target="#arrivalModal">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                                                     <path
@@ -78,6 +76,9 @@
                                                     <path
                                                         d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
                                                 </svg>
+                                            </button -->
+                                            <button type="button" class="btn btn-outline-success">
+                                                <i class="far fa-check-square"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -94,6 +95,7 @@
             </div>
         </div>
     </div>
+    {% endfor %}
     <div class="container-fluid col-md-12">
         <p>&nbsp;</p>
         <h1 style="text-align:center">Arrival Confirmation</h1>
@@ -105,12 +107,12 @@
                         <div class="card">
                             <div class="card-body">
                                 <p>&nbsp;</p>
-                                <h4 class="card-title text-success" style="text-align:center">Orders and Farmers</h4>
+                                <h4 class="card-title text-success" style="text-align:center">Farmers</h4>
 
 
                                 <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center"> Please, select the order and the
-                                    relative farmer you
+                                <p class="card-description" style="text-align:center"> Please, select the farmer whose
+                                    products you
                                     want to confirm the arrival of.</p>
                                 <p>&nbsp;</p>
                                 <div class="container-fluid nolateral tb-spacing">
@@ -121,7 +123,7 @@
                                                     class="align-middle mb-0 table table-borderless table-striped table-hover">
                                                     <thead>
                                                         <tr>
-                                                            <th class="text-center nomobile">Order ID</th>
+                                                            <th class="text-center">Farmer Company</th>
                                                             <th class="text-center">Farmer Name</th>
                                                             <th class="text-center">Farmer Surname</th>
                                                             <th class="text-center">Check Arrival</th>
@@ -129,17 +131,15 @@
                                                     </thead>
 
                                                     <tbody>
-                                                        {% for order in orders %}
+                                                        {% for farmer in farmers %}
                                                         <tr>
-                                                            <td class="text-center text-muted nomobile">
-                                                                #{{order[0].order_id}}</td>
-                                                            <td class="text-center">{{order[2].name}}</td>
-                                                            <td class="text-center">{{order[2].surname}}</td>
+                                                            <td class="text-center">{{farmer[2].company}}</td>
+                                                            <td class="text-center">{{farmer[2].name}}</td>
+                                                            <td class="text-center">{{farmer[2].surname}}</td>
                                                             <td class="text-center">
                                                                 <button type="button" class="btn btn-outline-success"
-                                                                    onclick="submitO('{{order[2].name}}');"
-                                                                    data-toggle="modal" data-target="#arrivalModal"
-                                                                    data-whatever="{{order[2].name}}">
+                                                                    onclick="submitO('{{farmer[2].name}}'+'_'+'{{farmer[2].surname}}');"
+                                                                    data-toggle="modal" data-target="#arrivalModal{{farmer[2].id}}">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                         height="16" fill="currentColor"
                                                                         class="bi bi-check-circle" viewBox="0 0 16 16">

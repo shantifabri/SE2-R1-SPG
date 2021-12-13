@@ -135,12 +135,27 @@ def updateshipping(value):
 @other_blueprint.route('/confirmarrivals', methods=['GET', 'POST'])
 @login_required
 def confirmarrivals():
-    orders = db.session.query(ProductInOrder,Product,User
+    farmers = db.session.query(ProductInOrder,Product,User,Order
     ).filter(
-        and_(ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id)
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'CONFIRMED')
+    ).group_by(
+        User.id,User.name,User.surname,User.company
     ).all()
-    print(orders)
-    return render_template('confirmarrivals.html', orders=orders)
+    products = db.session.query(Product,func.sum(Product.qty_confirmed)
+    ).filter(
+        Product.qty_confirmed>0
+    ).group_by(
+        Product.farmer_id,Product.product_id
+    ).all()
+    farmerproducts = {}
+    for product in products :
+        if product[0].farmer_id in farmerproducts.keys():
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+        else:
+            farmerproducts[product[0].farmer_id]=[]
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+
+    return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
