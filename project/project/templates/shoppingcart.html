@@ -1,5 +1,23 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+    
 <script>
+    $(function() {
+        $("#autocompletemail").autocomplete({
+            source:function(request, response) {
+                $.getJSON("{{url_for('other.autocompletemail')}}",{
+                    q: request.term, // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    response(data.matching_results); // matching_results from jsonify
+                });
+            },
+            minLength: 1,
+            delay: 200,
+            select: function(event, ui) {
+                console.log(ui.item.value); // not in your question, but might help later
+            }
+        });
+    })
+
     $(function() {
         $('#env').change(function() {
             var current_status = $(this).prop('checked');
@@ -51,25 +69,6 @@
         });
     </script>
 
-    <head>
-        <title>Shoppingcart</title>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
-
-        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
-
-        <link rel="stylesheet" href="/static/assets/css/default.css">
-        <link rel="stylesheet" href="/static/assets/css/default.date.css">
-
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="/static/assets/css//bootstrap.min.css">
-
-        <!-- Style -->
-        <link rel="stylesheet" href="/static/assets/css/style.css">
-
-    </head>
 
     
 <form class="form-container" action="{{ url_for('other.shoppingcart') }}" method="POST">
@@ -196,11 +195,8 @@
 </form>
 
 
-    <script src="/static/assets/js/popper.min.js"></script>
-    <script src="/static/assets/js/picker.js"></script>
-    <script src="/static/assets/js/picker.date.js"></script>
-    <script src="/static/assets/js/main.js"></script>
-    <script src="/static/assets/js/picker.time.js"></script>
+<script src="/static/assets/js/main.js"></script>
+
 
 
 {% endblock %}

@@ -1,16 +1,22 @@
-from flask import render_template, request, flash, redirect, url_for, session
+from flask import render_template, request, flash, redirect, url_for, session, jsonify
 from flask_login import login_user, current_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from sqlalchemy import func
+from sqlalchemy import func,or_,and_
 from wtforms.fields import datetime
+from sqlalchemy.sql import text
 import os
+import json
+import base64
+from dotenv import load_dotenv, find_dotenv
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
-from project.forms import ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
+from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
 import datetime
+import sendgrid
+from sendgrid.helpers.mail import *
 
 from . import other_blueprint
 
@@ -19,24 +25,36 @@ from . import other_blueprint
 def index():
     return render_template('index.html')
 
-@other_blueprint.route('/products')
-@login_required
+@other_blueprint.route('/products', methods=['GET','POST'])
 def products():
-    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
+    #     return redirect(url_for('other.index'))
+    form = ProductSearch()
     products = db.session.query(
         Product, 
         User
         ).filter(
             User.id == Product.farmer_id
         ).all()
-    return render_template('products.html',products=products)
+    if form.validate_on_submit():
+        if form.search.data == None:
+            search = ""
+        products = db.session.query(
+            Product,
+            User
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+
+            Product.name.like("%" + form.search.data + "%")
+        ).all()
+    
+    return render_template('products.html',products=products,form=form)
 
 @other_blueprint.route('/singleproduct/<product_id>',  methods=['GET','POST'])
-@login_required
 def singleproduct(product_id):
-    if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S' and current_user.role != 'C' and current_user.role != 'F':
+    #     return redirect(url_for('other.index'))
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
     product = db.session.query(
@@ -115,17 +133,68 @@ def updateshipping(value):
 
     return redirect(url_for('other.shoppingcart'))
 
-@other_blueprint.route('/updatestatus/<order_id>',  methods=['GET','POST'])
+@other_blueprint.route('/confirmarrivals', methods=['GET', 'POST'])
 @login_required
-def updatestatus(order_id):
-    if current_user.role != 'S':
-        return redirect(url_for('index'))
+def confirmarrivals():
+    farmers = db.session.query(ProductInOrder,Product,User,Order
+    ).filter(
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'CONFIRMED')
+    ).group_by(
+        User.id,User.name,User.surname,User.company
+    ).all()
+    products = db.session.query(Product,func.sum(Product.qty_confirmed)
+    ).filter(
+        Product.qty_confirmed>0
+    ).group_by(
+        Product.farmer_id,Product.product_id
+    ).all()
+    farmerproducts = {}
+    for product in products :
+        if product[0].farmer_id in farmerproducts.keys():
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+        else:
+            farmerproducts[product[0].farmer_id]=[]
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+
+    return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
+
+@other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
+@login_required
+def updatestatus(order_id,status,redirect_url):
+    order = db.session.query(Order).filter(Order.order_id == order_id).one()
+    order.status = status
+    db.session.commit()
+    redirect_url = "other." + str(redirect_url)
+    return redirect(url_for(redirect_url))
+
+@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>',  methods=['GET','POST'])
+@login_required
+def confirmorder(order_id,pio_id,product_id):
 
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
-    order.status = "DELIVERED"
+    pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    user = db.session.query(User,Order).filter(User.id == Order.client_id).filter(Order.order_id == order_id).one()
+    # order.status = status
+    qty_remaining = product.qty_available - product.qty_confirmed
+    if pio.quantity > qty_remaining:
+        pio.quantity = qty_remaining
+    product.qty_confirmed += pio.quantity
+    pio.confirmed = True
+    products = db.session.query(
+        ProductInOrder
+        ).filter(
+            ProductInOrder.order_id == order_id
+        ).filter(
+            ProductInOrder.confirmed == False
+        ).all()
+    if len(products) == 0:
+        order.status = 'CONFIRMED'
+        msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
+        # send confirmation mail here
+        sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
     db.session.commit()
-
-    return redirect(url_for('other.manageorders'))
+    return redirect(url_for('other.farmerorders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -175,11 +244,6 @@ def shoppingcart():
     vals["total"] = '%.2f' % (total + float(session.get("shipping",0)))
 
 
-    if request.method == "POST":
-        print(form.email.data)
-        print(form.delivery_address.data)
-        print(form.date.data)
-
     if form.validate_on_submit() and request.method == "POST":
         if form.date.data == "":
             return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=False)
@@ -202,14 +266,20 @@ def shoppingcart():
                 home_delivery = "F"
 
             if address != None:
-                new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=session.get("date",datetime.datetime.now()), actual_delivery_date="", status="PENDING")
+                balance = True
+                if float(vals["total"]) > q2.wallet - q2.pending_amount:
+                    balance = False
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date",datetime.datetime.now()))
+                else:
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date",datetime.datetime.now()))
+                # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
                 db.session.commit()
                 ProductInBasket.query.filter_by(client_id=current_user.id).delete()
 
                 items = []
                 for prod in products:
-                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id))
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False))
                 db.session.bulk_save_objects(items)
                 db.session.commit()
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -217,12 +287,12 @@ def shoppingcart():
                     ).all()
                 session["cart_count"] = len(status_counts)
 
-                if float(vals["total"]) > q2.wallet:
-                    print("Insufficient Balance")
-                    return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=False)
-                print("Sufficient Balance")
+                if not balance:
+                    # Send an email to the user to remind to top-up the wallet
+                    return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=balance)
 
                 return redirect(url_for('other.index'))
+                # order_id = new_order.order_id
       
     return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
 
@@ -230,7 +300,7 @@ def shoppingcart():
 @login_required
 def manageclients():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     return render_template('manageclients.html')
 
 @other_blueprint.route('/insertproducts', methods=['GET','POST'])
@@ -240,18 +310,18 @@ def insertproducts():
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
-@other_blueprint.route('/manageorders', methods=['GET', 'POST'])
+@other_blueprint.route('/shoporders', methods=['GET', 'POST'])
 @login_required
-def manageorders():
+def shoporders():
     if current_user.role != 'S':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     orders = db.session.query(
         Order,  
         User
         ).filter(
             User.id == Order.client_id
         ).all()
-    return render_template('manageorders.html', orders=orders)
+    return render_template('shoporders.html', orders=orders)
 
 @other_blueprint.route('/topup', methods=['GET','POST'])
 @login_required
@@ -292,7 +362,7 @@ def topup():
 @login_required
 def manageproducts():
     if current_user.role != 'F':
-        return redirect(url_for('index'))
+        return redirect(url_for('other.index'))
     form = ProductInsertForm()
     form_edit = ProductEditForm()
     products = db.session.query(
@@ -300,13 +370,195 @@ def manageproducts():
     ).filter(
         Product.farmer_id == current_user.id
     ).all()
+
+    if form.validate() and request.method == "POST":
+        filename = form.image.data.filename
+        filenames = filename.split(".")
+        prods = db.session.query(
+            Product
+        ).all()
+        filename = filenames[0] + str(len(prods)) + "." + filenames[1]
+        form.image.data.save("project/static/shop_imgs/" + filename)
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('other.manageproducts'))
     
-    if form_edit.validate_on_submit() and request.method == "POST":
-        print(form_edit.name.data)
-        pass
+    if form_edit.validate() and request.method == "POST":
+        db.session.query(
+            Product
+        ).filter(Product.product_id == form_edit.product_id.data
+        ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
+        db.session.commit()
+    
+    return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
 
-    if form.validate_on_submit() and request.method == "POST":
+@other_blueprint.route('/farmerorders', methods=['GET', 'POST'])
+@login_required
+def farmerorders():
+    if current_user.role != 'F':
+        return redirect(url_for('other.index'))
 
+    orders = db.session.query(Order,ProductInOrder,Product,User
+    ).filter(
+        Order.order_id == ProductInOrder.order_id
+    ).filter(
+        ProductInOrder.product_id == Product.product_id
+    ).filter(
+        Order.client_id == User.id
+    ).filter(
+        Product.farmer_id == current_user.id
+    ).filter(
+        Order.status == "PENDING"
+    # ).filter(
+    #     ProductInOrder.confirmed == False
+    ).all()
+    return render_template('farmerorders.html', orders=orders)
+
+@other_blueprint.route('/clientorders', methods=['GET', 'POST'])
+@login_required
+def clientorders():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+
+    client_orders = {}
+    prod = {}
+    orders = db.session.query(
+        Order,  
+        User,  
+        ProductInOrder,
+        Product
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+            Order.client_id == current_user.id
+        ).filter(
+            ProductInOrder.product_id == Product.product_id
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).all()
+    order_query = db.session.query(
+        Order,  
+        User,  
+        ProductInOrder,
+        Product
+        ).filter(
+            User.id == Product.farmer_id
+        ).filter(
+            Order.client_id == current_user.id
+        ).filter(
+            ProductInOrder.product_id == Product.product_id
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).statement
+
+    for order in orders:
+        prod = {}
+        id = str(order[0].order_id)
+        print(id + " " + order[3].name + " " + str(order[2].quantity))
+        prod["name"] = str(order[3].name)
+        prod["product_id"] = order[3].product_id
+        prod["price"] = str(order[3].price)
+        prod["qty_available"] = order[3].qty_available
+        prod["qty_requested"] = order[3].qty_requested
+        prod["order_qty"] = str(order[2].quantity)
+        prod["farmer"] = order[1].company
+        prod["img_url"] = order[3].img_url
+
+        if id in list(client_orders.keys()):
+            print("APPEND")
+            client_orders[id]["Products"].append(prod)
+        else:
+            print("NEW")
+            client_orders[id] = {}
+            client_orders[id]["Order"] = order[0]
+            client_orders[id]["Products"] = []
+            client_orders[id]["Products"].append(prod)
+        print(client_orders[id]["Products"])
+        # print(client_orders[order[0].order_id]["Products"])
+        # print(prod)
+        # print(client_orders[id])
+    # print(client_orders)
+    return render_template('clientorders.html', orders=orders, client_orders=client_orders)
+
+@other_blueprint.route('/managerorders', methods=['GET', 'POST'])
+@login_required
+def managerorders():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).filter(
+            or_(Order.status == "PREPARED", Order.status == "DELIVERING")
+        ).all()
+
+    return render_template('managerorders.html', orders=orders)
+
+@other_blueprint.route('/sendmail/<email>/<subject>/<msg>/<redirecting>', methods=['GET', 'POST'])
+@login_required
+def sendmail(email,subject,msg,redirecting):
+    load_dotenv(verbose=True)
+    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+    print("API KEY : " + SENDGRID_API_KEY)
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    from_email = Email("Solidarity.purchase@gmail.com")
+    to_email = To(email)
+    content = Content("text/plain", msg)
+    mail = Mail(from_email, to_email, subject, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
+    print(response.status_code)
+    print(email)
+    return redirect(url_for('other.' + redirecting))
+
+@other_blueprint.route('/workerorders', methods=['GET', 'POST'])
+@login_required
+def workerorders():
+    if current_user.role != 'W':
+        return redirect(url_for('other.index'))
+    orders = db.session.query(
+        Order,  
+        User
+        ).filter(
+            User.id == Order.client_id
+        ).filter(
+            or_(Order.status == "WAREHOUSED",Order.status == "PREPARED")
+        ).all()
+    return render_template('workerorders.html', orders=orders)
+
+@other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
+def farmerorderslist():
+    return render_template('farmerorderslist.html')
+
+@other_blueprint.route('/farmerconfirmation', methods=['GET', 'POST'])
+def farmerconfirmation():
+    if current_user.role != 'F':
+        return redirect(url_for('other.index'))
+    products = db.session.query(Product,ProductInOrder,User,Order,func.sum(ProductInOrder.quantity).label('quantity')
+    ).filter(
+        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id)
+    ).group_by(
+        Product.product_id,Product.name,Product.img_url,Product.price
+    ).all()
+    print(products)
+    return render_template('farmerconfirmation.html',products=products)
+
+@other_blueprint.route('/farmerorderconfirm', methods=['GET', 'POST'])
+def farmerorderconfirm():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+    form = ProductInsertForm()
+    form_edit = ProductEditForm()
+    products = db.session.query(
+        Product
+    ).filter(
+        Product.farmer_id == 9
+    ).all()
+
+    if form.validate() and request.method == "POST":
+        # filename = secure_filename(form.image.data.filename)
         filename = form.image.data.filename
         filenames = filename.split(".")
         prods = db.session.query(
@@ -318,4 +570,32 @@ def manageproducts():
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
-    return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
+    
+    if form_edit.validate() and request.method == "POST":
+        db.session.query(
+            Product
+        ).filter(Product.product_id == form_edit.product_id.data
+        ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
+        db.session.commit()
+    
+    return render_template('farmerorderconfirm.html', products=products, form=form, form_edit=form_edit)
+
+################## AUTOCOMPLETE ROUTES ##############################
+# @app.route('/autocomplete', methods=['GET'])
+# def autocomplete():
+#     search = request.args.get('q')
+#     results = getComplete(search,session['env'])
+#     return jsonify(matching_results=results)
+
+@other_blueprint.route('/autocompletemail', methods=['GET','POST'])
+@login_required
+def autocompletemail():
+    search = request.args.get('q')
+    mails = db.session.query(User).from_statement(text("""select * from users
+    where email like '%""" + str(search) + """%' and role = 'C' """)).all()
+    results = []
+    for mail in mails:
+        results.append(mail.email)
+
+    return jsonify(matching_results=results)
+    # return "pogu"

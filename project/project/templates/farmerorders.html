@@ -1,0 +1,89 @@
+{% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    function confirmOrder(order_id,pio_id,product_id) {
+        $.ajax({
+            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id,
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
+    }
+</script>
+<style>
+   .table-responsive tr:nth-child(even) {
+        background-color: #d6f0c7;
+    }
+</style>
+
+<body>
+    <div class="container-fluid col-md-12">
+        <p>&nbsp;</p>
+        <h1 style="text-align:center">Confirm Orders</h1>
+        <p>&nbsp;</p>
+        <div class="container-fluid" id="page-content">
+            <div class="padding">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- <p>&nbsp;</p>
+                                <h4 class="card-title text-success" style="text-align:center">Orders Confirmation</h4>
+                                <p>&nbsp;</p>
+                                <p class="card-description" style="text-align:center"> Please, select the orders you want to confirm</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p> -->
+                                <div class="table-responsive">
+                                    <table class="table" style="text-align:center;">
+                                        <caption>Please deal with orders as soon as possible</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Order Id</th>
+                                                <th>Client</th>
+                                                <th>Order Date</th>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for order in orders %}
+                                            <tr>
+                                                <td>#{{order[0].order_id}}</td>
+                                                <td>{{order[3].email}}</td>
+                                                <td>{{order[0].order_date[0:10]}}</td>
+                                                <td>{{order[2].name}}</td>
+                                                <td>{{order[1].quantity}} Kg</td>
+                                                <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
+                                                <td>
+                                                    {% if order[1].confirmed == False %}
+                                                    <span class="text-black-bold">{{order[0].status}}</span>
+                                                    {% else %}
+                                                    <span class="text-black-bold">CONFIRMED</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{% if order[1].confirmed == False %}
+                                                    <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
+                                                    <i class="fas fa-check-double"></i>
+                                                </button>{% endif %}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <p>&nbsp;</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>&nbsp;</p>
+    </div>
+
+    <body>
+        {% endblock %}

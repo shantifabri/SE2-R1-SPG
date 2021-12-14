@@ -35,13 +35,21 @@
                     </ul>
                 </div>
                 <div class="col-md-6 pb-4">
-                    <div class="d-flex">
-                        <select class="form-control">
+                      <!--  <select class="form-control">
                             <option>Featured</option>
                             <option>A to Z</option>
                             <option>Item</option>
-                        </select>
-                    </div>
+                        </select>-->
+    
+        <form action="/products" method="POST">
+            <div class="input-group">
+        {{form.csrf_token}}{{form.search}}
+		    <div class="input-group-postpend">
+			<button class="btn btn-success btn-search input-group-text" type="submit"><i class="fa fa-search" aria-hidden="true"></i>
+			</button>
+			</div>
+      </div>
+ 
                 </div>
             </div>
             <div class="row">
@@ -59,10 +67,10 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-6">
-                                    <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 text-decoration-none">{{prod[0].name}}</a>
+                                <div class="col-md-6">
+                                    <a href="{{ url_for('other.singleproduct', product_id = prod[0].product_id) }}" class="h3 cardtitle text-decoration-none">{{prod[0].name}}</a>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-md-6">
                                     <span class="text-success-bold">{{prod[1].company}}</span>
                                 </div>
                             </div>

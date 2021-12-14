@@ -20,24 +20,37 @@
         });
     })
 
+    /*$(document).on('show.bs.modal', '#editModal', function() {
+        //$("#currency-field").val("$1,000.00");
+        var inputs = document.getElementById("edit-form").elements;
+        console.log(name);
+        inputs[1].value = name;
+    })*/
+
     var id;
     var name;
     var desc;
     var price;
     var qty;
 
-    function submituser(i, n, d, p, q){
+    function editProduct(i, n, d, p, q) {
         id = i;
         name = n;
         desc = d;
         price = p;
         qty = q;
+        var inputs = document.getElementById("edit-form").elements;
+        console.log(inputs);
+        inputs[1].value = i;
+        inputs[2].value = n;
+        inputs[3].value = q;
+        inputs[4].value = p;
+        inputs[5].value = d
     }
 
-    function emptyProduct(productId) {
 
-    }
 </script>
+
 
 <form method="POST" action="/manageproducts">
     <section class="shopping-cart">
@@ -52,8 +65,8 @@
                             {% for prod in products %}
                             <div class="product">
                                 <div class="row">
-                                    <div class="col-md-3">
-                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}" alt="images for shopping." />
+                                    <div class="col-md-3" class="mproduct-image-container" >
+                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}">
                                         </a>
                                     </div>
                                     <div class="col-md-8">
@@ -65,13 +78,13 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label class="descTitle">Available Quantity:&nbsp</label> {{prod.qty_available}}
+                                                    <label class="descTitle">Available Qty:&nbsp</label> {{prod.qty_available}} Kg
                                                 </div>
 
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label class="descTitle">Requested Quantity:&nbsp</label> {{prod.qty_requested}}
+                                                    <label class="descTitle">Requested Qty:&nbsp</label> {{prod.qty_requested}} Kg
                                                 </div>
 
                                             </div>
@@ -84,27 +97,27 @@
 
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <div class="form-group col-xs-12 descRow" >
+                                                <div class="form-group col-xs-12 descRow">
                                                     <label class="descTitle">Product Description:&nbsp</label> {{prod.description}}
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
 
                                             </div>
-                                          
+
                                         </div>
                                         <div class="col-md-12 align-self-end">
                                             <div class="form-group ">
-                                                <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><em class="fas fa-trash"></em></button>
-                                                <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><em class="fas fa-edit"></em></button>
+                                                <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
+                                                <button type="button" onclick="editProduct({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
-                                
+
                             </div>
-                      
+
                             {% endfor %}
                         </div>
                     </div>
@@ -113,7 +126,7 @@
                         <div class="col-md-12">
                             <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
 
-                            <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-info btn-lg btn-block float-right addProd"><em class="fas fa-plus"></em></button>
+                            <button type="button" data-toggle="modal" s data-target="#addModal" class="btn-floating btn btn-info btn-lg btn-block float-right addProd"><i class="fas fa-plus"></i></button>
 
                         </div>
                     </div>
@@ -144,7 +157,7 @@
                                                     <div class="form-group ">
                                                         <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
                                                         <!-- <input type="text" class="form-control" placeholder="Ex.  Potatoes"> -->
-                                                        {{form.name}}
+                                                        {{ form.csrf_token() }}{{form.name}}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -185,8 +198,7 @@
                                         <div class="col-md-12">
                                             <!-- <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/upload_placeholder.jpg"> -->
                                             <!-- </a> -->
-                                            <label>Product Image</label><br>
-                                            {{form.image}}
+                                            <label>Product Image</label><br> {{form.image}}
                                         </div>
                                     </div>
                                 </div>
@@ -208,11 +220,11 @@
 
 <!-- MODAL FOR PRODUCT EDIT -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <form method="POST" action="/manageproducts" enctype="multipart/form-data">
+    <form method="POST" action="/manageproducts" enctype="multipart/form-data" id="edit-form">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>New Product</h3>
+                    <h3>Edit Product</h3>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -226,7 +238,7 @@
                                                     <div class="form-group ">
                                                         <label>Product Name&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
                                                         <!-- <input type="text" class="form-control" placeholder="Ex.  Potatoes"> -->
-                                                        {{form_edit.name}}
+                                                        {{ form.csrf_token() }}{{form_edit.product_id}}{{form_edit.name}}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -279,6 +291,7 @@
         </div>
     </form>
 </div>
+
 <!-- MODAL END -->
 <style>
     .modal-backdrop {

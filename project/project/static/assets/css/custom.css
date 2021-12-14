@@ -61,6 +61,7 @@
 .shopping-cart .items .product .info .product-name{
 	font-weight: 600;
     margin-top:10px;
+	margin-bottom:2px;
 }
 
 .shopping-cart .items .product .info .product-name .product-info{
@@ -170,6 +171,19 @@
 	color:#fff;
 }
 
+.trashReq-Floating{
+	margin:25px;
+	margin-left:0px;
+	color:#fff;
+}
+
+.acceptReq-Floating{
+	margin:25px;
+	margin-left:0px;
+	margin-right:85px;
+	color:#fff;
+}
+
 .descTitle{
 	font-weight:bold !important;
 }
@@ -185,3 +199,56 @@
 }
 }
 /* 2 END OF PRODUCTS PAGE */
+
+/* 3 START OF TABLE */
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.badge {
+    font-weight: bold !important;
+	padding: 5px 10px;
+
+	font-size:0.64em !important;
+    text-transform: uppercase;
+    min-width: 19px;
+}
+
+
+.badge-danger {
+    color: #fff;
+    background-color: #d92550;
+}
+
+.badge-info {
+    color: #fff;
+    background-color: #16aaff;
+}
+
+.badge-success {
+    color: #fff;
+    background-color: #3ac47d;
+}
+
+.badge-warning {
+    color: #212529;
+    background-color: #f7b924;
+}
+
+.widget-content-left{
+	display:inline-block;
+	height:100%;
+}
+
+.widget-content-left .rounded-circle{
+	margin-right:15px;
+}
+
+/* 3 END OF TABLE */
+
+/*4 START OF CALENDAR */
+.picker__frame{
+	bottom:auto !important;
+	
+}

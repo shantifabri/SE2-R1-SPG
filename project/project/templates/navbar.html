@@ -31,24 +31,45 @@
         <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="onertp_main_nav">
             <div class="flex-fill">
                 <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
-                    
+                    {% if current_user.role != 'M' and current_user.role != 'W' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
                     </li>
-                    {% if current_user.role == 'S' %}
+                    {% endif %} {% if current_user.role == 'S' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageclients') }}">Manage Clients</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.manageorders') }}">Manage Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.shoporders') }}">Manage Orders</a>
                     </li>
                     {% endif %} {% if current_user.role == 'F' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Products</a>
                     </li>
-                    {% endif %}{% if current_user.role != 'S' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="">About us</a>
+                        <a class="nav-link" href="{{ url_for('other.farmerorders') }}">Confirm Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.farmerconfirmation') }}">Deliver Products</a>
+                    </li>
+                    {% endif %} {% if current_user.role == 'C' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.clientorders') }}">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.manageproducts') }}">Profile</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.role == 'W' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.workerorders') }}">Prepare Orders</a>
+                    </li>
+                    {% endif %} {% if current_user.role == 'M' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.managerorders') }}">Check Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.confirmarrivals') }}">Confirm Arrivals</a>
                     </li>
                     {% endif %}
 
@@ -60,7 +81,7 @@
                 {% if current_user.is_authenticated %}
                 <span class="nav-icon position-relative text-decoration-none text-success">
                         Welcome {{current_user.name}}
-                    </span> {% if current_user.role == "S" or current_user.role == "C" %}
+                    </span> <img class="nav-icon iconbar" src="/static/icons/{{current_user.role}}.png">{% if current_user.role == "S" or current_user.role == "C" %}
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('other.shoppingcart') }}">
                     <em class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></em>
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">{{session["cart_count"]}}</span>
@@ -74,6 +95,7 @@
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.signup') }}">
                     <!-- <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> -->
                     Sign Up
+                    
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
                 </a>
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.login') }}">

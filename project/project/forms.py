@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     surname = StringField('Surname', validators=[InputRequired(), Length(min=1, max=20)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
     company = StringField('Company', validators=[InputRequired(), Length(min=1, max=80)])
-    role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Manager'), ('A', 'Admin')])
+    role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Manager'), ('A', 'Admin'), ('W', 'Warehouse Worker'), ('M', 'Warehouse Manager')])
 
 class AddToCartForm(FlaskForm):
     quantity = FloatField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
@@ -35,9 +35,10 @@ class ProductInsertForm(FlaskForm):
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
     description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())
     qty_available = IntegerField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","placeholder":"1.2 Kg"})
-    image = FileField('Image', render_kw={"class":"upload"})
+    image = FileField('Image', validators=[InputRequired()], render_kw={"class":"upload"})
 
 class ProductEditForm(FlaskForm):
+    product_id = HiddenField('Product Id')
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
     price = FloatField('Price', validators=[InputRequired()], widget=NumberInput(min=0.01, step=0.01), render_kw={"class":"form-control"})
     description = StringField('Description', validators=[InputRequired()], render_kw={"class":"form-control", "rows":"4"}, widget=TextArea())
@@ -45,7 +46,7 @@ class ProductEditForm(FlaskForm):
 
 class CheckOutForm(FlaskForm):
     delivery_address = StringField('Delivery Address', validators=[Length(min=0, max=100)], render_kw={"placeholder": "Baker Street 13"})
-    email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
+    email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)], render_kw={"id":"autocompletemail","placeholder":"example@email.com"})
     date = StringField('Date', validators=[InputRequired()], render_kw={"class":"form-control","id":"pick-date","placeholder":"Pick a date"})
 
 class CheckOutClientForm(FlaskForm):
@@ -62,3 +63,6 @@ class TopUpForm(FlaskForm):
 class TopUpSearch(FlaskForm):
     search = SearchField('', render_kw={'class':'form-control','style':'width: 50%; display:inline-block','placeholder':'Search by email', 'aria-label':"Search"})
     # class="form-control form-inline mr-sm-2" style="width: 50%; display: inline-block"
+
+class ProductSearch(FlaskForm):
+    search = StringField('', render_kw={'id':'searchbar','class':'form-control','placeholder':'Search', 'aria-label':"Search"})
