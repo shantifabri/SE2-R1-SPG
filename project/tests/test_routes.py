@@ -426,6 +426,9 @@ def test_manage_products_page_unauthorized_logged(test_client, init_database, lo
 
 def test_manage_products_post_new_logged_farmer(test_client, init_database, login_farmer_user):
     pass
+    # response = test_client.post('/manageproducts', data=())
+    # assert response.status_code == 200
+    # assert b"Manage Products" in response.data
 
 def test_manage_products_post_edit_logged_farmer(test_client, init_database, login_farmer_user):
     pass
@@ -439,8 +442,6 @@ def test_farmer_orders_page_logged_farmer(test_client, init_database, login_farm
     response = test_client.get('/farmerorders')
     assert response.status_code == 200
     assert b"Confirm Orders" in response.data
-    with open("response.txt", "w") as file:
-        file.write(str(response.data))
     assert b"Bananas" in response.data
 
 def test_farmer_orders_page_unauthorized_logged(test_client, init_database, login_employee_user):
@@ -476,6 +477,114 @@ def test_client_orders_page_unauthorized_logged(test_client, init_database, logi
     response = test_client.get('/clientorders',  follow_redirects=True)
     assert response.status_code == 200
     assert b"Check your Orders" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_shopping_cart_page_client(test_client, init_database, login_client_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/shoppingcart' page is requested (GET) and user is logged as client
+    THEN check that the response is valid
+    """
+    response = test_client.get('/shoppingcart')
+    assert response.status_code == 200
+    assert b"Shopping Cart" in response.data
+    assert b"1.00" in response.data
+
+def test_shopping_cart_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/shoppingcart' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/shoppingcart',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Shopping Cart" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_shopping_cart_post_client(test_client, init_database, login_client_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/shoppingcart' page is posted to (POST) and user is logged as client
+    THEN check that the response is valid
+    """
+    response = test_client.post('/shoppingcart', data=dict(email='ellaclint@gmail.com', date='2021-12-27'), follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Shopping Cart" not in response.data
+
+    assert request.path == url_for('other.index')
+
+# def test_update_quantity_post_client(test_client, init_database, login_client_user):
+#     """
+#     GIVEN a Flask application configured for testing
+#     WHEN the '/updatequantity/<pib_id>/<amount>' page is posted to (POST) and user is logged as client
+#     THEN check that it updates and the response is valid
+#     """
+#     response = test_client.post('/updatequantity/1/3',  follow_redirects=True)
+#     assert response.status_code == 200
+#     assert b"Quantity" in response.data
+#     assert b"Bananas" in response.data
+#     assert b"3.0" in response.data
+
+#     assert request.path == url_for('other.shoppingcart')
+
+def test_update_quantity_delete_post_client(test_client, init_database, login_client_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updatequantity/<pib_id>/<amount>' page is posted to (POST) and user is logged as client
+    THEN check that it updates and the response is valid
+    """
+    response = test_client.post('/updatequantity/1/0',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Quantity" not in response.data
+    assert b"Bananas" not in response.data
+
+    assert request.path == url_for('other.shoppingcart')
+
+def test_client_orders_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updatequantity/<pib_id>/<amount>' page is posted to (POST) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/updatequantity/1/9',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Shopping Cart" not in response.data
+
+    assert request.path == url_for('other.index')
+
+def test_update_shipping_home_post_client(test_client, init_database, login_client_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updateshipping/<value>' page is posted to (POST) and user is logged as client
+    THEN check that it updates and the response is valid
+    """
+    response = test_client.post('/updateshipping/home',  follow_redirects=True)
+    assert response.status_code == 200
+
+    assert request.path == url_for('other.shoppingcart')
+
+def test_update_shipping_address_post_client(test_client, init_database, login_client_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updateshipping/<value>' page is posted to (POST) and user is logged as client
+    THEN check that it updates and the response is valid
+    """
+    response = test_client.post('/updateshipping/myhouse',  follow_redirects=True)
+    assert response.status_code == 200
+
+    assert request.path == url_for('other.shoppingcart')
+
+def test_client_orders_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/updateshipping/<value>' page is posted to (POST) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/updateshipping/home',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Shopping Cart" not in response.data
 
     assert request.path == url_for('other.index')
 

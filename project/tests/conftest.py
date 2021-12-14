@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash
 import pytest
 from project import create_app, db
-from project.models import User, Product, Order, ProductInOrder
+from project.models import User, Product, Order, ProductInOrder, ProductInBasket
 
 @pytest.fixture(scope='module')
 def new_user():
@@ -23,12 +23,12 @@ def init_database(test_client):
     db.create_all()
 
     # Insert User data
-    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm")
-    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="")
-    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30)
-    user4 = User(name='Ema', surname='Gow ', email='emagow@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=10)
-    user5 = User(name='John', surname='Doe', email='johndoe@gmail.com', role='W', password=generate_password_hash('UserPassword', method='sha256'), company="")
-    user6 = User(name='Paul', surname='Right', email='paulright@gmail.com', role='M', password=generate_password_hash('UserPassword', method='sha256'), company="")
+    user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm", pending_amount=0.0)
+    user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
+    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30, pending_amount=0.0)
+    user4 = User(name='Ema', surname='Gow ', email='emagow@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=10, pending_amount=0.0)
+    user5 = User(name='John', surname='Doe', email='johndoe@gmail.com', role='W', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
+    user6 = User(name='Paul', surname='Right', email='paulright@gmail.com', role='M', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
 
     db.session.add(user1)
     db.session.add(user2)
@@ -50,7 +50,6 @@ def init_database(test_client):
     order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PENDING", order_date="2021-12-12")
     order3 = Order(client_id=4, delivery_address="That Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
     order4 = Order(client_id=4, delivery_address="Store", home_delivery="N", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
-
     db.session.add(order1)
     db.session.add(order2)
     db.session.add(order3)
@@ -59,10 +58,12 @@ def init_database(test_client):
     prod_in_order1 = ProductInOrder(product_id=1, order_id=1, quantity=2, confirmed=0)
     prod_in_order2 = ProductInOrder(product_id=1, order_id=2, quantity=2, confirmed=0)
     prod_in_order3 = ProductInOrder(product_id=2, order_id=2, quantity=2, confirmed=0)
-
     db.session.add(prod_in_order1)
     db.session.add(prod_in_order2)
     db.session.add(prod_in_order3)
+
+    prod_in_bask1 = ProductInBasket(product_id=1, client_id=3, quantity=1)
+    db.session.add(prod_in_bask1)
 
     db.session.commit()
 
