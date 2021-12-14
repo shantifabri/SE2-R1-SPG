@@ -46,13 +46,23 @@ def init_database(test_client):
     db.session.commit()
 
     # Insert Order data
-    order1 = Order(client_id=3, delivery_address="Store", home_delivery="N", total=12, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="LODGED")
-    order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PENDING")
+    order1 = Order(client_id=3, delivery_address="Store", home_delivery="N", total=12, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="LODGED", order_date="2021-12-12")
+    order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PENDING", order_date="2021-12-12")
+    order3 = Order(client_id=4, delivery_address="That Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
+    order4 = Order(client_id=4, delivery_address="Store", home_delivery="N", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
+
     db.session.add(order1)
     db.session.add(order2)
+    db.session.add(order3)
+    db.session.add(order4)
 
-    prod_in_order1 = ProductInOrder(product_id=1, order_id=2, quantity=2, confirmed=1)
+    prod_in_order1 = ProductInOrder(product_id=1, order_id=1, quantity=2, confirmed=0)
+    prod_in_order2 = ProductInOrder(product_id=1, order_id=2, quantity=2, confirmed=0)
+    prod_in_order3 = ProductInOrder(product_id=2, order_id=2, quantity=2, confirmed=0)
+
     db.session.add(prod_in_order1)
+    db.session.add(prod_in_order2)
+    db.session.add(prod_in_order3)
 
     db.session.commit()
 
