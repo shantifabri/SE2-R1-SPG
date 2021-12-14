@@ -465,6 +465,28 @@ def test_client_orders_page_unauthorized_logged(test_client, init_database, logi
 
     assert request.path == url_for('other.index')
 
-### ###
-def test():
-    pass
+### Warehouse Routes ###
+def test_manager_orders_page_logged_manager(test_client, init_database, login_warehouse_manager_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/managerorders' page is requested (GET) and user is logged as warehouse manager
+    THEN check that the response is valid
+    """
+    response = test_client.get('/managerorders')
+    assert response.status_code == 200
+    assert b"Manage Orders" in response.data
+    assert b"Orders Confirmation" in response.data
+    assert b"Store" in response.data
+    assert b"This Street" in response.data
+
+def test_manager_orders_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/managerorders' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/managerorders',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Orders Confirmation" not in response.data
+
+    assert request.path == url_for('other.index')
