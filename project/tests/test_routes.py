@@ -115,10 +115,10 @@ def test_home_page_logged_as_warehouse_manager(test_client, init_database, login
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
 
-def test_products_page_logged(test_client, init_database, login_employee_user):
+def test_products_page(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
-    WHEN the '/products' page is requested (GET) and user is logged in
+    WHEN the '/products' page is requested (GET)
     THEN check that the response is valid
     """
     response = test_client.get('/products')
@@ -127,6 +127,21 @@ def test_products_page_logged(test_client, init_database, login_employee_user):
     assert b"Vegetables" in response.data
     assert b"Fruit" in response.data
     assert b'Bananas' in response.data
+    assert b'Potatoes' in response.data
+
+def test_products_page_search(test_client, init_database):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/products' page is posted to (POST)
+    THEN check that the response is valid
+    """
+    response = test_client.post('/products', data=dict(search='bananas'))
+    assert response.status_code == 200
+    assert b"Categories" in response.data
+    assert b"Vegetables" in response.data
+    assert b"Fruit" in response.data
+    assert b'Bananas' in response.data
+    assert b'Potatoes' not in response.data
 
 # def test_products_page_not_logged_redirects(test_client, init_database):
 #     """
