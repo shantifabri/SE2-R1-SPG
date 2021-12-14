@@ -193,7 +193,6 @@ def confirmorder(order_id,pio_id,product_id):
         msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
         sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
-
     db.session.commit()
     return redirect(url_for('other.farmerorders'))
 
