@@ -9,6 +9,7 @@ from sqlalchemy.sql import text
 import os
 import json
 import base64
+from dotenv import load_dotenv, find_dotenv
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -173,7 +174,7 @@ def confirmorder(order_id,pio_id,product_id):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
     product = db.session.query(Product).filter(Product.product_id == product_id).one()
-    user = db.session.query(User,Order).filter(User.id == Order.user_id).filter(Order.order_id == order_id).one()
+    user = db.session.query(User,Order).filter(User.id == Order.client_id).filter(Order.order_id == order_id).one()
     # order.status = status
     qty_remaining = product.qty_available - product.qty_confirmed
     if pio.quantity > qty_remaining:
@@ -502,6 +503,7 @@ def managerorders():
 def sendmail(email,subject,msg,redirecting):
     load_dotenv(verbose=True)
     SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+    print("API KEY : " + SENDGRID_API_KEY)
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     from_email = Email("Solidarity.purchase@gmail.com")
     to_email = To(email)
