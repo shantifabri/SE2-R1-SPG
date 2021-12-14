@@ -78,7 +78,7 @@
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="toast-header">
-                <i class="fas fa-exclamation-triangle"></i>
+                <em class="fas fa-exclamation-triangle"></em>
                 <strong class="me-auto">Warning Reminder</strong>
                 <small>Just now</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -101,7 +101,7 @@
                             <div class="product">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <a target="_blank" href="{{ url_for('other.singleproduct', product_id = val['product_id']) }}"><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/{{val['url']}}">
+                                        <a target="_blank" href="{{ url_for('other.singleproduct', product_id = val['product_id']) }}"><img class="prod-img img-fluid mx-auto d-block image" src="/static/shop_imgs/{{val['url']}}" alt="photo of product." />
                                         </a>
                                     </div>
                                     <div class="col-md-8">
@@ -169,7 +169,7 @@
                                 </div>
                             </div>
                             <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
-                            <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><i class="fas fa-trash"></i></button>
+                            <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><em class="fas fa-trash"></em></button>
                             
                             {% if balance == False %}
                             <!-- <div class="float-right" style="position:absolute;"> -->
