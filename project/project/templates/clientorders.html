@@ -48,7 +48,7 @@
                                             <tr>
                                                 <td>{{client_orders[order]["Order"].order_id}}</td>
                                                 <td>{{client_orders[order]["Order"].delivery_address}}</td>
-                                                <td>{{client_orders[order]["Order"].requested_delivery_date[0:10]}}</td>
+                                                <td>{{client_orders[order]["Order"].requested_delivery_date}}</td>
                                                 <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
                                                 <td>
                                                     <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]["Order"].order_id}}" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
