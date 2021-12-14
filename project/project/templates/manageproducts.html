@@ -33,7 +33,7 @@
     var price;
     var qty;
 
-    function submituser(i, n, d, p, q) {
+    function editProduct(i, n, d, p, q) {
         id = i;
         name = n;
         desc = d;
@@ -78,13 +78,13 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label class="descTitle">Available Quantity:&nbsp</label> {{prod.qty_available}}
+                                                    <label class="descTitle">Available Qty:&nbsp</label> {{prod.qty_available}} Kg
                                                 </div>
 
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group  ">
-                                                    <label class="descTitle">Requested Quantity:&nbsp</label> {{prod.qty_requested}}
+                                                    <label class="descTitle">Requested Qty:&nbsp</label> {{prod.qty_requested}} Kg
                                                 </div>
 
                                             </div>
@@ -109,7 +109,7 @@
                                         <div class="col-md-12 align-self-end">
                                             <div class="form-group ">
                                                 <button type="button" style="margin-left:15px;" onclick="emptyProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
-                                                <button type="button" onclick="submituser({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
+                                                <button type="button" onclick="editProduct({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -224,7 +224,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>New Product</h3>
+                    <h3>Edit Product</h3>
                 </div>
                 <div class="modal-body">
                     <div class="row">

@@ -3,8 +3,10 @@
 <script>
     function updateStatus(orderId) {
         //$.post('/updatequantity/' + productID + '/' + amount)
+        var status = "AKAKA"
+        var redirect = "clientorders"
         $.ajax({
-            url: '/updatestatus/' + orderId,
+            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
             type: "post",
             success: function(data) {
                 location.reload(true);
@@ -29,18 +31,11 @@
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <p>&nbsp;</p>
-                                <h4 class="card-title text-success" style="text-align:center">Check your Orders</h4>
-                                <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center">You can change quantities, delivery address and delivery date</p>
-                                <p>&nbsp;</p>
-                                <p>&nbsp;</p>
                                 <div class="table-responsive">
                                     <table class="table" style="text-align:center;">
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
-                                                <th>Client Id</th>
                                                 <th>Shipping Location</th>
                                                 <th>Requested Delivery Date</th>
                                                 <th>Total Amount</th>
@@ -49,15 +44,14 @@
                                         </thead>
 
                                         <tbody>
-                                            {% for order in orders %}
+                                            {% for order in client_orders.keys() %}
                                             <tr>
-                                                <td>{{order[0].order_id}}</td>
-                                                <td>{{order[1].email}}</td>
-                                                <td>{{order[0].delivery_address}}</td>
-                                                <td>{{order[0].requested_delivery_date[0:10]}}</td>
-                                                <td>€ {{'%.2f' % order[0].total}}</td>
+                                                <td>{{client_orders[order]["Order"].order_id}}</td>
+                                                <td>{{client_orders[order]["Order"].delivery_address}}</td>
+                                                <td>{{client_orders[order]["Order"].requested_delivery_date[0:10]}}</td>
+                                                <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
                                                 <td>
-                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]["Order"].order_id}}" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -73,6 +67,71 @@
         </div>
         <p>&nbsp;</p>
     </div>
+
+    <!-- MODALS FOR PRODUCT EDIT -->
+    {% for order in client_orders.keys() %}
+    <div class="modal fade" id="editModal{{client_orders[order]['Order'].order_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <form method="POST" action="/manageproducts" id="edit-form">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Order n.{{client_orders[order]["Order"].order_id}}</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="items">
+                                    {% for product in client_orders[order]["Products"] %}
+                                    <div class="product">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="padding-bottom:25px;"><img class="img-fluid" src="static/shop_imgs/{{product['img_url']}}"/></div>
+                                                    <div class="col-md-8">      <div class="col-md-12">
+                                                        <div class="form-group ">
+                                                            <label>Product Name:</label>
+                                                               <b>{{product["name"]}}</b> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="form-group  ">
+                                                            <label>Product Quantity:</label>
+                                                            <b>{{product["order_qty"]}} Kg</b>
+                                                            <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label>Product Price €/Kg:</label>
+                                                           <b> {{product["price"]}}</b>
+                                                            <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
+                                                        </div></div>
+                                              
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-info">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+    <!-- MODAL END -->
 
     <body>
         {% endblock %}

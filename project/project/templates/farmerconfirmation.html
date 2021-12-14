@@ -58,46 +58,37 @@
             <div class="block-heading">
                 <h2>Manage Farmer Submission</h2>
             </div>
-           <div class="container"><h3>Farmer: CHANGE</h3></div> 
+           <div class="container"><h3>{{current_user.company}}</h3></div> 
             <br>
-            <div class="content">
-                <div class="row">
-                    <div class="col-md-12 col-lg-12">
+            <div class="">
+                    <div class="col-md-8 content">
                         <div class="items">
                             {% for prod in products %}
                             <div class="product">
                                 <div class="row">
                                     <div class="col-md-3" class="mproduct-image-container" >
-                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod.img_url}}">
+                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod[0].img_url}}">
                                         </a>
                                     </div>
-                                    <div class="col-md-8">
-                                        <div class="row">
-                                            <div class="col-md-4">
+                                    <div class="col-md-8" style="margin-top:15px;">
+                                            <div class="col-md-12">
                                                 <div class="form-group ">
-                                                    <label class="descTitle">Product Name:&nbsp</label>{{prod.name}}
+                                                    <label class="descTitle">Product Name:&nbsp</label>{{prod[0].name}}
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-12">
                                                 <div class="form-group  ">
-                                                    <label class="descTitle">Available Quantity:&nbsp</label> {{prod.qty_available}}
+                                                    <label class="descTitle">Quantity:&nbsp</label> {{prod[4]}} Kg
                                                 </div>
 
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group  ">
-                                                    <label class="descTitle">Requested Quantity:&nbsp</label> {{prod.qty_requested}}
-                                                </div>
-
-                                            </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod.price}}€/Kg
+                                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod[0].price}}€/Kg
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="row">
+                                        <!-- <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group col-xs-12 descRow">
                                                     <label class="descTitle">Product Description:&nbsp</label> {{prod.description}}
@@ -107,7 +98,7 @@
 
                                             </div>
 
-                                        </div>
+                                        </div> -->
                                    
                                     </div>
 
@@ -117,7 +108,6 @@
 
                             {% endfor %}
                         </div>
-                    </div>
 
                     <div class="row addProd">
                         <div class="col-md-12">

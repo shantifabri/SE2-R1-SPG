@@ -47,7 +47,10 @@
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">My Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.farmerorders') }}">Manage Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.farmerorders') }}">Confirm Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.farmerconfirmation') }}">Deliver Products</a>
                     </li>
                     {% endif %} {% if current_user.role == 'C' %}
                     <li class="nav-item">
@@ -57,19 +60,16 @@
                         <a class="nav-link" href="{{ url_for('other.manageproducts') }}">Profile</a>
                     </li>
                     {% endif %}
-                    <!-- {% if current_user.role != 'S' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="">About us</a>
-                    </li>
-                    {% endif %}  -->
-
                     {% if current_user.role == 'W' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="">Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.workerorders') }}">Prepare Orders</a>
                     </li>
                     {% endif %} {% if current_user.role == 'M' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.managerorders') }}">Orders</a>
+                        <a class="nav-link" href="{{ url_for('other.managerorders') }}">Check Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('other.confirmarrivals') }}">Confirm Arrivals</a>
                     </li>
                     {% endif %}
 
