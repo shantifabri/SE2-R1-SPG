@@ -397,7 +397,6 @@ def test_manage_products_page_logged_farmer(test_client, init_database, login_fa
     # assert response.status_code == 200
     # assert b"Manage Products" in response.data
 
-
 def test_manage_products_page_unauthorized_logged(test_client, init_database, login_employee_user):
     """
     GIVEN a Flask application configured for testing
@@ -416,12 +415,36 @@ def test_manage_products_post_new_logged_farmer(test_client, init_database, logi
 def test_manage_products_post_edit_logged_farmer(test_client, init_database, login_farmer_user):
     pass
 
+def test_farmer_orders_page_logged_farmer(test_client, init_database, login_farmer_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/farmerorders' page is requested (GET) and user is logged as farmer
+    THEN check that the response is valid
+    """
+    response = test_client.get('/farmerorders')
+    assert response.status_code == 200
+    assert b"Orders Confirmation" in response.data
+    assert b"Please, select the orders you want to confirm" in response.data
+    assert b"This Street" in response.data
+    assert b"15.00" in response.data
+
+def test_farmer_orders_page_unauthorized_logged(test_client, init_database, login_employee_user):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/farmerorders' page is requested (GET) and user is logged as unauthorized role
+    THEN check that it redirects to index and the response is valid
+    """
+    response = test_client.get('/farmerorders',  follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Orders Confirmation" not in response.data
+
+    assert request.path == url_for('other.index')
 
 ### Client Routes ###
 def test_client_orders_page_logged_client(test_client, init_database, login_client_user):
     """
     GIVEN a Flask application configured for testing
-    WHEN the '/clientorders' page is requested (GET) and user is logged as employee
+    WHEN the '/clientorders' page is requested (GET) and user is logged as client
     THEN check that the response is valid
     """
     response = test_client.get('/clientorders')
@@ -429,7 +452,6 @@ def test_client_orders_page_logged_client(test_client, init_database, login_clie
     assert b"Check your Orders" in response.data
     assert b"You can change quantities, delivery address and delivery date" in response.data
     assert b"12.00" in response.data
-
 
 def test_client_orders_page_unauthorized_logged(test_client, init_database, login_farmer_user):
     """
@@ -443,3 +465,6 @@ def test_client_orders_page_unauthorized_logged(test_client, init_database, logi
 
     assert request.path == url_for('other.index')
 
+### ###
+def test():
+    pass

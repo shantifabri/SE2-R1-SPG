@@ -339,7 +339,7 @@ def farmerorders():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
 
-    orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select * from products join 
+    orders = db.session.query(Order,ProductInOrder,Product).from_statement(text('''select a.* from products join 
             (select * from orders o join product_in_order pio on o.order_id = pio.order_id)a
             on products.product_id = a.product_id
             where farmer_id = ''' + str(current_user.id) + ''' and STATUS = 'PENDING';''')).all()

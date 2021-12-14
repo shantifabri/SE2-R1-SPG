@@ -1,8 +1,7 @@
 from werkzeug.security import generate_password_hash
 import pytest
 from project import create_app, db
-from project.models import User, Product, Order
-
+from project.models import User, Product, Order, ProductInOrder
 
 @pytest.fixture(scope='module')
 def new_user():
@@ -48,7 +47,13 @@ def init_database(test_client):
 
     # Insert Order data
     order1 = Order(client_id=3, delivery_address="Store", home_delivery="N", total=12, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="LODGED")
+    order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PENDING")
     db.session.add(order1)
+    db.session.add(order2)
+
+    prod_in_order1 = ProductInOrder(product_id=1, order_id=2, quantity=2, confirmed=1)
+    db.session.add(prod_in_order1)
+
     db.session.commit()
 
     yield
