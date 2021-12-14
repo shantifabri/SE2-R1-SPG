@@ -8,7 +8,7 @@ from wtforms.fields import datetime
 from sqlalchemy.sql import text
 import os
 import json
-import pandas as pd
+import base64
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -137,18 +137,31 @@ def updateshipping(value):
 @other_blueprint.route('/confirmarrivals', methods=['GET', 'POST'])
 @login_required
 def confirmarrivals():
-    orders = db.session.query(ProductInOrder,Product,User
+    farmers = db.session.query(ProductInOrder,Product,User,Order
     ).filter(
-        and_(ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id)
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'CONFIRMED')
+    ).group_by(
+        User.id,User.name,User.surname,User.company
     ).all()
-    print(orders)
-    return render_template('confirmarrivals.html', orders=orders)
+    products = db.session.query(Product,func.sum(Product.qty_confirmed)
+    ).filter(
+        Product.qty_confirmed>0
+    ).group_by(
+        Product.farmer_id,Product.product_id
+    ).all()
+    farmerproducts = {}
+    for product in products :
+        if product[0].farmer_id in farmerproducts.keys():
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+        else:
+            farmerproducts[product[0].farmer_id]=[]
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+
+    return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
-    if current_user.role != 'F':
-        return redirect(url_for('other.index'))
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = status
     db.session.commit()
@@ -435,11 +448,6 @@ def clientorders():
         ).filter(
             ProductInOrder.order_id == Order.order_id
         ).statement
-    
-    df = pd.read_sql(order_query, db.session.bind)
-    # print(df.columns)
-    # df = df[['name_1','company','qty_available','img_url','total','status','order_id','quantity','price']]
-    # print(df)
 
     for order in orders:
         prod = {}
@@ -486,24 +494,21 @@ def managerorders():
 
     return render_template('managerorders.html', orders=orders)
 
-@other_blueprint.route('/sendmail/<mailaddr>', methods=['GET', 'POST'])
+@other_blueprint.route('/sendmail/<email>/<subject>/<msg>', methods=['GET', 'POST'])
 @login_required
-def sendmail(mailaddr):
-    if current_user.role != 'M':
-        return redirect(url_for('other.index'))
-
+def sendmail(email,subject,msg):
+    
     load_dotenv(verbose=True)
     SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     from_email = Email("Solidarity.purchase@gmail.com")
-    to_email = To(mailaddr)
-    subject = "Notice for balance on SPG2"
-    content = Content("text/plain", "Dear customer, your balance is not enough, please contact your manager to top up! Need to change the email address to current email!")
+    to_email = To(email)
+    content = Content("text/plain", msg)
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     print(response.status_code)
-
-    return render_template('managerorders.html')
+    print(email)
+    return redirect(url_for('other.shoporders'))
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
 @login_required
