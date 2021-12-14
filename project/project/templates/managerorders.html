@@ -13,13 +13,12 @@
             }
         });
     }
-</script>
-<script>
-    function sendmail(){
+
+    function sendmail(mailaddr) {
         $.ajax({
-            url:'/sendmail',
-            type:"get",
-            success:function (data){
+            url: '/sendmail/' + mailaddr,
+            type: "post",
+            success: function (data) {
                 location.reload(true);
             }
         });
@@ -83,10 +82,10 @@
                                                                 <button onClick="updateStatus({{order[0].order_id}});" type="button" class="btn btn-outline-success">
                                                                     <i class="fas fa-shipping-fast"></i>
                                                                 </button>
-                                                                {% endif %}
-                                                                <button onClick="sendmail();" type="button" class="btn btn-outline-success">
+                                                                <button onClick="sendmail('{{order[1].email}}');" type="button" class="btn btn-outline-success">
                                                                     <i class="fas fa-wallet"></i>
                                                                 </button>
+                                                                {% endif %}
                                                             </td>
                                                         </tr>
                                                         {% endfor %}

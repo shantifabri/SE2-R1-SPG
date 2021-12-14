@@ -16,6 +16,8 @@ from project import db
 import datetime
 import sendgrid
 from sendgrid.helpers.mail import *
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
 
 from . import other_blueprint
 
@@ -474,7 +476,7 @@ def managerorders():
     if current_user.role != 'M':
         return redirect(url_for('other.index'))
     orders = db.session.query(
-        Order,  
+        Order,
         User
         ).filter(
             User.id == Order.client_id
@@ -484,15 +486,17 @@ def managerorders():
 
     return render_template('managerorders.html', orders=orders)
 
-@other_blueprint.route('/sendmail', methods=['GET', 'POST'])
+@other_blueprint.route('/sendmail/<mailaddr>', methods=['GET', 'POST'])
 @login_required
-def sendmail():
+def sendmail(mailaddr):
     if current_user.role != 'M':
         return redirect(url_for('other.index'))
-    SENDGRID_API_KEY = "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"
+
+    load_dotenv(verbose=True)
+    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     from_email = Email("Solidarity.purchase@gmail.com")
-    to_email = To("dingzhily@gmail.com")
+    to_email = To(mailaddr)
     subject = "Notice for balance on SPG2"
     content = Content("text/plain", "Dear customer, your balance is not enough, please contact your manager to top up! Need to change the email address to current email!")
     mail = Mail(from_email, to_email, subject, content)
