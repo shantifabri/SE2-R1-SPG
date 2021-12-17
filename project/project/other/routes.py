@@ -14,7 +14,7 @@ from project.models import User, Product, Client, ProductRequest, ProductInOrder
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
 import datetime
-import sendgrid
+import sendgrid as sg
 from sendgrid.helpers.mail import *
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
@@ -415,6 +415,7 @@ def farmerorders():
     # ).filter(
     #     ProductInOrder.confirmed == False
     ).all()
+
     return render_template('farmerorders.html', orders=orders)
 
 @other_blueprint.route('/clientorders', methods=['GET', 'POST'])
