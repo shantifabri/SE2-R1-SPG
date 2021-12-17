@@ -54,6 +54,8 @@ Worker: worker@gmail.com
 
 ShopEmployee: verdi@gmail.com
 
+Password:
+helloworld
 ----------
 ** The layout of the project, inizialization and tests are greatly based on [this repository](https://gitlab.com/patkennedy79/flask_user_management_example) by Patrick Kennedy.
 
