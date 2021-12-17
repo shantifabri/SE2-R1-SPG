@@ -42,5 +42,14 @@ If you want to see more details about the tests, you can run them in verbose mod
 If instead you want to see the coverage of the suit of tests, you should run `python -m pytest --cov-report term-missing --cov=project`.
 
 ----------
+## User Credentials:
 
+Farmer: giovanni@gmail.com
+Client: lucaval@gmail.com
+Manager: manager@gmail.com
+Worker: worker@gmail.com
+ShopEmployee: verdi@gmail.com
+
+----------
 ** The layout of the project, inizialization and tests are greatly based on [this repository](https://gitlab.com/patkennedy79/flask_user_management_example) by Patrick Kennedy.
+
