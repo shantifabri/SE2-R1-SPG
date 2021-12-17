@@ -45,9 +45,13 @@ If instead you want to see the coverage of the suit of tests, you should run `py
 ## User Credentials:
 
 Farmer: giovanni@gmail.com
+
 Client: lucaval@gmail.com
+
 Manager: manager@gmail.com
+
 Worker: worker@gmail.com
+
 ShopEmployee: verdi@gmail.com
 
 ----------
