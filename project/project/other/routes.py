@@ -58,7 +58,7 @@ def singleproduct(product_id):
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
     product = db.session.query(
-        Product, 
+        Product,
         User
         ).filter(
             Product.product_id == product_id
@@ -280,6 +280,9 @@ def shoppingcart():
                 items = []
                 for prod in products:
                     items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False))
+                    product = db.session.query(Product).filter(Product.product_id == prod["product_id"]).first()
+                    product.qty_requested = product.qty_requested + prod["quantity"]
+                    db.session.commit()
                 db.session.bulk_save_objects(items)
                 db.session.commit()
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -293,7 +296,7 @@ def shoppingcart():
 
                 return redirect(url_for('other.index'))
                 # order_id = new_order.order_id
-      
+
     return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
@@ -466,7 +469,6 @@ def clientorders():
         prod["img_url"] = order[3].img_url
 
         if id in list(client_orders.keys()):
-            print("APPEND")
             client_orders[id]["Products"].append(prod)
         else:
             print("NEW")

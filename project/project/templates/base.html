@@ -23,26 +23,26 @@
     <link rel="stylesheet" href="/static/assets/css/fontawesome.min.css">
     <link rel="stylesheet" type="text/css" href="/static/assets/css/slick.min.css">
     <link rel="stylesheet" type="text/css" href="/static/assets/css/slick-theme.css">
-	<link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet">
-    <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
-	 
-        <link rel="stylesheet" href="/static/assets/css/default.css">
-        <link rel="stylesheet" href="/static/assets/css/default.date.css">
-        <script src="/static/assets/js/popper.min.js"></script>
-        <script src="/static/assets/js/picker.js"></script>
-        <script src="/static/assets/js/picker.date.js"></script>
-        <script src="/static/assets/js/picker.time.js"></script>
-<script>
-   $( document ).ready(function() {
-        $('.pick-date-global').pickadate({
-onSet: function(context) {
-//console.log('Debug:', context)
-console.log($(".picker__day").attr("aria-label"));
-}
-});
+    <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet">
+    <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
-    });
-</script>
+    <link rel="stylesheet" href="/static/assets/css/default.css">
+    <link rel="stylesheet" href="/static/assets/css/default.date.css">
+    <script src="/static/assets/js/popper.min.js"></script>
+    <script src="/static/assets/js/picker.js"></script>
+    <script src="/static/assets/js/picker.date.js"></script>
+    <script src="/static/assets/js/picker.time.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.pick-date-global').pickadate({
+                onSet: function(context) {
+                    //console.log('Debug:', context)
+                    console.log($(".picker__day").attr("aria-label"));
+                }
+            });
+
+        });
+    </script>
 </head>
 
 <body>
@@ -55,12 +55,15 @@ console.log($(".picker__day").attr("aria-label"));
         </div>
         {% block main %}{% endblock %}
     </main>
-
+    <footer class="bg-dark" id="tempaltemo_footer">
+        <div class="container">
+            {% include "footer.html" %}
+        </div>
+    </footer>
 
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     {% block js %} {% endblock%}
-
     <script src="/static/assets/js/onertp.js"></script>
     <script src="/static/assets/js/custom.js"></script>
 </body>
