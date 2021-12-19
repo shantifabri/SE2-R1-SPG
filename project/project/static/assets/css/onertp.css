@@ -370,7 +370,28 @@ div {
     background: #69bb7e;
 }
 
+/* DatePicker  */
+.dtp-picker, .dtp-picker a, .dtp-picker th, .dtp-picker-days, .dtp-select-day{
+    font-size:15px !important;
+    font-weight:500 !important;
+}
 
+.dtp-select-hour-text{
+    font-weight:500 !important;
+}
+
+.dtp-picker-days{
+    margin-right:15px;
+}
+.picker__day:hover{
+	background: #8bc34a2b !important;
+}
+.picker__day--highlighted {
+	background: #8bc34a7a !important;
+    border-color: #8bc34a7a  !important;
+	color:#000 !important;
+	font-weight:400 !important;
+}
 /* Contact map */
 
 .leaflet-control a,

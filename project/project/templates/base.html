@@ -32,16 +32,28 @@
     <script src="/static/assets/js/picker.js"></script>
     <script src="/static/assets/js/picker.date.js"></script>
     <script src="/static/assets/js/picker.time.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.pick-date-global').pickadate({
-                onSet: function(context) {
-                    //console.log('Debug:', context)
-                    console.log($(".picker__day").attr("aria-label"));
-                }
-            });
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
+
+
+    <script>
+        $(function () {
+            var m = moment();
+            $('.pick-date-global').bootstrapMaterialDatePicker({
+                format: 'DD-MM-YYYY HH:mm',
+                minDate: moment(),
+                //maxDate: moment().add(365, 'days')
+            });
+            //get the date after picking it
+            $('.pick-date-global').on('change', function (e, date) {
+                 console.log($(".pick-date-global").val());
+             });
         });
+
+      
     </script>
 </head>
 
@@ -50,16 +62,18 @@
         {% include "navbar.html" %}
     </header>
     <main>
-        <div class="wrapper">
-            <button class="btn btn-danger pick-date-global" id="calendar-slide"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
+        <div class="wrapper"  onclick="getDateTime()" >
+            <button class="btn btn-danger pick-date-global" onclick="getDateTime()" id="calendar-slide"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
         </div>
         {% block main %}{% endblock %}
     </main>
-    <footer class="bg-dark" id="tempaltemo_footer">
+    <footer class="bg-dark" id="onerspg_footer">
         <div class="container">
             {% include "footer.html" %}
         </div>
     </footer>
+
+    
 
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
