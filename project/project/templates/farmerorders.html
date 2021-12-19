@@ -2,8 +2,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     function confirmOrder(order_id,pio_id,product_id) {
+        var quantity = document.getElementById('input'+pio_id);
         $.ajax({
-            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id,
+            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id + '/' + quantity.value,
             type: "post",
             success: function(data) {
                 location.reload(true);
@@ -40,12 +41,14 @@
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
-                                                <th>Client</th>
+                                                <th>Client Email</th>
                                                 <th>Order Date</th>
                                                 <th>Product</th>
-                                                <th>Quantity</th>
+                                                <th>Qty Requested</th>
+                                                <th>Qty Available</th>
                                                 <th>Total</th>
                                                 <th>Status</th>
+                                                <th>Qty to Confirm</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -58,6 +61,7 @@
                                                 <td>{{order[0].order_date[0:10]}}</td>
                                                 <td>{{order[2].name}}</td>
                                                 <td>{{order[1].quantity}} Kg</td>
+                                                <td>{{order[2].qty_available-order[2].qty_confirmed}} Kg</td>
                                                 <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
                                                 <td>
                                                     {% if order[1].confirmed == False %}
@@ -66,6 +70,11 @@
                                                     <span class="text-black-bold">CONFIRMED</span>
                                                     {% endif %}
                                                 </td>
+                                                <td>{% if order[1].confirmed == False %}<div class="w-100">
+                                                    <span class="input-number" style="text-align:center">
+                                                      <input type="number" id="input{{order[1].pio_id}}" name="inputNumber" value="{{order[1].quantity}}" step="0.1" min="0" max="{{order[2].qty_available-order[2].qty_confirmed}}">
+                                                    </span>
+                                                  </div>{% endif %}</td>
                                                 <td>{% if order[1].confirmed == False %}
                                                     <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
                                                     <i class="fas fa-check-double"></i>

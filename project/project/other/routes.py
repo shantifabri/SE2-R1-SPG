@@ -167,9 +167,9 @@ def updatestatus(order_id,status,redirect_url):
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
 
-@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>',  methods=['GET','POST'])
+@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>/<quantity>',  methods=['GET','POST'])
 @login_required
-def confirmorder(order_id,pio_id,product_id):
+def confirmorder(order_id,pio_id,product_id,quantity):
 
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
@@ -177,10 +177,16 @@ def confirmorder(order_id,pio_id,product_id):
     user = db.session.query(User,Order).filter(User.id == Order.client_id).filter(Order.order_id == order_id).one()
     # order.status = status
     qty_remaining = product.qty_available - product.qty_confirmed
-    if pio.quantity > qty_remaining:
-        pio.quantity = qty_remaining
-    product.qty_confirmed += pio.quantity
+    print(quantity)
+#    if pio.quantity > qty_remaining:
+#        pio.quantity = qty_remaining
+    if float(quantity) > qty_remaining:
+        pio.qty_confirmed = qty_remaining
+    else:
+        pio.qty_confirmed = float(quantity)
+    product.qty_confirmed += pio.qty_confirmed
     pio.confirmed = True
+    
     products = db.session.query(
         ProductInOrder
         ).filter(
@@ -279,7 +285,7 @@ def shoppingcart():
 
                 items = []
                 for prod in products:
-                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False))
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False, qty_confirmed=0))
                     product = db.session.query(Product).filter(Product.product_id == prod["product_id"]).first()
                     product.qty_requested = product.qty_requested + prod["quantity"]
                     db.session.commit()
@@ -530,9 +536,6 @@ def workerorders():
         ).all()
     return render_template('workerorders.html', orders=orders)
 
-@other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
-def farmerorderslist():
-    return render_template('farmerorderslist.html')
 
 @other_blueprint.route('/farmerconfirmation', methods=['GET', 'POST'])
 def farmerconfirmation():

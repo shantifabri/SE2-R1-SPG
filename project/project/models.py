@@ -30,7 +30,8 @@ class ProductInOrder(db.Model):
     order_id = db.Column(db.Integer)
     quantity = db.Column(db.Float)
     confirmed = db.Column(db.Integer)
-
+    qty_confirmed = db.Column(db.Float)
+    
 class ProductInBasket(db.Model):
     __tablename__ = "product_in_basket"
     pib_id = db.Column(db.Integer, primary_key=True)
