@@ -27,22 +27,6 @@
         });
     }
 </script>
-<style>
-    tbody tr:nth-child(odd) {
-        background-color: #d6f0c7;
-    }
-
-    tr {
-        text-align: center;
-        height: 53.6px;
-    }
-
-    th {
-        text-align: center;
-        height: 53.6px;
-    }
-</style>
-
 <body>
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -100,7 +84,7 @@
                                                     <tbody>
                                                         {% for order in orders %}
                                                         <tr>
-                                                            <td class="text-muted nomobile">#{{order[0].order_id}}</td>
+                                                            <td class="nomobile">#{{order[0].order_id}}</td>
                                                             <td>{{order[1].email}}</td>
                                                             <td>{{order[0].delivery_address}}</td>
                                                             <td>{{order[0].requested_delivery_date}}</td>
@@ -121,7 +105,7 @@
                                                                 <div class="badge badge-danger">{{order[0].status}}
                                                                 </div>
                                                                 {% else %}
-                                                                <span class="text-black-bold">{{order[0].status}}</span>
+                                                                <div class="badge badge-info">{{order[0].status}}</div>
                                                                 {% endif %}
                                                             </td>
 

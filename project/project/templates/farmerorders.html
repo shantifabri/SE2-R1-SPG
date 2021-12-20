@@ -12,11 +12,6 @@
         });
     }
 </script>
-<style>
-   .table-responsive tr:nth-child(even) {
-        background-color: #d6f0c7;
-    }
-</style>
 
 <body>
     <div class="container-fluid col-md-12">
@@ -27,8 +22,8 @@
             <div class="padding">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
+                        <div class="row">
+                            <div class="main-card mb-3 card">
                                 <!-- <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Orders Confirmation</h4>
                                 <p>&nbsp;</p>
@@ -36,8 +31,8 @@
                                 <p>&nbsp;</p>
                                 <p>&nbsp;</p> -->
                                 <div class="table-responsive">
-                                    <table class="table" style="text-align:center;">
-                                        <caption>Please deal with orders as soon as possible</caption>
+                                    <table  class="align-middle mb-0 table table-borderless table-striped table-hover" style="text-align:center;border:0px !important;">
+                                     <caption style="color:red;"><marquee>Please deal with orders as soon as possible</marquee></caption>
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
@@ -65,14 +60,14 @@
                                                 <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
                                                 <td>
                                                     {% if order[1].confirmed == False %}
-                                                    <span class="text-black-bold">{{order[0].status}}</span>
+                                                    <div class="badge badge-info">{{order[0].status}}</div>
                                                     {% else %}
-                                                    <span class="text-black-bold">CONFIRMED</span>
+                                                    <div class="badge badge-success">CONFIRMED</div>
                                                     {% endif %}
                                                 </td>
                                                 <td>{% if order[1].confirmed == False %}<div class="w-100">
                                                     <span class="input-number" style="text-align:center">
-                                                      <input type="number" id="input{{order[1].pio_id}}" name="inputNumber" value="{{order[1].quantity}}" step="0.1" min="0" max="{{order[2].qty_available-order[2].qty_confirmed}}">
+                                                      <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{{order[1].quantity}}" step="0.1" min="0" max="{{order[2].qty_available-order[2].qty_confirmed}}">
                                                     </span>
                                                   </div>{% endif %}</td>
                                                 <td>{% if order[1].confirmed == False %}

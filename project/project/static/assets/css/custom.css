@@ -201,7 +201,41 @@
 /* 2 END OF PRODUCTS PAGE */
 
 /* 3 START OF TABLE */
+	.main-card{border-left:0px;border-right:0px;}
+    
+	.table{
+		border-top:0px;
+	}
+	tbody tr{
+        background-color:#83cb1ea6;
+        color:#fff !important;
+        font-weight:400;
+        font-size:16px;
+    }
+    tbody tr:nth-child(odd) {
+        background-color: #83CB1E;
+        color:#fff !important;
+    }
+    
+    tr {
+      
+        text-align: center;
+        height: 53.6px;
+    }
 
+    th {
+        text-align: center;
+        height: 53.6px;
+    }
+
+    tbody tr .btn-outline-success {
+    color: #fff !important;
+    border-color: #fff;
+    font-size:15px;
+    text-transform:uppercase;
+
+    }
+	
 .rounded-circle {
     border-radius: 50% !important;
 }
@@ -251,4 +285,12 @@
 .picker__frame{
 	bottom:auto !important;
 	
+}
+/**/
+
+/*5 MISCELLANEOUS */
+
+.numclass{
+	border:0px;
+	border-radius:4px;
 }
