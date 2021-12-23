@@ -30,7 +30,7 @@
 
         <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="onertp_main_nav">
             <div class="flex-fill">
-                <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
+                <ul class="nav navbar-nav d-flex justify-content-start mx-lg-auto">
                     {% if current_user.role != 'M' and current_user.role != 'W' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('other.products') }}">Products</a>
@@ -50,7 +50,7 @@
                         <a class="nav-link" href="{{ url_for('other.farmerorders') }}">Confirm Orders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('other.farmerconfirmation') }}">Deliver Products</a>
+                        <a class="nav-link" href="{{ url_for('other.farmerconfirmation') }}">Deliver</a>
                     </li>
                     {% endif %} {% if current_user.role == 'C' %}
                     <li class="nav-item">
@@ -72,21 +72,22 @@
                         <a class="nav-link" href="{{ url_for('other.confirmarrivals') }}">Confirm Arrivals</a>
                     </li>
                     {% endif %}
-
+                  
                 </ul>
             </div>
-            <div class="navbar align-self-center d-flex">
-
-
+        
+            <div class="navbar align-self-center  text-right d-flex">
+     
                 {% if current_user.is_authenticated %}
-                <span class="nav-icon position-relative text-decoration-none text-success">
-                        Welcome {{current_user.name}}
+                <span class="nav-icon position-relative text-decoration-none text-success font-weight-bold" style="font-weight:700;">
+                         {{current_user.name}}
                     </span> <img class="nav-icon iconbar" src="/static/icons/{{current_user.role}}.png">{% if current_user.role == "S" or current_user.role == "C" %}
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('other.shoppingcart') }}">
                     <em class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></em>
                     <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">{{session["cart_count"]}}</span>
                 </a>
                 {% endif %}
+    
                 <a class="nav-icon position-relative text-decoration-none" href="{{ url_for('users.logout') }}">
                         Log Out
                         <!-- <i class="fa fa-fw fa-user text-dark mr-3"></i> -->
