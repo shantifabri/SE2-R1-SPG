@@ -158,6 +158,14 @@ def confirmarrivals():
 
     return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
+@other_blueprint.route('/deleteproduct/<product_id>',  methods=['GET','POST'])
+@login_required
+def deleteproduct(product_id):
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    product.deleted = 1
+    db.session.commit()
+    return redirect(url_for('other.manageproducts'))
+
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
@@ -278,6 +286,7 @@ def shoppingcart():
                     new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date",datetime.datetime.now()))
                 else:
                     new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date",datetime.datetime.now()))
+                    q2.pending_amount = q2.pending_amount + float(vals["total"])
                 # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
                 db.session.commit()
@@ -319,6 +328,13 @@ def insertproducts():
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
 
+@other_blueprint.route('/profile', methods=['GET','POST'])
+@login_required
+def profile():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+    return render_template('profile.html')
+
 @other_blueprint.route('/shoporders', methods=['GET', 'POST'])
 @login_required
 def shoporders():
@@ -347,10 +363,29 @@ def topup():
 
     if form.validate_on_submit():
         # print(form.email.data)
-        db.session.query(
+        user = db.session.query(
             User
         ).filter(User.email == form.email.data
-        ).update({"wallet": (User.wallet + form.amount.data)})
+        ).one()
+        user.wallet += form.amount.data
+
+        found = True
+        while(found == True):
+            order = db.session.query(
+                Order
+            ).filter(
+                user.id == Order.client_id
+            ).filter(
+                Order.status == "PENDING CANCELLATION"
+            ).filter(
+                Order.total <= (user.wallet - user.pending_amount)
+            ).all()
+            # print(order)
+            if len(order) > 0:
+                order[0].status = "PENDING"
+                user.pending_amount += order[0].total
+            else:
+                found = False
         db.session.commit()
 
     if form_search.validate_on_submit():
@@ -378,6 +413,8 @@ def manageproducts():
         Product
     ).filter(
         Product.farmer_id == current_user.id
+    ).filter(
+        Product.deleted == 0
     ).all()
 
     if form.validate() and request.method == "POST":

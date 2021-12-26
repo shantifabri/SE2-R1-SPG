@@ -93,6 +93,7 @@
                                                 <th scope="col">Surname</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Current Balance</th>
+                                                <th scope="col">Pending Amount</th>
                                                 <th scope="col">Top-Up</th>
                                             </tr>
                                         </thead>
@@ -104,6 +105,7 @@
                                                 <td>{{user.surname}}</td>
                                                 <td>{{user.email}}</td>
                                                 <td>€ {{'%.2f' % user.wallet}}</td>
+                                                <td>€ {{'%.2f' % user.pending_amount}}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-outline-success" onclick="submituser('{{user.email}}');" data-toggle="modal" data-target="#topupModal" data-whatever="{{user}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">

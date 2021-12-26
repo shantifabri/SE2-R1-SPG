@@ -61,6 +61,7 @@ class Product(db.Model):
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))
+    deleted = db.Column(db.Integer) 
 
 class Order(db.Model):
     __tablename__ = "orders"
