@@ -207,8 +207,19 @@ def confirmorder(order_id,pio_id,product_id,quantity):
     if len(products) == 0:
         order.status = 'CONFIRMED'
         items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
+        if order.home_delivery == 'N':
+            new_total = 0
+        else:
+            new_total = 7.50
         for item in items:
+            prod = db.session.query(Product).filter(Product.product_id == item.product_id).one()
+            new_total += prod.price * item.qty_confirmed
             item.confirmed = False
+        order.total = new_total
+        
+        user[0].wallet -= new_total
+        user[0].pending_amount -= bew_total
+
         msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
         sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
