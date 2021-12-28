@@ -138,23 +138,25 @@ def updateshipping(value):
 def confirmarrivals():
     farmers = db.session.query(ProductInOrder,Product,User,Order
     ).filter(
-        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'CONFIRMED')
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'WAREHOUSING')
     ).group_by(
         User.id,User.name,User.surname,User.company
     ).all()
     products = db.session.query(Product,func.sum(Product.qty_confirmed)
     ).filter(
         Product.qty_confirmed>0
+    ).filter(
+        Order.status == "WAREHOUSING"
     ).group_by(
         Product.farmer_id,Product.product_id
     ).all()
     farmerproducts = {}
-    for product in products :
+    for product in products:
         if product[0].farmer_id in farmerproducts.keys():
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1], 'id':product[0].product_id})
         else:
             farmerproducts[product[0].farmer_id]=[]
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1], 'id':product[0].product_id})
 
     return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
@@ -204,6 +206,9 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         ).all()
     if len(products) == 0:
         order.status = 'CONFIRMED'
+        items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
+        for item in items:
+            item.confirmed = False
         msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
         sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
@@ -621,6 +626,56 @@ def farmerorderconfirm():
         db.session.commit()
     
     return render_template('farmerorderconfirm.html', products=products, form=form, form_edit=form_edit)
+
+@other_blueprint.route('/confirmarrived', methods=['GET','POST'])
+@login_required
+def confirmarrived():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+
+    res = request.get_json()
+    for item in res:
+        try:
+            prod_id = item["product_id"].split("_")[1]
+            prod = db.session.query(
+                Product
+            ).filter(
+                Product.product_id == prod_id
+            ).one()
+            prod.qty_warehoused = item["qty"]
+            pio = db.session.query(
+                ProductInOrder
+            ).filter(
+                ProductInOrder.product_id == prod_id
+            ).all()
+            for elem in pio:
+                elem.confirmed = 1
+        except Exception as e:
+            print(e)
+        db.session.commit()
+    
+    orders = db.session.query(
+        Order
+    ).filter(
+        Order.status == "WAREHOUSING"
+    ).all()
+    for elem in orders:
+        order_confs = db.session.query(
+            Order,Product,ProductInOrder
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).filter(
+            ProductInOrder.product_id == Product.product_id
+        ).filter(
+            Order.order_id == elem.order_id
+        ).filter(
+            ProductInOrder.confirmed == 0
+        ).all()
+        # print(order)
+        if len(order_confs) == 0:
+            elem.status = "WAREHOUSED"
+    db.session.commit()
+    return redirect(url_for('other.confirmarrivals'))
 
 ################## AUTOCOMPLETE ROUTES ##############################
 # @app.route('/autocomplete', methods=['GET'])

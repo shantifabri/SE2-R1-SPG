@@ -5,17 +5,36 @@
     var r;
     //var r2;
 
-    function submitO(recp) {
-        r = recp;
+    function confirmArrivals(product) {
+        inputs = document.getElementById("form" + product).elements;
+        var values = [];
 
-        //var button = $(event.relatedTarget) // Button that triggered the modal
-        //r2 = button.data('whatever')
+        for(var i = 0; i<inputs.length; i++){
+            var obj = {"qty": inputs[i].value, "product_id": inputs[i].id};
+            values.push(obj);
+        }
+
+        $.ajax({
+            url: '/confirmarrived',
+            data: JSON.stringify(values),
+            contentType: 'application/json;charset=UTF-8',
+            type: 'POST',
+            success: function(response) {
+                location.reload(true);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+
+        });
     }
+
     $(document).on('show.bs.modal', '#arrivalModal', function() {
         var modal = $(this)
             //modal.find('.modal-title').text('Please, check the following arrivals for the farmer '+r1+ ' '+r2);
 
     });
+    
 </script>
 
 <body>
@@ -34,12 +53,14 @@
                 <div class="container-fluid nolateral tb-spacing">
                     <div class="row">
                         <div class="table-responsive">
+                            <form method="POST" id=form{{farmerproduct}} action="{{ url_for('other.confirmarrivals') }}">
                             <table class="align-middle mb-0 table table-borderless table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th class="text-center nomobile">Product Name</th>
-                                        <th class="text-center">Confirmed Quantity</th>
-                                        <th class="text-center">Check Arrival</th>
+                                        <th class="text-center">Delivered Quantity</th>
+                                        <th class="text-center">Arrived Quantity</th>
+                                        <!-- <th class="text-center">Check Arrival</th> -->
                                     </tr>
                                 </thead>
 
@@ -48,33 +69,25 @@
 
                                     <tr>
                                         <td class="text-center">{{product.name}}</td>
-                                        <td class="text-center">{{product.quantity}}</td>
-
-                                        <td class="text-center">
-                                            <!--button type="button" class="btn btn-outline-success" data-toggle="modal"
-                                                data-target="#arrivalModal">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                    <path
-                                                        d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
-                                                </svg>
-                                            </button -->
+                                        <td class="text-center">{{product.quantity}} Kg</td>
+                                        <td><input style="width:30%" type="number" class="numclass" id="{{farmerproduct}}_{{product.id}}" name="inputNumber" value="{{product.quantity}}" step="0.1" min="0"> Kg</td>
+                                        <!-- <td class="text-center">
                                             <button type="button" class="btn btn-outline-success">
                                                 <i class="far fa-check-square"></i>
                                             </button>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            </form>
                             <p>&nbsp;</p>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer" style="justify-content:center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="confirmArrivals({{farmerproduct}})" data-dismiss="modal">Confirm Arrivals</button>
                 </div>
             </div>
         </div>
@@ -90,13 +103,8 @@
                     <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <p>&nbsp;</p>
-                                <h4 class="card-title text-success" style="text-align:center">Farmers</h4>
-
-
-                                <p>&nbsp;</p>
-                                <p class="card-description" style="text-align:center"> Please, select the farmer whose products you want to confirm the arrival of.</p>
-                                <p>&nbsp;</p>
+                                <!-- <p>&nbsp;</p> -->
+                                
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
                                         <div class="main-card mb-3 card">
@@ -118,7 +126,7 @@
                                                             <td class="text-center">{{farmer[2].name}}</td>
                                                             <td class="text-center">{{farmer[2].surname}}</td>
                                                             <td class="text-center">
-                                                                <button type="button" class="btn btn-outline-success" onclick="submitO('{{farmer[2].name}}'+'_'+'{{farmer[2].surname}}');" data-toggle="modal" data-target="#arrivalModal{{farmer[2].id}}">
+                                                                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#arrivalModal{{farmer[2].id}}">
                                                                     <i class="fas fa-eye"></i>
                                                                 </button>
                                                             </td>
