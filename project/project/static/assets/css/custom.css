@@ -203,6 +203,14 @@
 /* 3 START OF TABLE */
 	.main-card{border-left:0px;border-right:0px;}
     
+	.table-responsive{
+		border-radius:8px;background-color: #83CB1E;
+
+	}
+	
+	.table-responsive thead tr th {
+		color:#fff !important;
+	}
 	.table-responsive .table{
 		border-top:0px;
 	}
