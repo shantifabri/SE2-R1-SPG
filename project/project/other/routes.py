@@ -331,8 +331,8 @@ def insertproducts():
 @other_blueprint.route('/profile', methods=['GET','POST'])
 @login_required
 def profile():
-    if current_user.role != 'C':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'C':
+    #     return redirect(url_for('other.index'))
     return render_template('profile.html')
 
 @other_blueprint.route('/shoporders', methods=['GET', 'POST'])
