@@ -39,7 +39,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
 
 
-    <script>
+    <script type="text/javascript">
         $(function () {
             var m = moment();
             $('.pick-date-global').bootstrapMaterialDatePicker({
@@ -49,8 +49,20 @@
             });
             //get the date after picking it
             $('.pick-date-global').on('change', function (e, date) {
-                 console.log($(".pick-date-global").val());
+                e.preventDefault();
+                console.log($(".pick-date-global").val());
+                $.ajax({
+                    url: '/calendar',
+                    data: JSON.stringify(date),
+                    contentType: 'application/json;charset=UTF-8',
+                    type: 'post',
+                    
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
              });
+             
         });
 
       

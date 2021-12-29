@@ -218,7 +218,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         order.total = new_total
         
         user[0].wallet -= new_total
-        user[0].pending_amount -= bew_total
+        user[0].pending_amount -= new_total
 
         msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
@@ -738,3 +738,11 @@ def autocompletemail():
 
     return jsonify(matching_results=results)
     # return "pogu"
+
+@other_blueprint.route('/calendar', methods=['GET', 'POST'])
+@login_required
+def calendar():
+    res = request.get_json()
+    print(res)
+    global_date = res
+    return jsonify(date=res)
