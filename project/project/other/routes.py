@@ -517,12 +517,13 @@ def clientorders():
     for order in orders:
         prod = {}
         id = str(order[0].order_id)
-        print(id + " " + order[3].name + " " + str(order[2].quantity))
+        # print(id + " " + order[3].name + " " + str(order[2].quantity))
         prod["name"] = str(order[3].name)
         prod["product_id"] = order[3].product_id
         prod["price"] = str(order[3].price)
         prod["qty_available"] = order[3].qty_available
         prod["qty_requested"] = order[3].qty_requested
+        prod["qty_confirmed"] = order[3].qty_confirmed
         prod["order_qty"] = str(order[2].quantity)
         prod["farmer"] = order[1].company
         prod["img_url"] = order[3].img_url
@@ -530,12 +531,12 @@ def clientorders():
         if id in list(client_orders.keys()):
             client_orders[id]["Products"].append(prod)
         else:
-            print("NEW")
+            # print("NEW")
             client_orders[id] = {}
             client_orders[id]["Order"] = order[0]
             client_orders[id]["Products"] = []
             client_orders[id]["Products"].append(prod)
-        print(client_orders[id]["Products"])
+        # print(client_orders[id]["Products"])
         # print(client_orders[order[0].order_id]["Products"])
         # print(prod)
         # print(client_orders[id])
@@ -687,6 +688,36 @@ def confirmarrived():
             elem.status = "WAREHOUSED"
     db.session.commit()
     return redirect(url_for('other.confirmarrivals'))
+
+@other_blueprint.route('/updateorder', methods=['GET','POST'])
+@login_required
+def updateorder():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+
+    res = request.get_json()
+    order = db.session.query(Order).filter(Order.order_id == res["order"]).one()
+    products = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == res["order"]).all()
+    print(products[0].product_id)
+    new_total = 0
+    if order.home_delivery == 'F':
+        new_total += 7.50
+    print(res["values"])
+    for item in res["values"]:
+        item_id = item["product_id"].split("_")[1]
+        print(item_id)
+        for product in products:
+            if product.product_id == int(item_id):
+                print("UPDATE")
+                product.quantity = item["qty"]
+                prod = db.session.query(Product).filter(Product.product_id == item_id).one()
+                new_total += float(item["qty"]) * prod.price
+
+    order.total = new_total
+    db.session.commit()
+
+
+    return redirect(url_for('other.clientorders'))
 
 ################## AUTOCOMPLETE ROUTES ##############################
 # @app.route('/autocomplete', methods=['GET'])

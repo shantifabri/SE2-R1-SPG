@@ -1,19 +1,36 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
-    function updateStatus(orderId) {
-        //$.post('/updatequantity/' + productID + '/' + amount)
-        var status = "AKAKA"
-        var redirect = "clientorders"
+    function updateOrder(orderId) {
+        inputs = document.getElementById("form" + orderId).elements;
+        var values = [];
+        for (var i = 0; i < inputs.length; i++) {
+            var obj = {
+                "qty": inputs[i].value,
+                "product_id": inputs[i].id
+            };
+            values.push(obj);
+        }
+        var dict = {};
+        dict["values"] = values;
+        dict["order"] = orderId;
+
         $.ajax({
-            url: '/updatestatus/' + orderId + '/' + status + '/' + redirect,
-            type: "post",
-            success: function(data) {
+            url: '/updateorder',
+            data: JSON.stringify(dict),
+            contentType: 'application/json;charset=UTF-8',
+            type: 'POST',
+            success: function(response) {
                 location.reload(true);
+            },
+            error: function(error) {
+                console.log(error);
             }
+
         });
     }
 </script>
+
 <body>
     <div class="container-fluid col-md-12">
         <p>&nbsp;</p>
@@ -26,7 +43,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table  class="align-middle mb-0 table table-borderless table-striped table-hover" style="text-align:center;border:0px !important;">
+                                    <table class="align-middle mb-0 table table-borderless table-striped table-hover" style="text-align:center;border:0px !important;">
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
@@ -44,8 +61,9 @@
                                                 <td>{{client_orders[order]["Order"].delivery_address}}</td>
                                                 <td>{{client_orders[order]["Order"].requested_delivery_date}}</td>
                                                 <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
-                                                <td>
-                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]["Order"].order_id}}" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
+                                                <td>{% if client_orders[order]["Order"].status == "PENDING" or client_orders[order]["Order"].status == "PENDING CANCELLATION" %}
+                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]['Order'].order_id}}" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>{%
+                                                    else %} {{client_orders[order]["Order"].status}}{% endif %}
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -65,44 +83,47 @@
     <!-- MODALS FOR PRODUCT EDIT -->
     {% for order in client_orders.keys() %}
     <div class="modal fade" id="editModal{{client_orders[order]['Order'].order_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <form method="POST" action="/manageproducts" id="edit-form">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Order n.{{client_orders[order]["Order"].order_id}}</h3>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12 col-lg-12">
-                                <div class="items">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Order n.{{client_orders[order]["Order"].order_id}}</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <form method="POST" id=form{{order}} action="{{ url_for('other.confirmarrivals') }}">
                                     {% for product in client_orders[order]["Products"] %}
                                     <div class="product">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="row">
-                                                    <div class="col-md-4" style="padding-bottom:25px;"><img class="img-fluid" src="static/shop_imgs/{{product['img_url']}}"/></div>
-                                                    <div class="col-md-8">      <div class="col-md-12">
-                                                        <div class="form-group ">
-                                                            <label>Product Name:</label>
-                                                               <b>{{product["name"]}}</b> 
+                                                    <div class="col-md-4" style="padding-bottom:25px;"><img class="img-fluid" src="static/shop_imgs/{{product['img_url']}}" /></div>
+                                                    <div class="col-md-8">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group ">
+                                                                <label>Product Name:</label>
+                                                                <b>{{product["name"]}}</b>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group  ">
-                                                            <label>Product Quantity:</label>
-                                                            <b>{{product["order_qty"]}} Kg</b>
-                                                            <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
+                                                        <div class="col-md-12">
+                                                            <div class="form-group  ">
+                                                                <label>Product Quantity:</label>
+                                                                <b><input style="width:15%" type="number" class="numclass" id="input_{{product['product_id']}}" name="inputNumber" value="{{product['order_qty']}}" step="0.1" min="0" max="{{product['qty_available']-product['qty_requested']}}"> Kg</b>
+
+                                                                <!-- <input type="number" min="1" class="form-control" placeholder="Min. 1"> -->
+                                                            </div>
+
                                                         </div>
 
-                                                    </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Product Price €/Kg:</label>
+                                                                <b> {{product["price"]}}</b>
+                                                                <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
+                                                            </div>
+                                                        </div>
 
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label>Product Price €/Kg:</label>
-                                                           <b> {{product["price"]}}</b>
-                                                            <!-- <input type="number" min="0.01" step="0.01" class="form-control" placeholder="Min. 0,01"> -->
-                                                        </div></div>
-                                              
                                                     </div>
                                                 </div>
 
@@ -110,19 +131,18 @@
                                         </div>
                                     </div>
                                     {% endfor %}
-
-                                </div>
+                                </form>
                             </div>
-
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-info">Save</button>
+
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="updateOrder({{order}})" class="btn btn-info">Save</button>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
     {% endfor %}
     <!-- MODAL END -->
