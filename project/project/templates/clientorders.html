@@ -40,7 +40,7 @@
             <div class="padding">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
+                        <div class="cardtable">
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="align-middle mb-0 table table-borderless table-striped table-hover" style="text-align:center;border:0px !important;">
@@ -62,7 +62,7 @@
                                                 <td>{{client_orders[order]["Order"].requested_delivery_date}}</td>
                                                 <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
                                                 <td>{% if client_orders[order]["Order"].status == "PENDING" or client_orders[order]["Order"].status == "PENDING CANCELLATION" %}
-                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]['Order'].order_id}}" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>{%
+                                                    <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]['Order'].order_id}}" class="btn btn-success btn-lg btn-block"><i class="fas fa-edit"></i></button>{%
                                                     else %} {{client_orders[order]["Order"].status}}{% endif %}
                                                 </td>
                                             </tr>

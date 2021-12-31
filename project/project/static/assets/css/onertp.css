@@ -320,6 +320,17 @@ table .btn-success {
     color: #000;
 }
 
+.cardtable{
+	box-shadow: 0 0 .1rem #fff,
+              0 0 .1rem #fff,
+              0 0 0.5rem #83CB1E,
+              0 0 0.4rem #83CB1E,
+              0 0 1.4rem #83CB1E,
+              inset 0 0 0.75rem #83CB1E;
+        
+	border-radius:10px;
+}
+
 #carousel-related-product .slick-slide:focus {
     outline: none !important;
 }
