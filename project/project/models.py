@@ -57,6 +57,7 @@ class Product(db.Model):
     qty_available = db.Column(db.Float)
     qty_requested = db.Column(db.Float)
     qty_confirmed = db.Column(db.Float)
+    qty_warehousing = db.Column(db.Float)
     qty_warehoused = db.Column(db.Float)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
@@ -78,7 +79,8 @@ class Order(db.Model):
     # status is PENDING if the order has just been submitted,
     # status is PENDING CANCELLATION if the wallet is not enough to pay the order,
     # status is CONFIRMED if the order is confirmed from the farmer,
-    # status is WAREHOUSED if the order is delivered from the farmer and confirmed by the warehouse manager,
+    # status is WAREHOUSING if the order is delivered from the farmer to the warehouse,
+    # status is WAREHOUSED if the order has been received from the farmer by the warehouse manager,
     # status is PREPARED if the warehouse worker has prepared the bag with the goods,
     # status is CANCELLED if the order has been cancelled (insufficient balance),
     # status is DELIVERING if the order has been delivered from the warehouse,

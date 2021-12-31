@@ -56,7 +56,7 @@
                                                 <td>{{order[0].order_date[0:10]}}</td>
                                                 <td>{{order[2].name}}</td>
                                                 <td>{{order[1].quantity}} Kg</td>
-                                                <td>{{order[2].qty_available-order[2].qty_confirmed}} Kg</td>
+                                                <td>{{'%.2f' % (order[2].qty_available-order[2].qty_confirmed)}} Kg</td>
                                                 <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
                                                 <td>
                                                     {% if order[1].confirmed == False %}
@@ -67,7 +67,7 @@
                                                 </td>
                                                 <td>{% if order[1].confirmed == False %}<div class="w-100">
                                                     <span class="input-number" style="text-align:center">
-                                                      <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}" step="0.1" min="0" max="{{order[2].qty_available-order[2].qty_confirmed}}">
+                                                      <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}" step="0.1" min="0" max="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}">
                                                     </span>
                                                   </div>{% endif %}</td>
                                                 <td>{% if order[1].confirmed == False %}

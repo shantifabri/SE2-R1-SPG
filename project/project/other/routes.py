@@ -177,6 +177,59 @@ def updatestatus(order_id,status,redirect_url):
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
 
+@other_blueprint.route('/confirmwarehousing/<product_id>/<quantity>',  methods=['GET','POST'])
+@login_required
+def confirmwarehousing(product_id,quantity):
+
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    print(quantity)
+    
+    product.qty_warehousing += float(quantity)
+
+    products = db.session.query(
+        ProductInOrder,Order
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).filter(
+            ProductInOrder.product_id == product_id
+        ).filter(
+            Order.status == "CONFIRMED"
+        ).filter(
+            ProductInOrder.confirmed == False
+        ).all()
+    
+    for p in products:
+        p[0].confirmed=True
+    
+    db.session.commit()
+
+    p1 = db.session.query(
+        Order
+    ).filter(
+            Order.status == "CONFIRMED"
+    ).all()
+
+    for ps1 in p1:
+        p2 = db.session.query(
+            ProductInOrder
+        ).filter(
+            ProductInOrder.order_id == ps1.order_id
+        ).all()
+        
+        f = True
+    
+        for ps2 in p2:
+            if ps2.confirmed == False:
+                f=False
+                
+        if f == True:
+            for ps3 in p2:
+                ps3.confirmed = False
+            ps1.status = "WAREHOUSING"
+
+    db.session.commit()
+    return redirect(url_for('other.farmerconfirmation'))
+
 @other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>/<quantity>',  methods=['GET','POST'])
 @login_required
 def confirmorder(order_id,pio_id,product_id,quantity):
@@ -218,7 +271,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         order.total = new_total
         
         user[0].wallet -= new_total
-        user[0].pending_amount -= bew_total
+        user[0].pending_amount -= new_total
 
         msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
@@ -267,6 +320,7 @@ def shoppingcart():
         prod["name"] = val[1].name
         prod["url"] = val[1].img_url
         prod["id"] = val[0].pib_id
+        prod["qty_available"] = val[1].qty_available - val[1].qty_requested
         total += val[0].quantity * val[1].price
         products.append(prod)
     vals["subtotal"] = '%.2f' % total
@@ -596,11 +650,12 @@ def farmerconfirmation():
         return redirect(url_for('other.index'))
     products = db.session.query(Product,ProductInOrder,User,Order,func.sum(ProductInOrder.quantity).label('quantity')
     ).filter(
-        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id)
+        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id,Product.qty_warehousing<Product.qty_confirmed)
     ).group_by(
         Product.product_id,Product.name,Product.img_url,Product.price
     ).all()
     print(products)
+    
     return render_template('farmerconfirmation.html',products=products)
 
 @other_blueprint.route('/farmerorderconfirm', methods=['GET', 'POST'])

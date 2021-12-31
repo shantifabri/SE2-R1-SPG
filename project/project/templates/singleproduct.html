@@ -132,7 +132,7 @@
                                 <h6>Avaliable Quantity :</h6>
                             </li>
                             <li class="list-inline-item">
-                                <p class="text-muted"><strong>{{product[0].qty_available - product[0].qty_requested}} Kg</strong></p>
+                                <p class="text-muted"><strong>{{'%.2f' % (product[0].qty_available - product[0].qty_requested)}} Kg</strong></p>
                             </li>
                         </ul>
 
@@ -151,7 +151,7 @@
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">
                                 <div class="col-4">
-                                    {{ form.hidden_tag() }} {{ wtf.form_field(form.quantity) }}
+                                    {{ form.hidden_tag() }} {{form.quantity(max = product[0].qty_available - product[0].qty_requested)}}
                                 </div>
                             </div>
                             <div class="row pb-3">

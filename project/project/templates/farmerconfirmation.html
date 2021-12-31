@@ -1,6 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 <!--FARMER-ONLY PAGE in which he adds products -->
-<script>
+<!--    script>
     $(function() {
         $('#env').change(function() {
             var current_status = $(this).prop('checked');
@@ -49,46 +49,84 @@
     }
 
 
-</script>
+</script    -->
 
+<script>
+    function confirmWarehousing(product_id) {
+        var quantity = document.getElementById('input' + product_id);
+        $.ajax({
+            url: '/confirmwarehousing/' + product_id + '/' + quantity.value,
+            type: "post",
+            success: function (data) {
+                location.reload(true);
+            }
+        });
+    }
+</script>
 
 <form method="POST" action="/manageproducts">
     <section class="shopping-cart">
         <div class="container">
             <div class="block-heading">
-                <h2>Manage Farmer Submission</h2>
+                <h2>Farmer Orders Submission</h2>
             </div>
-           <div class="container"><h3>{{current_user.company}}</h3></div> 
-            <br>
-            <div class="">
-                    <div class="col-md-8 content">
-                        <div class="items">
-                            {% for prod in products %}
-                            <div class="product">
-                                <div class="row">
-                                    <div class="col-md-3" class="mproduct-image-container" >
-                                        <a target="_blank" href=""><img class="img-fluid mx-auto d-block image" src="/static/shop_imgs/{{prod[0].img_url}}">
-                                        </a>
-                                    </div>
-                                    <div class="col-md-8" style="margin-top:15px;">
-                                            <div class="col-md-12">
-                                                <div class="form-group ">
-                                                    <label class="descTitle">Product Name:&nbsp</label>{{prod[0].name}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group  ">
-                                                    <label class="descTitle">Quantity:&nbsp</label> {{prod[4]}} Kg
-                                                </div>
+            <div class="container">
+                <h3>{{current_user.company}}</h3>
+            </div>
+            <div class="items">
+                {% if products|length == 0 %}
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <img class="card-img"
+                                src="https://design.workday.com/media/empty-states-example-user-cleared.svg"
+                                style="filter:hue-rotate(255deg);" alt="Card image">
+                            <div class="card-img-overlay" style="text-align: center;">
+                                <h5 class="card-title" style="font:bolder; font-size:5mm">No shipments to confirm yet
+                                </h5>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <p>&nbsp;</p>
+                                <a href="{{ url_for('other.farmerorders')}}" class="btn btn-outline-success">Check orders</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                {% for prod in products %}
+                <div class="product">
+                    <div class="row">
+                        <div class="col-md-3" class="mproduct-image-container">
+                            <a target="_blank" href=""><img class="img-fluid mx-auto d-block image"
+                                    src="/static/shop_imgs/{{prod[0].img_url}}">
+                            </a>
+                        </div>
+                        <div class="col-md-6" style="margin-top:15px;">
+                            <div class="col-md-12">
+                                <div class="form-group ">
+                                    <label class="descTitle">Product Name:&nbsp</label>{{prod[0].name}}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod[0].price}}€/Kg
+                                </div>
+                            </div>
 
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="descTitle">Product Price:&nbsp</label> {{'%.2f' %prod[0].price}}€/Kg
-                                                </div>
-                                            </div>
-
-                                        <!-- <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="descTitle">Quantity:&nbsp</label>
+                                    <span class="input-number" style="text-align:center">
+                                        <input type="number" class="numclass" id="input{{prod[0].product_id}}"
+                                            name="inputNumber" value="{{prod[4]}}" step="0.1" min="0" max="{{prod[4]}}">
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group col-xs-12 descRow">
                                                     <label class="descTitle">Product Description:&nbsp</label> {{prod.description}}
@@ -99,39 +137,37 @@
                                             </div>
 
                                         </div> -->
-                                   
-                                    </div>
 
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-success btn-lg"
+                                onClick="confirmWarehousing({{prod[0].product_id}});"
+                                style="margin-top:50px;"><span>Confirm Warehousing</span></button>
 
-                            </div>
+                            <!--button type="button" class="btn btn-danger btn-lg btn-block" style="margin-top:50px;"><i class="fas fa-trash"></i></button-->
 
-                            {% endfor %}
                         </div>
 
+                    </div>
+
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <!--
                     <div class="row addProd">
                         <div class="col-md-12">
-                            <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
+                            <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button>
 
-                            <button type="button" class="btn-floating btn btn-success btn-lg btn-block float-right acceptReq-Floating"><i class="fas fa-check"></i></button>
+                            
                             <button type="button" class="btn-floating btn btn-danger btn-lg btn-block float-right trashReq-Floating"><i class="fas fa-trash"></i></button>
 
                         </div>
                     </div>
 
-
-                </div>
-            </div>
+-->
         </div>
     </section>
 </form>
-
-
-
-<style>
-    .modal-backdrop {
-        display: none;
-    }
-</style>
 
 {% endblock %}
