@@ -46,7 +46,7 @@ def products():
             User.id == Product.farmer_id
         ).filter(
 
-            Product.name.like("%" + form.search.data + "%")
+            or_(Product.name.like("%" + form.search.data + "%"),User.company.like("%" + form.search.data + "%"))
         ).all()
     
     return render_template('products.html',products=products,form=form)
@@ -173,6 +173,8 @@ def deleteproduct(product_id):
 def updatestatus(order_id,status,redirect_url):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     order.status = status
+    if status == "DELIVERING":
+        order.actual_delivery_date = session.get("date",datetime.datetime.now()).strftime("%d %B, %Y")
     db.session.commit()
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
@@ -273,7 +275,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         user[0].wallet -= new_total
         user[0].pending_amount -= new_total
 
-        msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
+        msg = 'Dear ' + user[0].name +', the order with id ' + order_id + ' has been confirmed from the farmer!'
         # send confirmation mail here
         sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
     db.session.commit()
