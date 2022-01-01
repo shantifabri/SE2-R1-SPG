@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     company = db.Column(db.String(40))
     wallet = db.Column(db.Float)
     pending_amount = db.Column(db.Float)
+    tgusername = db.Column(db.String(50))
 
 class ProductRequest(db.Model):
     __tablename__ = "product_requests"
