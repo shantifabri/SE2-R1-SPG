@@ -5,7 +5,7 @@ import sqlite3
 from dotenv import load_dotenv, find_dotenv
 import os
 
-conn = sqlite3.connect('/Users/ledon/Downloads/SE2-R1-SPGdocker/project/instance/database.db')
+conn = sqlite3.connect('/project/instance/database.db')
 cursor = conn.cursor()
 cursor.execute('select tgusername,wallet,pending_amount from users where tgusername IS NOT NULL')
 values = cursor.fetchall()
