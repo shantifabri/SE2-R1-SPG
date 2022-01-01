@@ -46,15 +46,15 @@
                           <div class="row pt-1">
                             <div class="col-4 mb-3">
                               <h6>Total Balance</h6>
-                              <p>{{current_user.wallet}}€</p>
+                              <p>{{'%.2f' % current_user.wallet}}€</p>
                             </div>
                             <div class="col-4 mb-3">
                                 <h6>Pending Balance</h6>
-                                <p>{{current_user.pending_amount}}€</p>
+                                <p>{{'%.2f' % current_user.pending_amount}}€</p>
                               </div>
                             <div class="col-4 mb-3">
                                 <h6>Available Balance</h6>
-                                <p>{{current_user.wallet-current_user.pending_amount}}€</p>
+                                <p>{{'%.2f' % (current_user.wallet-current_user.pending_amount)}}€</p>
                               </div>
                           </div>
                           {% else %}

@@ -151,9 +151,10 @@
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">
                                 <div class="col-4">
-                                    {{ form.hidden_tag() }} {{form.quantity(max = product[0].qty_available - product[0].qty_requested)}}
+                                    <h6>Select your Quantity: </h6>{{ form.hidden_tag() }} {{form.quantity(max = product[0].qty_available - product[0].qty_requested)}}
                                 </div>
                             </div>
+                            <br>
                             <div class="row pb-3">
                                 <div class="col d-grid">
                                     <button type="submit" class="btn btn-success btn-lg" name="submit" value="buy">Add to Cart</button>
