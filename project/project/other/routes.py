@@ -176,8 +176,8 @@ def updatestatus(order_id,status,redirect_url):
     order.status = status
     if status == "DELIVERING":
         subject = "Order Delivering"
-        msg = "Dear "+user.name+", your order with id: #"+str(order.order_id)+",\nfor a total of: €"+str(order.total)+",\nis being delivered to the chosen delivery place ("+order.delivery_address+"). Make sure to not miss your delivery!\nThanks, \nSPG Team."
-        mail_sender(subject,msg,q2.email)
+        msg = "Dear "+user.name+", your order with id: #"+str(order.order_id)+",\nfor a total price of: €"+str(order.total)+",\nis being delivered to the chosen delivery place ("+order.delivery_address+").\nMake sure to not miss your delivery!\nThanks, \nSPG Team."
+        mail_sender(subject,msg,user.email)
         order.actual_delivery_date = session.get("date",datetime.datetime.now()).strftime("%d %B, %Y")
 
     db.session.commit()
@@ -266,6 +266,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         ).all()
     if len(products) == 0:
         order.status = 'CONFIRMED'
+        #FIXME send email when order is confirmed
         items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
         if order.home_delivery == 'N':
             new_total = 0
