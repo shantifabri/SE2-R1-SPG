@@ -10,7 +10,7 @@ import os
 import json
 import base64
 from dotenv import load_dotenv, find_dotenv
-
+from project.other.utils import mail_sender
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
@@ -172,9 +172,14 @@ def deleteproduct(product_id):
 @login_required
 def updatestatus(order_id,status,redirect_url):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
+    user = db.session.query(User).filter(User.id == order.client_id).one()
     order.status = status
     if status == "DELIVERING":
+        subject = "Order Delivering"
+        msg = "Dear "+user.name+", your order with id: #"+str(order.order_id)+",\nfor a total of: €"+str(order.total)+",\nis being delivered to the chosen delivery place ("+order.delivery_address+"). Make sure to not miss your delivery!\nThanks, \nSPG Team."
+        mail_sender(subject,msg,q2.email)
         order.actual_delivery_date = session.get("date",datetime.datetime.now()).strftime("%d %B, %Y")
+
     db.session.commit()
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
@@ -275,9 +280,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         user[0].wallet -= new_total
         user[0].pending_amount -= new_total
 
-        msg = 'Dear ' + user[0].name +', the order with id ' + order_id + ' has been confirmed from the farmer!'
-        # send confirmation mail here
-        sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
+        
     db.session.commit()
     return redirect(url_for('other.farmerorders'))
 
@@ -379,6 +382,9 @@ def shoppingcart():
 
                 if not balance:
                     # Send an email to the user to remind to top-up the wallet
+                    subject = "Insufficient Balance Reminder"
+                    msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(new_order.order_id)+" with a total of €"+str(new_order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
+                    mail_sender(subject,msg,q2.email)
                     return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=balance)
 
                 return redirect(url_for('other.index'))
@@ -627,8 +633,6 @@ def sendmail(email,subject,msg,redirecting):
     content = Content("text/plain", msg)
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
-    print(response.status_code)
-    print(email)
     return redirect(url_for('other.' + redirecting))
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
@@ -742,7 +746,12 @@ def confirmarrived():
         ).all()
         # print(order)
         if len(order_confs) == 0:
+            user = db.session.query(User).filter(User.id == elem.client_id).one()
             elem.status = "WAREHOUSED"
+            subject = "Order Warehoused"
+            msg = "Dear User, the order you submitted with id: #"+str(elem.order_id)+", with a total of €"+str(elem.total)+" has been Warehoused,\nIt will be prepared by one of our workers and brought to you according to the delivery date you have chosen.\nThanks, \nSPG Team."
+            mail_sender(subject,msg,user.email)
+            
     db.session.commit()
     return redirect(url_for('other.confirmarrivals'))
 

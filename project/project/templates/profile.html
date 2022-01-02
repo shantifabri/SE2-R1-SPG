@@ -50,11 +50,11 @@
                             </div>
                             <div class="col-4 mb-3">
                                 <h6>Pending Balance</h6>
-                                <p>{{'%.2f' % current_user.pending_amount}}€</p>
+                                <p><span style="color:red; font-weight:900;">{{'%.2f' % current_user.pending_amount}}€</span></p>
                               </div>
                             <div class="col-4 mb-3">
                                 <h6>Available Balance</h6>
-                                <p>{{'%.2f' % (current_user.wallet-current_user.pending_amount)}}€</p>
+                                <p><span style="color:green; font-weight:900;">{{'%.2f' % (current_user.wallet-current_user.pending_amount)}}€</span></p>
                               </div>
                           </div>
                           {% else %}
