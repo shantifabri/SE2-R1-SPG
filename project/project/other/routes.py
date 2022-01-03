@@ -15,7 +15,7 @@ from project.models import User, Product, Client, ProductRequest, ProductInOrder
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
 import datetime
-import sendgrid as sg
+import sendgrid
 from sendgrid.helpers.mail import *
 
 from . import other_blueprint
