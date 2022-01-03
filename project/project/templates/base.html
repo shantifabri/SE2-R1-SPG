@@ -41,38 +41,38 @@
 
     <script type="text/javascript">
         $(function () {
-            var now ;
-            $.ajax({
-                url: '/calendar',
-                contentType: 'application/json;charset=UTF-8',
-                type: 'get', 
-                success: function(s) {
-                    now = s
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
+            var now = moment();
 
-            $('.pick-date-global').bootstrapMaterialDatePicker({
+            $.getJSON( "/calendar", function( json ) {
+                var retrievedObject = localStorage.getItem('tdate');
+                //console.log('retrievedObject: ', JSON.parse(retrievedObject));
+                now = retrievedObject;
+                //console.log( "JSON Data: " + now);
+
+                $('.pick-date-global').bootstrapMaterialDatePicker({
                 format: 'DD-MM-YYYY HH:mm',
                 minDate: moment(),
                 currentDate: now,
                 //maxDate: moment().add(365, 'days')
             });
+            });
+  
+
+
             //get the date after picking it
             $('.pick-date-global').on('change', function (e, date) {
                 e.preventDefault();
-                console.log($(".pick-date-global").val());
-                $.ajax({
+           //     console.log(JSON.stringify({dt: date.format('DD-MM-YYYY HH:mm')}));
+                localStorage.setItem('tdate', JSON.stringify({dt: date.format('DD-MM-YYYY HH:mm')}));
+                /*$.ajax({
                     url: '/calendar',
-                    data: JSON.stringify(date.format('DD-MM-YYYY HH:mm')),
+                    data: JSON.stringify({dt: date.format('DD-MM-YYYY HH:mm')}),
                     contentType: 'application/json;charset=UTF-8',
                     type: 'post', 
                     error: function(error) {
                         console.log(error);
                     }
-                });
+                }); */
              });  
         });
 

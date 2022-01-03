@@ -745,6 +745,6 @@ def autocompletemail():
 def calendar():
     if request.method == "POST":
         res = request.get_json()
-        session['date'] = res
+        session['date'] = res['dt']
 
     return jsonify(date=session['date'])
