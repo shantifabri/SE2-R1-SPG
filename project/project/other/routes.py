@@ -475,6 +475,7 @@ def farmerorders():
     # ).filter(
     #     ProductInOrder.confirmed == False
     ).all()
+
     return render_template('farmerorders.html', orders=orders)
 
 @other_blueprint.route('/clientorders', methods=['GET', 'POST'])
