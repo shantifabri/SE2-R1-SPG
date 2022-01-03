@@ -17,7 +17,7 @@
         var subject = "Insufficient Balance Reminder";
         var msg = "Dear User, your balance is not sufficient to complete the order "+order_id+', please make sure to charge your wallet. Thanks, \nSPG Team.'
         $.ajax({
-            url: '/sendmail/' + email + '/' + subject + '/' + msg,
+            url: '/sendmail/' + email + '/' + subject + '/' + msg + '/shoporders',
             type: "post",
             success: function (data) {
                 location.reload(true);

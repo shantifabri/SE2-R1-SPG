@@ -9,6 +9,7 @@ from sqlalchemy.sql import text
 import os
 import json
 import base64
+from dotenv import load_dotenv, find_dotenv
 
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
@@ -173,6 +174,7 @@ def confirmorder(order_id,pio_id,product_id):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
     product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    user = db.session.query(User,Order).filter(User.id == Order.client_id).filter(Order.order_id == order_id).one()
     # order.status = status
     qty_remaining = product.qty_available - product.qty_confirmed
     if pio.quantity > qty_remaining:
@@ -188,6 +190,9 @@ def confirmorder(order_id,pio_id,product_id):
         ).all()
     if len(products) == 0:
         order.status = 'CONFIRMED'
+        msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
+        # send confirmation mail here
+        sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
     db.session.commit()
     return redirect(url_for('other.farmerorders'))
 
@@ -493,10 +498,13 @@ def managerorders():
 
     return render_template('managerorders.html', orders=orders)
 
-@other_blueprint.route('/sendmail/<email>/<subject>/<msg>', methods=['GET', 'POST'])
+@other_blueprint.route('/sendmail/<email>/<subject>/<msg>/<redirecting>', methods=['GET', 'POST'])
 @login_required
-def sendmail(email,subject,msg):
-    
+def sendmail(email,subject,msg,redirecting):
+    load_dotenv(verbose=True)
+    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+    print("API KEY : " + SENDGRID_API_KEY)
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     from_email = Email("Solidarity.purchase@gmail.com")
     to_email = To(email)
     content = Content("text/plain", msg)
@@ -504,7 +512,7 @@ def sendmail(email,subject,msg):
     response = sg.client.mail.send.post(request_body=mail.get())
     print(response.status_code)
     print(email)
-    return redirect(url_for('other.shoporders'))
+    return redirect(url_for('other.' + redirecting))
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
 @login_required
