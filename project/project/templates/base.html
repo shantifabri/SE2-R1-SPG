@@ -53,16 +53,14 @@
                 console.log($(".pick-date-global").val());
                 $.ajax({
                     url: '/calendar',
-                    data: JSON.stringify(date),
+                    data: JSON.stringify(date.format('DD-MM-YYYY HH:mm')),
                     contentType: 'application/json;charset=UTF-8',
-                    type: 'post',
-                    
+                    type: 'post', 
                     error: function(error) {
                         console.log(error);
                     }
                 });
-             });
-             
+             });  
         });
 
       

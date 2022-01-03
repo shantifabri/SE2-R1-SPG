@@ -2,6 +2,7 @@ from flask import Flask, session, render_template
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from datetime import datetime
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -30,6 +31,7 @@ def initialize_extensions(app):
         # session["email"] = user.email
         # session["role"] = user.role
         session["logged"] = True
+        session['date'] = datetime.now().strftime("%d-%m-%Y %H:%M")
         return user
 
 

@@ -743,7 +743,8 @@ def autocompletemail():
 @other_blueprint.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def calendar():
-    res = request.get_json()
-    print(res)
-    global_date = res
-    return jsonify(date=res)
+    if request.method == "POST":
+        res = request.get_json()
+        session['date'] = res
+
+    return jsonify(date=session['date'])
