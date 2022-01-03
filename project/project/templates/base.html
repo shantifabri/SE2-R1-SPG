@@ -41,10 +41,23 @@
 
     <script type="text/javascript">
         $(function () {
-            var m = moment();
+            var now ;
+            $.ajax({
+                url: '/calendar',
+                contentType: 'application/json;charset=UTF-8',
+                type: 'get', 
+                success: function(s) {
+                    now = s
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+
             $('.pick-date-global').bootstrapMaterialDatePicker({
                 format: 'DD-MM-YYYY HH:mm',
                 minDate: moment(),
+                currentDate: now,
                 //maxDate: moment().add(365, 'days')
             });
             //get the date after picking it
