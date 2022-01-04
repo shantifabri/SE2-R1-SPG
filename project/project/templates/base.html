@@ -34,13 +34,13 @@
     <script src="/static/assets/js/picker.time.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js"></script>
 
 
     <script>
-        $(function () {
+        $(function() {
             var m = moment();
             $('.pick-date-global').bootstrapMaterialDatePicker({
                 format: 'DD-MM-YYYY HH:mm',
@@ -48,12 +48,24 @@
                 //maxDate: moment().add(365, 'days')
             });
             //get the date after picking it
-            $('.pick-date-global').on('change', function (e, date) {
-                 console.log($(".pick-date-global").val());
-             });
-        });
+            $('.pick-date-global').on('change', function(e, date) {
+                console.log($(".pick-date-global").val());
+                var date = $(".pick-date-global").val();
+                $.ajax({
+                    url: '/updatedatetime',
+                    data: JSON.stringify(date),
+                    contentType: 'application/json;charset=UTF-8',
+                    type: 'POST',
+                    success: function(response) {
+                        location.reload(true);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
 
-      
+                });
+            });
+        });
     </script>
 </head>
 
@@ -62,7 +74,7 @@
         {% include "navbar.html" %}
     </header>
     <main>
-        <div class="wrapper"  onclick="getDateTime()" >
+        <div class="wrapper" onclick="getDateTime()">
             <button class="btn btn-danger pick-date-global" onclick="getDateTime()" id="calendar-slide"><i class="fa fa-calendar-alt" aria-hidden="true"></i></button>
         </div>
         {% block main %}{% endblock %}
@@ -73,7 +85,7 @@
         </div>
     </footer>
 
-    
+
 
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->

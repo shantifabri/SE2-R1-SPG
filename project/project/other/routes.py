@@ -31,6 +31,7 @@ bot = telepot.Bot(TOKEN)
 #### routes ####
 @other_blueprint.route('/')
 def index():
+    print(session.get("date",datetime.datetime.now()))
     return render_template('index.html')
 
 @other_blueprint.route('/products', methods=['GET','POST'])
@@ -764,6 +765,14 @@ def confirmarrived():
             
     db.session.commit()
     return redirect(url_for('other.confirmarrivals'))
+
+@other_blueprint.route('/updatedatetime', methods=['GET','POST'])
+@login_required
+def updatedatetime():
+    new_date = request.get_json()
+    print(new_date)
+    session["date"] = new_date
+    return redirect(url_for('other.index'))
 
 @other_blueprint.route('/updateorder', methods=['GET','POST'])
 @login_required
