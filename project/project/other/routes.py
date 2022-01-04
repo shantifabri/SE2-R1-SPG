@@ -20,6 +20,14 @@ from sendgrid.helpers.mail import *
 
 from . import other_blueprint
 
+from telepot.loop import MessageLoop
+import telepot
+import time
+
+load_dotenv(verbose=True)
+TOKEN = os.getenv("TOKEN")
+bot = telepot.Bot(TOKEN)
+
 #### routes ####
 @other_blueprint.route('/')
 def index():
@@ -280,6 +288,7 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         
         user[0].wallet -= new_total
         user[0].pending_amount -= new_total
+        bot.sendMessage(chat_id=user[0].tg_chat_id,text='Your order number:%d is confirmed' % (order.order_id))
 
         
     db.session.commit()
@@ -441,12 +450,12 @@ def topup():
     ).all()
 
     if form.validate_on_submit():
-        # print(form.email.data)
         user = db.session.query(
             User
         ).filter(User.email == form.email.data
         ).one()
         user.wallet += form.amount.data
+        bot.sendMessage(chat_id=user.tg_chat_id,text='Your wallet topped up with %s euro' % (form.amount.data))
 
         found = True
         while(found == True):
