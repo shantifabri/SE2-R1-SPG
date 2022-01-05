@@ -43,7 +43,7 @@
                                                 <th>Qty Available</th>
                                                 <th>Total</th>
                                                 <th>Status</th>
-                                                <th>Qty to Confirm</th>
+                                                {% if session["confirm_avail"] %}<th>Qty to Confirm</th>{% endif %}
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -65,15 +65,18 @@
                                                     <div class="badge badge-success">CONFIRMED</div>
                                                     {% endif %}
                                                 </td>
-                                                <td>{% if order[1].confirmed == False %}<div class="w-100">
-                                                    <span class="input-number" style="text-align:center">
-                                                      <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}" step="0.1" min="0" max="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}">
-                                                    </span>
-                                                  </div>{% endif %}</td>
-                                                <td>{% if order[1].confirmed == False %}
-                                                    <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
-                                                    <i class="fas fa-check-double"></i>
-                                                </button>{% endif %}</td>
+                                                
+                                                {% if session["confirm_avail"] %}
+                                                    <td>{% if order[1].confirmed == False %}<div class="w-100">
+                                                        <span class="input-number" style="text-align:center">
+                                                        <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}" step="0.1" min="0" max="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}">
+                                                        </span>
+                                                    </div>{% endif %}</td>
+                                                    <td>{% if order[1].confirmed == False %}
+                                                        <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
+                                                        <i class="fas fa-check-double"></i>
+                                                    </button>{% endif %}</td>
+                                                {% endif %}
                                             </tr>
                                             {% endfor %}
                                         </tbody>

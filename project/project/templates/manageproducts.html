@@ -117,12 +117,14 @@
                                             </div>
 
                                         </div>
+                                        {% if session["report_avail"] %}
                                         <div class="col-md-12 align-self-end">
                                             <div class="form-group ">
                                                 <button type="button" style="margin-left:15px;" onclick="deleteProduct({{prod.product_id}})" class="btn btn-danger btn-lg btn-block float-right align-self-end"><i class="fas fa-trash"></i></button>
                                                 <button type="button" onclick="editProduct({{prod.product_id}},'{{prod.name}}','{{prod.description}}',{{prod.price}},{{prod.qty_available}});" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-lg btn-block float-right align-self-end"><i class="fas fa-edit"></i></button>
                                             </div>
                                         </div>
+                                        {% endif %}
                                     </div>
 
                                 </div>
@@ -133,6 +135,7 @@
                         </div>
                     </div>
 
+                    {% if session["report_avail"] %}
                     <div class="row addProd">
                         <div class="col-md-12">
                             <!-- <button type="submit" class="btn btn-success btn-lg btn-block float-right addProd">SUBMIT</button> -->
@@ -141,6 +144,7 @@
 
                         </div>
                     </div>
+                    {% endif %}
 
 
                 </div>
