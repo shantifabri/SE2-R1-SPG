@@ -101,7 +101,7 @@ def insertclient():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         # add the user form input which is form.'field'.data into the column which is 'field'
-        new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0)
+        new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0, pending_amount=0, tg_chat_id=form.Telegram_id.data)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('other.index'))

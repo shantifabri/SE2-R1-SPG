@@ -17,6 +17,8 @@ bot = telepot.Bot(TOKEN)
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
     chat_id = str(chat_id)
+    if msg['text'] == '/info':
+        bot.sendMessage(chat_id, 'Your telegram user id is: %s, please give id to ShopEmployee' % (chat_id))
 
     if msg['text'] == '/balance':
         for row in values:

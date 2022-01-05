@@ -29,6 +29,7 @@ class ClientInsertForm(FlaskForm):
     surname = StringField('Surname', validators=[InputRequired(), Length(min=1, max=20)])
     email = StringField('Email', validators=[InputRequired(), Email(message="Invalid Email"), Length(min=6, max=30)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
+    Telegram_id = StringField('Telegram_id', validators=[InputRequired(), Length(min=6, max=9)])
 
 class ProductInsertForm(FlaskForm):
     name = StringField('Name', validators=[InputRequired(), Length(min=1, max=20)], render_kw={"class":"form-control"})
