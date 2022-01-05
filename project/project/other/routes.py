@@ -772,6 +772,33 @@ def updatedatetime():
     new_date = request.get_json()
     print(new_date)
     session["date"] = new_date
+
+    date, time = new_date.split()
+    day, month, year = list(map(int,date.split("-")))
+    hour, minutes = list(map(int,time.split(":")))
+
+    ans = datetime.date(year, month, day)
+    session["weekday"] = ans.strftime("%A")
+    week = ans.isoweekday()
+
+    session["place_order"] = False
+    if (week == 6 and hour >= 9) or (week == 7 and hour < 23):
+        session["place_order"] = True
+
+    session["report_avail"] = False
+    if (week == 3 and hour >= 9) or (week in range(4,6)) or (week == 6 and hour < 9):
+        session["report_avail"] = True
+
+    session["confirm_avail"] = False
+    if (week == 7 and hour >= 23) or (week == 1 and hour < 9):
+        session["confirm_avail"] = True
+
+    session["farmer_delivery"] = False
+    if (week == 1 and hour >= 9) or (week == 2 and hour < 23):
+        session["farmer_delivery"] = True
+    
+    #client_pickups
+    
     return redirect(url_for('other.index'))
 
 @other_blueprint.route('/updateorder', methods=['GET','POST'])
