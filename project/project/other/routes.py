@@ -798,6 +798,10 @@ def updatedatetime():
         session["farmer_delivery"] = True
     
     #client_pickups
+
+    if not session["place_order"]:
+        ProductInBasket.query.delete()
+        db.session.commit()
     
     return redirect(url_for('other.index'))
 
