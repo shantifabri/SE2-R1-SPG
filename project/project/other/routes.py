@@ -368,9 +368,9 @@ def shoppingcart():
                 balance = True
                 if float(vals["total"]) > q2.wallet - q2.pending_amount:
                     balance = False
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date",datetime.datetime.now()))
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date"))
                 else:
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date",datetime.datetime.now()))
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date"))
                     q2.pending_amount = q2.pending_amount + float(vals["total"])
                 # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
@@ -836,6 +836,24 @@ def updateorder():
                 new_total += float(item["qty"]) * prod.price
 
     order.total = new_total
+    q2 = db.session.query(
+        User
+        ).filter(
+            User.id == order.client_id
+        ).filter(
+            User.role == "C"
+        ).first()
+    balance = True
+    if new_total > q2.wallet - q2.pending_amount:
+        balance = False
+        order.status = "PENDING CANCELLATION"
+    else:
+        order.status = "PENDING"
+    if not balance:
+        # Send an email to the user to remind to top-up the wallet
+        subject = "Insufficient Balance Reminder"
+        msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(order.order_id)+" with a total of €"+str(order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
+        mail_sender(subject,msg,q2.email)
     db.session.commit()
 
 
