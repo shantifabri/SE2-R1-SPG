@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, session, render_template
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -39,6 +40,14 @@ def register_blueprints(app):
 
     app.register_blueprint(other_blueprint)
     app.register_blueprint(users_blueprint)
+
+    from project.other.routes import set_session_vars
+
+    @app.before_first_request
+    def initialize():
+        session["date"] = datetime.now().strftime("%d-%m-%Y %H:%M")
+        set_session_vars()
+
 
 
 

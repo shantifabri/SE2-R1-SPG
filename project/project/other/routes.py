@@ -31,7 +31,6 @@ bot = telepot.Bot(TOKEN)
 #### routes ####
 @other_blueprint.route('/')
 def index():
-    print(session.get("date",datetime.datetime.now()))
     return render_template('index.html')
 
 @other_blueprint.route('/products', methods=['GET','POST'])
@@ -772,14 +771,17 @@ def updatedatetime():
     new_date = request.get_json()
     print(new_date)
     session["date"] = new_date
+    set_session_vars()
+    return redirect(url_for('other.index'))
 
-    date, time = new_date.split()
+def set_session_vars():
+    date, time = session["date"].split()
     day, month, year = list(map(int,date.split("-")))
     hour, minutes = list(map(int,time.split(":")))
 
     ans = datetime.date(year, month, day)
     session["weekday"] = ans.strftime("%A")
-    week = ans.isoweekday()
+    week = ans.isoweekday() # days 1 .. 7
 
     session["place_order"] = False
     if (week == 6 and hour >= 9) or (week == 7 and hour < 23):
@@ -797,13 +799,17 @@ def updatedatetime():
     if (week == 1 and hour >= 9) or (week == 2 and hour < 23):
         session["farmer_delivery"] = True
     
-    #client_pickups
+    session["client_pickups"] = False
+    if (week == 3 and hour >= 9) or (week == 4) or (week == 5 and hour < 23):
+        session["client_pickups"] = True
 
     if not session["place_order"]:
         ProductInBasket.query.delete()
         db.session.commit()
+
     
-    return redirect(url_for('other.index'))
+    orders_pending_cancel = db.session.query(Order).filter(Order.status == "PENDING CANCELLATION").all()
+    
 
 @other_blueprint.route('/updateorder', methods=['GET','POST'])
 @login_required
