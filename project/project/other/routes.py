@@ -807,8 +807,28 @@ def set_session_vars():
         ProductInBasket.query.delete()
         db.session.commit()
 
-    
     orders_pending_cancel = db.session.query(Order).filter(Order.status == "PENDING CANCELLATION").all()
+    for order in orders_pending_cancel:
+        order_date, order_time = order.order_date.split()
+        order_day, order_month, order_year = list(map(int,order_date.split("-")))
+        d = datetime.date(order_year, order_month, order_day)
+        next_monday = next_weekday(d, 0) # 0 = Monday
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
+
+        print(next_monday, current)
+        print(current > next_monday)
+        
+        if current > next_monday:
+            order.status = "CANCELLED"
+
+        db.session.commit()
+        
+
+def next_weekday(d, weekday):
+    days_ahead = weekday - d.weekday()
+    if days_ahead <= 0: # Target day already happened this week
+        days_ahead += 7
+    return d + datetime.timedelta(days_ahead)
     
 
 @other_blueprint.route('/updateorder', methods=['GET','POST'])
@@ -849,11 +869,11 @@ def updateorder():
         order.status = "PENDING CANCELLATION"
     else:
         order.status = "PENDING"
-    if not balance:
-        # Send an email to the user to remind to top-up the wallet
-        subject = "Insufficient Balance Reminder"
-        msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(order.order_id)+" with a total of €"+str(order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
-        mail_sender(subject,msg,q2.email)
+    # if not balance:
+    #     # Send an email to the user to remind to top-up the wallet
+    #     subject = "Insufficient Balance Reminder"
+    #     msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(order.order_id)+" with a total of €"+str(order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
+    #     mail_sender(subject,msg,q2.email)
     db.session.commit()
 
 
