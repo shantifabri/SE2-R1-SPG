@@ -87,7 +87,9 @@
                 </div>
                 <div class="modal-footer" style="justify-content:center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    {% if session["farmer_delivery"] %}
                     <button type="button" class="btn btn-success" onclick="confirmArrivals({{farmerproduct}});" data-dismiss="modal">Confirm Arrivals</button>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -61,7 +61,7 @@
                                                 <td>{{client_orders[order]["Order"].delivery_address}}</td>
                                                 <td>{{client_orders[order]["Order"].requested_delivery_date}}</td>
                                                 <td>€ {{'%.2f' % client_orders[order]["Order"].total}}</td>
-                                                <td>{% if client_orders[order]["Order"].status == "PENDING" or client_orders[order]["Order"].status == "PENDING CANCELLATION" %}
+                                                <td>{% if (client_orders[order]["Order"].status == "PENDING" or client_orders[order]["Order"].status == "PENDING CANCELLATION") and session["place_order"] %}
                                                     <button type="button" onclick="" data-toggle="modal" data-target="#editModal{{client_orders[order]['Order'].order_id}}" class="btn btn-success btn-lg btn-block"><i class="fas fa-edit"></i></button>{%
                                                     else %} {{client_orders[order]["Order"].status}}{% endif %}
                                                 </td>
