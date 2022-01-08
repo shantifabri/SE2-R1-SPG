@@ -780,6 +780,11 @@ def confirmarrived():
     db.session.commit()
     return redirect(url_for('other.confirmarrivals'))
 
+@other_blueprint.route('/getdate', methods=['GET'])
+@login_required
+def getdate():
+    return jsonify(date=session["date"])
+
 @other_blueprint.route('/updatedatetime', methods=['GET','POST'])
 @login_required
 def updatedatetime():
