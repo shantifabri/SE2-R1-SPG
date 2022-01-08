@@ -23,6 +23,7 @@ from . import other_blueprint
 from telepot.loop import MessageLoop
 import telepot
 import time
+import socket
 
 load_dotenv(verbose=True)
 TOKEN = os.getenv("TOKEN")
@@ -524,6 +525,20 @@ def manageproducts():
         ).filter(Product.product_id == form_edit.product_id.data
         ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
         db.session.commit()
+        print(form_edit.name.data)
+        print(form_edit.qty_available.data)
+        print(form_edit.product_id.data)
+
+        sendupdate = db.session.query(
+            User.tg_chat_id
+        ).filter(
+            User.tg_chat_id > 0
+        ).all()
+
+        # for telegram link, need to attention the host!
+        hostip = socket.gethostbyname(socket.gethostname())
+        for sendid in sendupdate:
+            bot.sendMessage(chat_id=sendid[0], text='Product is updated: %s, now available quantity is %s Kg, If you want to get more details, please click following link: http://%s:5000/singleproduct/%s' % (form_edit.name.data, form_edit.qty_available.data, hostip,  form_edit.product_id.data))
     
     return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
 
