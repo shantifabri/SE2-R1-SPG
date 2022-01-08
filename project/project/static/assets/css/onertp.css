@@ -429,6 +429,9 @@ table .btn-success {
 
 
 /* Footer */
+#onerspg_footer{
+	margin-top:50px;
+}
 
 #onerspg_footer a {
     color: #dcdde1;

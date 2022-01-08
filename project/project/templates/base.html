@@ -46,6 +46,7 @@
             $('.pick-date-global').bootstrapMaterialDatePicker({
                 format: 'DD-MM-YYYY HH:mm',
                 minDate: moment(),
+                daysOfWeekDisabled: [1,2,3,4,5]
                 //maxDate: moment().add(365, 'days')
             });
             //get the date after picking it
