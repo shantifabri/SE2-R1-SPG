@@ -42,13 +42,20 @@
     <script>
         $(function() {
 
-            var m = moment();
-            $('.pick-date-global').bootstrapMaterialDatePicker({
-                format: 'DD-MM-YYYY HH:mm',
-                minDate: moment(),
-                daysOfWeekDisabled: [1,2,3,4,5]
-                //maxDate: moment().add(365, 'days')
-            });
+            $.ajax({
+                url: "/getdate",
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    var k=res.date;
+                    
+                    $('.pick-date-global').bootstrapMaterialDatePicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        minDate: k,
+                    });
+                }
+            }); 
+
             //get the date after picking it
             $('.pick-date-global').on('change', function(e, date) {
                 console.log($(".pick-date-global").val());
