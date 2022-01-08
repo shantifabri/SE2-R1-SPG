@@ -59,7 +59,13 @@
     }
 
     function emptyCart() {
-
+        $.ajax({
+            url: '/emptycart',
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
     }
 </script>
     <!-- need differ balance and total -->
@@ -169,7 +175,7 @@
                                         {% endif %}
                                 </div>
                             </div>
-                            <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
+                            <button class="btn btn-success btn-lg btn-block" type="submit" {% if session["cart_count"] == 0 %}disabled{% endif %}>Checkout</button>
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><em class="fas fa-trash"></em></button>
                             
                             {% if balance == False %}

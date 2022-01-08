@@ -829,7 +829,17 @@ def next_weekday(d, weekday):
     if days_ahead <= 0: # Target day already happened this week
         days_ahead += 7
     return d + datetime.timedelta(days_ahead)
-    
+
+@other_blueprint.route('/emptycart', methods=['GET','POST'])
+@login_required
+def emptycart():
+    if current_user.role != 'C' and current_user.role != 'S':
+        return redirect(url_for('other.index'))
+    ProductInBasket.query.filter(ProductInBasket.client_id == current_user.id).delete()
+    print("DElETING CART")
+    db.session.commit() 
+    session["cart_count"] = 0
+    return redirect(url_for('other.shoppingcart'))
 
 @other_blueprint.route('/updateorder', methods=['GET','POST'])
 @login_required
