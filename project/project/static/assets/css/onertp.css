@@ -303,7 +303,9 @@ table .btn-success {
 .product-wap .product-color-dot.color-dot-green {
     background: #0bff7e;
 }
-
+.main-card{
+	background-color: transparent !important;
+}
 .card.product-wap .card .product-overlay {
     background: rgba(0, 0, 0, .2);
     visibility: hidden;
