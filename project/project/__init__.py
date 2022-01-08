@@ -43,10 +43,11 @@ def register_blueprints(app):
 
     from project.other.routes import set_session_vars
 
-    @app.before_first_request
+    @app.before_request
     def initialize():
-        session["date"] = datetime.now().strftime("%d-%m-%Y %H:%M")
-        set_session_vars()
+        if not session.get('date'):
+            session["date"] = datetime.now().strftime("%d-%m-%Y %H:%M")
+            set_session_vars()
 
 
 
