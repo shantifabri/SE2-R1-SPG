@@ -289,7 +289,10 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         
         user[0].wallet -= new_total
         user[0].pending_amount -= new_total
-        bot.sendMessage(chat_id=user[0].tg_chat_id,text='Your order number:%d is confirmed' % (order.order_id))
+        try:
+            bot.sendMessage(chat_id=user[0].tg_chat_id, text='Your order number:%d is confirmed' % (order.order_id))
+        except telepot.exception.TelegramError:
+            bot.sendMessage(chat_id=473918518, text='User: %s order is confirmed but Telegram message sent failed'%(user.email))
 
         
     db.session.commit()
@@ -456,7 +459,12 @@ def topup():
         ).filter(User.email == form.email.data
         ).one()
         user.wallet += form.amount.data
-        bot.sendMessage(chat_id=user.tg_chat_id,text='Your wallet topped up with %s euro' % (form.amount.data))
+        try:
+            bot.sendMessage(chat_id=user.tg_chat_id,text='Your wallet topped up with %s euro' % (form.amount.data))
+        except telepot.exception.TelegramError:
+            bot.sendMessage(chat_id=473918518,text='User: %s topped up successfully but Telegram message sent failed'%(user.email))
+            # chat_id=473918518 can set as manager's userid. So manager can receive message when topup successful but
+            # telegram sent failed.
 
         found = True
         while(found == True):
@@ -538,7 +546,11 @@ def manageproducts():
         # for telegram link, need to attention the host!
         hostip = socket.gethostbyname(socket.gethostname())
         for sendid in sendupdate:
-            bot.sendMessage(chat_id=sendid[0], text='Product is updated: %s, now available quantity is %s Kg, If you want to get more details, please click following link: http://%s:5000/singleproduct/%s' % (form_edit.name.data, form_edit.qty_available.data, hostip,  form_edit.product_id.data))
+            print(sendid[0])
+            try:
+                bot.sendMessage(chat_id=sendid[0], text='Product is updated: %s, now available quantity is %s Kg, If you want to get more details, please click following link: http://%s:5000/singleproduct/%s' % (form_edit.name.data, form_edit.qty_available.data, hostip,  form_edit.product_id.data))
+            except telepot.exception.TelegramError:
+                bot.sendMessage(chat_id=473918518, text='Message notification sent failed to telegram user_id: %s .' % (sendid[0]))
     
     return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
 
