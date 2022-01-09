@@ -1,5 +1,0 @@
--manageorders.html
-send email to client when 'balance reminder' button is pressed.
-
--routes.py/shoppingcart
-when the order is submitted, the pending_amount must be updated adding the amount of the current order.

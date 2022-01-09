@@ -9,4 +9,4 @@ COPY . /spgr2
 RUN pip3 install --requirement /spgr2/requirements.txt
 EXPOSE 5000
 ENTRYPOINT ["python3"]
-CMD ["./app.py"]
+CMD ["./app.py","./spgr2/other/tgbot.py"]
