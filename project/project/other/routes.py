@@ -399,6 +399,18 @@ def shoppingcart():
                     subject = "Insufficient Balance Reminder"
                     msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(new_order.order_id)+" with a total of €"+str(new_order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
                     mail_sender(subject,msg,q2.email)
+
+                    i = 1
+                    try:
+                        while 1:
+                            bot.sendMessage(chat_id=q2.tg_chat_id, text='%s' % (msg))
+                            time.sleep(10)
+                            # sleep 10s here just for test
+                            i += 1
+                            if i > 3:
+                                break
+                    except telepot.exception.TelegramError:
+                        bot.sendMessage(chat_id=473918518, text='User: %s order failed notification sent failed' % (q2.email))
                     return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=balance)
 
                 return redirect(url_for('other.index'))
