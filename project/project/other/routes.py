@@ -91,10 +91,9 @@ def singleproduct(product_id):
     return render_template('singleproduct.html', product=product, form=form, valid=True)
 
 @other_blueprint.route('/insertclient', methods=['GET','POST'])
-@login_required
 def insertclient():
-    if current_user.role != 'S':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S':
+    #     return redirect(url_for('other.index'))
     # name, surname, email, phone, wallet
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
@@ -297,10 +296,11 @@ def confirm_order(order_id,pio_id,product_id,quantity):
             order.status = 'CONFIRMED'
             user[0].wallet -= new_total
             user[0].pending_amount -= new_total
+
         try:
             bot.sendMessage(chat_id=user[0].tg_chat_id, text='Your order number:%d is confirmed' % (order.order_id))
         except telepot.exception.TelegramError:
-            bot.sendMessage(chat_id=473918518, text='User: %s order is confirmed but Telegram message sent failed'%(user.email))
+            bot.sendMessage(chat_id=473918518, text='User: %s order is confirmed but Telegram message sent failed'%(user[0].email))
 
     db.session.commit()
 
@@ -884,7 +884,7 @@ def set_session_vars():
         order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
         current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
 
-        if not session["confirm_avail"] and current > order_date:
+        if not (session["confirm_avail"] or session["place_order"]) and current > order_date and order.status == "PENDING":
             confirm_order(order.order_id,prod.pio_id,prod.product_id,0)
 
 
