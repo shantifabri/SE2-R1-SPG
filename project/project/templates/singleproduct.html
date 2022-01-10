@@ -146,7 +146,7 @@
                             <li>Dolore magna aliqua</li>
                             <li>Excepteur sint</li>
                         </ul> -->
-                        {% if (current_user.role == "S" or current_user.role == "C") and session["place_order"] %}
+                        {% if (current_user.role == "S" or current_user.role == "C") and session["place_order"] and (product[0].qty_available - product[0].qty_requested)>0 %}
                         <form class="form-container" action="{{ url_for('other.singleproduct', product_id = product[0].product_id) }}" method="POST">
                             <!-- <input type="hidden" name="product-title" value="Activewear"> -->
                             <div class="row">

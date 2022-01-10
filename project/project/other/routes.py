@@ -154,21 +154,27 @@ def confirmarrivals():
     ).group_by(
         User.id,User.name,User.surname,User.company
     ).all()
-    products = db.session.query(Product
+    products = db.session.query(Product, Order, ProductInOrder
     ).filter(
         Product.qty_confirmed>0
     ).filter(
         Order.status == "CONFIRMED"
+    ).filter(
+        Order.order_id == ProductInOrder.order_id
+    ).filter(
+        Product.product_id == ProductInOrder.product_id
+    ).filter(
+        ProductInOrder.confirmed == 1
     ).group_by(
         Product.farmer_id,Product.product_id
     ).all()
     farmerproducts = {}
     for product in products:
-        if product.farmer_id in farmerproducts.keys():
-            farmerproducts[product.farmer_id].append({'name':product.name, 'quantity':product.qty_confirmed, 'id':product.product_id})
+        if product[0].farmer_id in farmerproducts.keys():
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[0].qty_confirmed, 'id':product[0].product_id})
         else:
-            farmerproducts[product.farmer_id]=[]
-            farmerproducts[product.farmer_id].append({'name':product.name, 'quantity':product.qty_confirmed, 'id':product.product_id})
+            farmerproducts[product[0].farmer_id]=[]
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[0].qty_confirmed, 'id':product[0].product_id})
 
     return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
