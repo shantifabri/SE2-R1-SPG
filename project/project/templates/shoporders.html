@@ -108,7 +108,7 @@
                                                             </td>
 
                                                             <td>
-                                                                {% if order[0].status == "LODGED" and session["client_pickups"] %}
+                                                                {% if order[0].status == "DELIVERING" and session["client_pickups"] %}
                                                                 <button onClick="updateStatus({{order[0].order_id}})"
                                                                     type="button" class="btn btn-outline-success">
                                                                     Hand Out
