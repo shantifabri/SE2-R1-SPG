@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     surname = StringField('Surname', validators=[InputRequired(), Length(min=1, max=20)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=5, max=80)])
     company = StringField('Company', validators=[InputRequired(), Length(min=1, max=80)])
-    role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Manager'), ('A', 'Admin'), ('W', 'Warehouse Worker'), ('M', 'Warehouse Manager')])
+    role = SelectField('Role',choices=[('F', 'Farmer'), ('S', 'Shop Employee'), ('W', 'Warehouse Worker'), ('M', 'Warehouse Manager')])
 
 class AddToCartForm(FlaskForm):
     quantity = FloatField('Quantity (Kg):', widget=NumberInput(min=0.1, step=0.1), validators=[InputRequired()], render_kw={"class":"form-control","style":"width:50%","placeholder":"1.2 Kg", "max":"0", "value":"0.1"})
