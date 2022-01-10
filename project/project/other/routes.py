@@ -903,7 +903,17 @@ def set_session_vars():
         if not (session["confirm_avail"] or session["place_order"]) and current > order_date and order.status == "PENDING":
             confirm_order(order.order_id,prod.pio_id,prod.product_id,0)
 
+    # missed orders
+    for order in Order.query.all():
+        order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
 
+        next_saturday = next_weekday(order_date, 5)
+
+        if current >= next_saturday and order.status == "DELIVERING":
+            order.status = "MISSED"
+    db.session.commit()
+    
 def next_weekday(d, weekday):
     days_ahead = weekday - d.weekday()
     if days_ahead <= 0: # Target day already happened this week

@@ -81,10 +81,11 @@ class Order(db.Model):
     # status is PENDING if the order has just been submitted,
     # status is PENDING CANCELLATION if the wallet is not enough to pay the order,
     # status is CONFIRMED if the order is confirmed from the farmer,
-    # status is WAREHOUSING if the order is delivered from the farmer to the warehouse,
+    # status is WAREHOUSING if the order is delivered from the farmer to the warehouse, - not longer in use
     # status is WAREHOUSED if the order has been received from the farmer by the warehouse manager,
     # status is PREPARED if the warehouse worker has prepared the bag with the goods,
     # status is CANCELLED if the order has been cancelled (insufficient balance),
     # status is DELIVERING if the order has been delivered from the warehouse,
-    # status is LODGED if the order has arrived to the pick-up point,
+    # status is LODGED if the order has arrived to the pick-up point, - not longer in use
     # status is DELIVERED if the order has been handed out to the client or delivered to the client address.
+    # status is MISSED if the order pickup was missed by the client
