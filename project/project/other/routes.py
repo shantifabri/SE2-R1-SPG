@@ -861,6 +861,12 @@ def set_session_vars():
 
     session["report_avail"] = False
     if (week == 3 and hour >= 9) or (week in range(4,6)) or (week == 6 and hour < 9):
+        for product in Product.query.all():
+            product.qty_requested = 0
+            product.qty_confirmed = 0
+            product.qty_warehousing = 0
+            product.qty_warehoused = 0
+        db.session.commit()
         session["report_avail"] = True
 
     session["confirm_avail"] = False
@@ -878,6 +884,11 @@ def set_session_vars():
     # wipe client carts
     if not session["place_order"]:
         ProductInBasket.query.delete()
+        db.session.commit()
+
+    if (week == 1 and hour >= 9) or (week == 2) or (week == 3 and hour < 9):
+        for product in Product.query.all():
+            product.qty_available = 0
         db.session.commit()
 
     # cancel orders with pending cancellation past deadline
