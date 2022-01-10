@@ -43,6 +43,7 @@
                                                 <th>Qty Available</th>
                                                 <th>Total</th>
                                                 <th>Status</th>
+                                                <th>Qty Confirmed</th>
                                                 {% if session["confirm_avail"] %}<th>Qty to Confirm</th>{% endif %}
                                                 <th></th>
                                             </tr>
@@ -65,6 +66,7 @@
                                                     <div class="badge badge-success">CONFIRMED</div>
                                                     {% endif %}
                                                 </td>
+                                                <td>{{order[1].qty_confirmed}} Kg</td>
                                                 
                                                 {% if session["confirm_avail"] %}
                                                     <td>{% if order[1].confirmed == False %}<div class="w-100">

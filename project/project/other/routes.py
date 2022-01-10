@@ -249,7 +249,10 @@ def confirmwarehousing(product_id,quantity):
 @other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>/<quantity>',  methods=['GET','POST'])
 @login_required
 def confirmorder(order_id,pio_id,product_id,quantity):
+    confirm_order(order_id,pio_id,product_id,quantity)
+    return redirect(url_for('other.farmerorders'))
 
+def confirm_order(order_id,pio_id,product_id,quantity):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
     product = db.session.query(Product).filter(Product.product_id == product_id).one()
@@ -274,7 +277,6 @@ def confirmorder(order_id,pio_id,product_id,quantity):
             ProductInOrder.confirmed == False
         ).all()
     if len(products) == 0:
-        order.status = 'CONFIRMED'
         #FIXME send email when order is confirmed
         items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
         if order.home_delivery == 'N':
@@ -284,19 +286,23 @@ def confirmorder(order_id,pio_id,product_id,quantity):
         for item in items:
             prod = db.session.query(Product).filter(Product.product_id == item.product_id).one()
             new_total += prod.price * item.qty_confirmed
-            item.confirmed = False
+            print(item.qty_confirmed)
+            # item.confirmed = False
         order.total = new_total
+
+        if order.total == 0 or (order.home_delivery != 'N' and order.total == 7.50):
+            order.status = "CANCELLED"
         
-        user[0].wallet -= new_total
-        user[0].pending_amount -= new_total
+        else:
+            order.status = 'CONFIRMED'
+            user[0].wallet -= new_total
+            user[0].pending_amount -= new_total
         try:
             bot.sendMessage(chat_id=user[0].tg_chat_id, text='Your order number:%d is confirmed' % (order.order_id))
         except telepot.exception.TelegramError:
             bot.sendMessage(chat_id=473918518, text='User: %s order is confirmed but Telegram message sent failed'%(user.email))
 
-        
     db.session.commit()
-    return redirect(url_for('other.farmerorders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -847,10 +853,12 @@ def set_session_vars():
     if (week == 3 and hour >= 9) or (week == 4) or (week == 5 and hour < 23):
         session["client_pickups"] = True
 
+    # wipe client carts
     if not session["place_order"]:
         ProductInBasket.query.delete()
         db.session.commit()
 
+    # cancel orders with pending cancellation past deadline
     orders_pending_cancel = db.session.query(Order).filter(Order.status == "PENDING CANCELLATION").all()
     for order in orders_pending_cancel:
         order_date, order_time = order.order_date.split()
@@ -858,15 +866,27 @@ def set_session_vars():
         d = datetime.date(order_year, order_month, order_day)
         next_monday = next_weekday(d, 0) # 0 = Monday
         current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
-
-        print(next_monday, current)
-        print(current > next_monday)
         
         if current > next_monday:
             order.status = "CANCELLED"
-
         db.session.commit()
-        
+
+    # confirm 0 avail if past confirmation deadline
+    prod_pending_confirm = db.session.query(
+            Order, ProductInOrder
+        ).filter(
+            Order.order_id == ProductInOrder.order_id
+        ).filter(
+            ProductInOrder.confirmed == 0
+        ).all()
+
+    for order, prod in prod_pending_confirm:
+        order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
+
+        if not session["confirm_avail"] and current > order_date:
+            confirm_order(order.order_id,prod.pio_id,prod.product_id,0)
+
 
 def next_weekday(d, weekday):
     days_ahead = weekday - d.weekday()
