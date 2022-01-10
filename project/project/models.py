@@ -23,6 +23,7 @@ class ProductRequest(db.Model):
     shop_id = db.Column(db.Integer)
     quantity = db.Column(db.Float)
     timestamp = db.Column(db.String(40))
+    deleted = db.Column(db.Integer)
 
 class ProductInOrder(db.Model):
     __tablename__ = "product_in_order"

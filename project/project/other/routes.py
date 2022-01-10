@@ -44,6 +44,8 @@ def products():
         User
         ).filter(
             User.id == Product.farmer_id
+        ).filter(
+            Product.deleted == 0
         ).all()
     if form.validate_on_submit():
         if form.search.data == None:
@@ -56,6 +58,8 @@ def products():
         ).filter(
 
             or_(Product.name.like("%" + form.search.data + "%"),User.company.like("%" + form.search.data + "%"))
+        ).filter(
+            Product.deleted == 0
         ).all()
     
     return render_template('products.html',products=products,form=form)
@@ -146,25 +150,25 @@ def updateshipping(value):
 def confirmarrivals():
     farmers = db.session.query(ProductInOrder,Product,User,Order
     ).filter(
-        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'WAREHOUSING')
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, ProductInOrder.confirmed == 1)
     ).group_by(
         User.id,User.name,User.surname,User.company
     ).all()
-    products = db.session.query(Product,func.sum(Product.qty_confirmed)
+    products = db.session.query(Product
     ).filter(
         Product.qty_confirmed>0
     ).filter(
-        Order.status == "WAREHOUSING"
+        Order.status == "CONFIRMED"
     ).group_by(
         Product.farmer_id,Product.product_id
     ).all()
     farmerproducts = {}
     for product in products:
-        if product[0].farmer_id in farmerproducts.keys():
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1], 'id':product[0].product_id})
+        if product.farmer_id in farmerproducts.keys():
+            farmerproducts[product.farmer_id].append({'name':product.name, 'quantity':product.qty_confirmed, 'id':product.product_id})
         else:
-            farmerproducts[product[0].farmer_id]=[]
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1], 'id':product[0].product_id})
+            farmerproducts[product.farmer_id]=[]
+            farmerproducts[product.farmer_id].append({'name':product.name, 'quantity':product.qty_confirmed, 'id':product.product_id})
 
     return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
 
@@ -186,7 +190,7 @@ def updatestatus(order_id,status,redirect_url):
         subject = "Order Delivering"
         msg = "Dear "+user.name+", your order with id: #"+str(order.order_id)+",\nfor a total price of: €"+str(order.total)+",\nis being delivered to the chosen delivery place ("+order.delivery_address+").\nMake sure to not miss your delivery!\nThanks, \nSPG Team."
         mail_sender(subject,msg,user.email)
-        order.actual_delivery_date = session.get("date",datetime.datetime.now()).strftime("%d %B, %Y")
+        order.actual_delivery_date = session.get("date")
 
     db.session.commit()
     redirect_url = "other." + str(redirect_url)
@@ -210,11 +214,11 @@ def confirmwarehousing(product_id,quantity):
         ).filter(
             Order.status == "CONFIRMED"
         ).filter(
-            ProductInOrder.confirmed == False
+            ProductInOrder.confirmed == 1
         ).all()
     
     for p in products:
-        p[0].confirmed=True
+        p[0].confirmed=2
     
     db.session.commit()
 
@@ -234,12 +238,10 @@ def confirmwarehousing(product_id,quantity):
         f = True
     
         for ps2 in p2:
-            if ps2.confirmed == False:
+            if ps2.confirmed == 1:
                 f=False
                 
         if f == True:
-            for ps3 in p2:
-                ps3.confirmed = False
             ps1.status = "WAREHOUSING"
 
     db.session.commit()
@@ -266,18 +268,19 @@ def confirm_order(order_id,pio_id,product_id,quantity):
     else:
         pio.qty_confirmed = float(quantity)
     product.qty_confirmed += pio.qty_confirmed
-    pio.confirmed = True
+    pio.confirmed = 1
     
     products = db.session.query(
         ProductInOrder
         ).filter(
             ProductInOrder.order_id == order_id
         ).filter(
-            ProductInOrder.confirmed == False
+            ProductInOrder.confirmed == 0
         ).all()
     if len(products) == 0:
         #FIXME send email when order is confirmed
         items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
+        old_total = order.total
         if order.home_delivery == 'N':
             new_total = 0
         else:
@@ -293,9 +296,13 @@ def confirm_order(order_id,pio_id,product_id,quantity):
             order.status = "CANCELLED"
         
         else:
-            order.status = 'CONFIRMED'
-            user[0].wallet -= new_total
-            user[0].pending_amount -= new_total
+            if order.status == "PENDING CANCELLATION":
+                pass
+
+            else:
+                order.status = 'CONFIRMED'
+                user[0].wallet -= new_total
+                user[0].pending_amount -= old_total
 
         try:
             bot.sendMessage(chat_id=user[0].tg_chat_id, text='Your order number:%d is confirmed' % (order.order_id))
@@ -389,7 +396,7 @@ def shoppingcart():
 
                 items = []
                 for prod in products:
-                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False, qty_confirmed=0))
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=0, qty_confirmed=0))
                     product = db.session.query(Product).filter(Product.product_id == prod["product_id"]).first()
                     product.qty_requested = product.qty_requested + prod["quantity"]
                     db.session.commit()
@@ -497,8 +504,19 @@ def topup():
             ).all()
             # print(order)
             if len(order) > 0:
-                order[0].status = "PENDING"
-                user.pending_amount += order[0].total
+                prod_in_order = db.session.query(
+                    ProductInOrder
+                ).filter(
+                    ProductInOrder.order_id == order[0].order_id
+                ).filter(
+                    ProductInOrder.confirmed == 0).all()
+                
+                if len(prod_in_order) > 0:
+                    order[0].status = "PENDING"
+                    user.pending_amount += order[0].total
+                else:
+                    order[0].status = "CONFIRMED"
+                    user.wallet -= order[0].total
             else:
                 found = False
         db.session.commit()
@@ -540,7 +558,7 @@ def manageproducts():
         ).all()
         filename = filenames[0] + str(len(prods)) + "." + filenames[1]
         form.image.data.save("project/static/shop_imgs/" + filename)
-        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()), deleted=0)
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
@@ -588,7 +606,7 @@ def farmerorders():
     ).filter(
         Product.farmer_id == current_user.id
     ).filter(
-        Order.status == "PENDING"
+        or_(Order.status == "PENDING", Order.status == "PENDING CANCELLATION")
     # ).filter(
     #     ProductInOrder.confirmed == False
     ).all()
@@ -777,7 +795,7 @@ def confirmarrived():
                 ProductInOrder.product_id == prod_id
             ).all()
             for elem in pio:
-                elem.confirmed = 1
+                elem.confirmed = 2
         except Exception as e:
             print(e)
         db.session.commit()
@@ -785,27 +803,25 @@ def confirmarrived():
     orders = db.session.query(
         Order
     ).filter(
-        Order.status == "WAREHOUSING"
+        Order.status == "CONFIRMED"
     ).all()
     for elem in orders:
-        order_confs = db.session.query(
-            Order,Product,ProductInOrder
-        ).filter(
-            ProductInOrder.order_id == Order.order_id
-        ).filter(
-            ProductInOrder.product_id == Product.product_id
-        ).filter(
-            Order.order_id == elem.order_id
-        ).filter(
-            ProductInOrder.confirmed == 0
-        ).all()
+        # order_confs = db.session.query(
+        #     Order,Product,ProductInOrder
+        # ).filter(
+        #     ProductInOrder.order_id == Order.order_id
+        # ).filter(
+        #     ProductInOrder.product_id == Product.product_id
+        # ).filter(
+        #     Order.order_id == elem.order_id
+        # ).all()
         # print(order)
-        if len(order_confs) == 0:
-            user = db.session.query(User).filter(User.id == elem.client_id).one()
-            elem.status = "WAREHOUSED"
-            subject = "Order Warehoused"
-            msg = "Dear User, the order you submitted with id: #"+str(elem.order_id)+", with a total of €"+str(elem.total)+" has been Warehoused,\nIt will be prepared by one of our workers and brought to you according to the delivery date you have chosen.\nThanks, \nSPG Team."
-            mail_sender(subject,msg,user.email)
+        # if len(order_confs) == 0:
+        user = db.session.query(User).filter(User.id == elem.client_id).one()
+        elem.status = "WAREHOUSED"
+        subject = "Order Warehoused"
+        msg = "Dear User, the order you submitted with id: #"+str(elem.order_id)+", with a total of €"+str(elem.total)+" has been Warehoused,\nIt will be prepared by one of our workers and brought to you according to the delivery date you have chosen.\nThanks, \nSPG Team."
+        mail_sender(subject,msg,user.email)
             
     db.session.commit()
     return redirect(url_for('other.confirmarrivals'))
