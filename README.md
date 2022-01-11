@@ -61,16 +61,15 @@ d. When the available products is updated.
 ------
 
 ## User Credentials:
-
-Farmer: giovanni@gmail.com
-
-Client: lucaval@gmail.com
-
-Manager: manager@gmail.com
-
-Worker: worker@gmail.com
-
-ShopEmployee: verdi@gmail.com
+| Role             | Name                | Email                          |
+| ---------------- | ------------------- | ------------------------------ |
+| Client           | Miriam Bread        | miriambread@yopmail.com        |
+| Client           | Giovanni Fettuccini | giovannifettuccini@yopmail.com |
+| Shop Employee    | Mario White         | mariowhite@yopmail.com         |
+| Farmer           | Calvin Ross         | calvinross@yopmail.com         |
+| Farmer           | Mike Garcia         | mikegarcia@yopmail.com         |
+| Warehouse Worker | Bob Martin          | bobmartin@yopmail.com          |
+| Warehouse Worker | Mark Doe            | markdoe@yopmail.com            |
 
 Password for everyone: helloworld
 
