@@ -25,11 +25,11 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           TOKEN: ${{ secrets.TOKEN }}
         working-directory: ./project
-        run: python -m pytest -v  --cov --cov-report=xml --cov-report=html
+        run: python -m pytest -v  --junitxml coverage.xml
       - uses: actions/upload-artifact@v2
         with:
           name: code-coverage
-          path: project/.coverage
+          path: project/coverage.xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
