@@ -27,6 +27,9 @@ jobs:
         with:
           name: code-coverage
           path: project/coverage.xml
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          TOKEN: ${{ secrets.TOKEN }}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
