@@ -1,8 +1,10 @@
 {% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
 <div class="container col-md-6">
     <form class="form-container form-container-spacing" method="POST" action="/insertclient" >
-        <h1 class="form-signin-heading" style="text-align:center">Insert a new Client</h1>
-        {{ form.hidden_tag() }} {{ wtf.form_field(form.name) }} {{ wtf.form_field(form.surname) }} {{ wtf.form_field(form.email) }} {{ wtf.form_field(form.password) }}
+        <h1 class="form-signin-heading" style="text-align:center">{% if current_user.role == "S" %} Insert a new Client {% else %} Register {% endif %}</h1>
+        {{ form.hidden_tag() }} {{ wtf.form_field(form.name) }} {{ wtf.form_field(form.surname) }} {{ wtf.form_field(form.email) }} {{ wtf.form_field(form.password) }} {{ wtf.form_field(form.Telegram_id) }}
+
+        <h6>*to get your Telegram ID click <a target="_blank" href="https://t.me/SPGR1bot">HERE</a> and write /info.</h6>
         <button class="btn btn-lg btn-success btn-block" type="submit">Insert</button>
     </form>
 </div>

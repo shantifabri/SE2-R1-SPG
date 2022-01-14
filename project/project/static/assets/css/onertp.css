@@ -61,6 +61,10 @@ div {
     vertical-align:middle;
 }
 
+.table .dtp-picker-days tbody{
+	margin-top:-500px;
+}
+
 .nomobile{
     display:none;
 }
@@ -168,9 +172,9 @@ div {
     background-color: #59ab6e !important;
 }
 
-.btn-success {
-    background-color: #59ab6e !important;
-    border-color: #56ae6c !important;
+table .btn-success {
+    background-color: #59ab6e ;
+    border-color: #56ae6c ;
 }
 
 .pagination .page-link:hover {
@@ -219,6 +223,10 @@ div {
     right: 0;
 }
 
+.form-signin{
+	margin-top:50px;
+	margin-bottom:50px;
+}
 /* Nav */
 
 #onertp_nav_top {
@@ -241,6 +249,9 @@ div {
     margin-right: 20px;
 }
 
+.nav-item{
+	padding-right:15px;
+}
 
 /* Hero Carousel */
 
@@ -292,7 +303,9 @@ div {
 .product-wap .product-color-dot.color-dot-green {
     background: #0bff7e;
 }
-
+.main-card{
+	background-color: transparent !important;
+}
 .card.product-wap .card .product-overlay {
     background: rgba(0, 0, 0, .2);
     visibility: hidden;
@@ -307,6 +320,17 @@ div {
 
 .card.product-wap a {
     color: #000;
+}
+
+.cardtable{
+	box-shadow: 0 0 .1rem #fff,
+              0 0 .1rem #fff,
+              0 0 0.5rem #83CB1E,
+              0 0 0.4rem #83CB1E,
+              0 0 1.4rem #83CB1E,
+              inset 0 0 0.75rem #83CB1E;
+        
+	border-radius:10px;
 }
 
 #carousel-related-product .slick-slide:focus {
@@ -370,7 +394,28 @@ div {
     background: #69bb7e;
 }
 
+/* DatePicker  */
+.dtp-picker, .dtp-picker a, .dtp-picker th, .dtp-picker-days, .dtp-select-day{
+    font-size:15px !important;
+    font-weight:500 !important;
+}
 
+.dtp-select-hour-text{
+    font-weight:500 !important;
+}
+
+.dtp-picker-days{
+    margin-right:15px;
+}
+.picker__day:hover{
+	background: #8bc34a2b !important;
+}
+.picker__day--highlighted {
+	background: #8bc34a7a !important;
+    border-color: #8bc34a7a  !important;
+	color:#000 !important;
+	font-weight:400 !important;
+}
 /* Contact map */
 
 .leaflet-control a,
@@ -384,6 +429,9 @@ div {
 
 
 /* Footer */
+#onerspg_footer{
+	margin-top:50px;
+}
 
 #onerspg_footer a {
     color: #dcdde1;

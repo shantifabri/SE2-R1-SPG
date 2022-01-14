@@ -1,0 +1,90 @@
+{% import "bootstrap/wtf.html" as wtf %} {% extends "base.html" %} {% block main %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+.gradient-bg {
+  background: #59ab6e;
+  background: linear-gradient(to right bottom, #83cb1ea6, #59ab6e);
+}
+</style>
+<body>
+    <div class="container">
+      {% set roles = {'C':'Client','F':'Farmer','W':'Warehouse Worker','M':'Warehouse Manager','S':'Shop Employee'} %}
+        <section >
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-lg-8 mb-4 mb-lg-0">
+                  <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                      <div class="col-md-4 gradient-bg text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                        <img
+                          src="/static/icons/{{current_user.role}}.png"
+                          alt="Avatar"
+                          class="img-fluid my-5"
+                          style="width: 90px;"
+                        />
+                        <h5>{{current_user.name}}&nbsp;{{current_user.surname}}</h5>
+                        <p>{{roles[current_user.role]}}</p>
+                      <i class="far fa-user mb-5"></i>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="card-body p-4">
+                          <h6>Information</h6>
+                          <hr class="mt-0 mb-4">
+                          <div class="row pt-1">
+                            <div class="col-9 mb-3">
+                              <h6>Email</h6>
+                              <p>{{current_user.email}}</p>
+                            </div>
+                            <div class="col-3 mb-3">
+                              <h6>User Id</h6>
+                              <p>#{{current_user.id}}</p>
+                            </div>
+                          </div>
+                          {% if current_user.role == 'C' %}
+                          <h6>Wallet</h6>
+                          <hr class="mt-0 mb-4">
+                          <div class="row pt-1">
+                            <div class="col-4 mb-3">
+                              <h6>Total Balance</h6>
+                              <p>{{'%.2f' % current_user.wallet}}€</p>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <h6>Pending Balance</h6>
+                                <p><span style="color:red; font-weight:900;">{{'%.2f' % current_user.pending_amount}}€</span></p>
+                              </div>
+                            <div class="col-4 mb-3">
+                                <h6>Available Balance</h6>
+                                <p><span style="color:green; font-weight:900;">{{'%.2f' % (current_user.wallet-current_user.pending_amount)}}€</span></p>
+                              </div>
+                          </div>
+                          {% else %}
+                          <h6>Description</h6>
+                          <div class="row pt-1">
+                            <div class="col-12 mb-3">
+                              {% if current_user.role == 'F' %}
+                              Farmer working at <span class="text-success "><b>{{current_user.company}}</b></span>, in charge of uploading the products available each week and confirm all the orders from the clients.
+                              {% elif current_user.role == 'M' %}
+                              Manager of the SPG Central Warehouse, in charge of checking the received quantities and preparing the deliveries.
+                              {% elif current_user.role == 'W' %}
+                              Employed at the SPG Central Warehouse, in charge of preparing the bags with the goods to be delivered.
+                              {% elif current_user.role == 'S' %}
+                              Employed at the Super Market, in charge of taking SPG orders and handing out SPG bags.
+                              {% else %}
+                              Default
+                              {% endif %}
+                            </div>
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+    </div>
+    
+
+    <body>
+        {% endblock %}

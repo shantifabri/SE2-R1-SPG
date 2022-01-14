@@ -2,8 +2,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
     function confirmOrder(order_id,pio_id,product_id) {
+        var quantity = document.getElementById('input'+pio_id);
         $.ajax({
-            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id,
+            url: '/confirmorder/' + order_id + '/' + pio_id + '/' + product_id + '/' + quantity.value,
             type: "post",
             success: function(data) {
                 location.reload(true);
@@ -11,11 +12,6 @@
         });
     }
 </script>
-<style>
-   .table-responsive tr:nth-child(even) {
-        background-color: #d6f0c7;
-    }
-</style>
 
 <body>
     <div class="container-fluid col-md-12">
@@ -26,8 +22,8 @@
             <div class="padding">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
+                        <div class="row">
+                            <div class="main-card mb-3 card">
                                 <!-- <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Orders Confirmation</h4>
                                 <p>&nbsp;</p>
@@ -35,17 +31,20 @@
                                 <p>&nbsp;</p>
                                 <p>&nbsp;</p> -->
                                 <div class="table-responsive">
-                                    <table class="table" style="text-align:center;">
-                                        <caption>Please deal with orders as soon as possible</caption>
+                                    <table  class="align-middle mb-0 table table-borderless table-striped table-hover" style="text-align:center;border:0px !important;">
+                                     <caption style="color:red;"><marquee>Please deal with orders as soon as possible</marquee></caption>
                                         <thead>
                                             <tr>
                                                 <th>Order Id</th>
-                                                <th>Client</th>
+                                                <th>Client Email</th>
                                                 <th>Order Date</th>
                                                 <th>Product</th>
-                                                <th>Quantity</th>
+                                                <th>Qty Requested</th>
+                                                <th>Qty Available</th>
                                                 <th>Total</th>
                                                 <th>Status</th>
+                                                <th>Qty Confirmed</th>
+                                                {% if session["confirm_avail"] %}<th>Qty to Confirm</th>{% endif %}
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -58,18 +57,28 @@
                                                 <td>{{order[0].order_date[0:10]}}</td>
                                                 <td>{{order[2].name}}</td>
                                                 <td>{{order[1].quantity}} Kg</td>
+                                                <td>{{'%.2f' % (order[2].qty_available-order[2].qty_confirmed)}} Kg</td>
                                                 <td>€ {{'%.2f' % (order[1].quantity * order[2].price)}}</td>
                                                 <td>
                                                     {% if order[1].confirmed == False %}
-                                                    <span class="text-black-bold">{{order[0].status}}</span>
+                                                    <div class="badge badge-info">{{order[0].status}}</div>
                                                     {% else %}
-                                                    <span class="text-black-bold">CONFIRMED</span>
+                                                    <div class="badge badge-success">CONFIRMED</div>
                                                     {% endif %}
                                                 </td>
-                                                <td>{% if order[1].confirmed == False %}
-                                                    <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
-                                                    <i class="fas fa-check-double"></i>
-                                                </button>{% endif %}</td>
+                                                <td>{{order[1].qty_confirmed}} Kg</td>
+                                                
+                                                {% if session["confirm_avail"] %}
+                                                    <td>{% if order[1].confirmed == False %}<div class="w-100">
+                                                        <span class="input-number" style="text-align:center">
+                                                        <input type="number" class="numclass" id="input{{order[1].pio_id}}" name="inputNumber" value="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}" step="0.1" min="0" max="{% if order[1].quantity < order[2].qty_available-order[2].qty_confirmed %}{{order[1].quantity}}{% else %}{{order[2].qty_available-order[2].qty_confirmed}}{% endif %}">
+                                                        </span>
+                                                    </div>{% endif %}</td>
+                                                    <td>{% if order[1].confirmed == False %}
+                                                        <button onClick="confirmOrder({{order[0].order_id}},{{order[1].pio_id}},{{order[2].product_id}});" type="button" class="btn btn-outline-success">
+                                                        <i class="fas fa-check-double"></i>
+                                                    </button>{% endif %}</td>
+                                                {% endif %}
                                             </tr>
                                             {% endfor %}
                                         </tbody>

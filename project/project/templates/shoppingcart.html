@@ -59,7 +59,13 @@
     }
 
     function emptyCart() {
-
+        $.ajax({
+            url: '/emptycart',
+            type: "post",
+            success: function(data) {
+                location.reload(true);
+            }
+        });
     }
 </script>
     <!-- need differ balance and total -->
@@ -118,7 +124,7 @@
                                                 <div class="col-md-3 offset-md-1 quantity">
                                                     <label for="quantity">Quantity:</label>
                                                     <div class="input-group ">
-                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['pib_id']}});" min="0.1" step="0.1" value="{{val['quantity']}}" class="form-control quantity-input">
+                                                        <input id="quantity" type="number" onchange="prodQty($(this).val(),{{val['pib_id']}});" min="0.1" max="{{val['qty_available']}}" step="0.1" value="{{val['quantity']}}" class="form-control quantity-input">
                                                         <button class="btn btn-danger input-group-text" onClick="prodQty(0,{{val['pib_id']}});">x</button>
                                                     </div>
                                                 </div>
@@ -161,6 +167,7 @@
                                     <h3 class="mb-5 text-center">Select your date</h3>
                                         <!-- <div class="form-group"> -->
                                             <!-- <input type="text" class="form-control" id="pick-date" placeholder="Pick a date"> -->
+                                           
                                             {{form.date}}
                                         <!-- </div> -->
                                         {% if date == False %}
@@ -168,7 +175,7 @@
                                         {% endif %}
                                 </div>
                             </div>
-                            <button class="btn btn-success btn-lg btn-block" type="submit">Checkout</button>
+                            <button class="btn btn-success btn-lg btn-block" type="submit" {% if session["cart_count"] == 0 %}disabled{% endif %}>Checkout</button>
                             <button type="button" onclick="emptyCart()" class="btn btn-danger btn-lg btn-block float-right "><em class="fas fa-trash"></em></button>
                             
                             {% if balance == False %}

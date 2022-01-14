@@ -14,33 +14,9 @@
         });
     }
 </script>
-<!-- <script>
-    function sendmail(){
-        $.ajax({
-            url:'/sendmail',
-            type:"get",
-            success:function (data){
-                location.reload(true);
-            }
-        });
-    }
-</script> -->
-<style>
-    tbody tr:nth-child(odd) {
-        background-color: #d6f0c7;
-    }
-    
-    tr {
-        height: 53.6px;
-    }
-    
-    td {
-        height: 53.6px;
-    }
-</style>
 
 <body>
-    <div class="container-fluid col-md-12">
+    <div class="container-fluid col-md-12" style="padding-bottom:50px;">
         <p>&nbsp;</p>
         <h1 style="text-align:center">Check Deliverable Orders</h1>
         <p>&nbsp;</p>
@@ -48,7 +24,7 @@
             <div class="padding">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
+                        <div class="cardtable">
                             <div class="card-body">
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
@@ -61,7 +37,7 @@
                                                             <th class="text-center">Client</th>
                                                             <th class="text-center">Shipping Location</th>
                                                             <th class="text-center">Requested Delivery</th>
-                                                            <th class="text-center">Actual Delivery</th>
+                                                            <!-- <th class="text-center">Actual Delivery</th> -->
                                                             <th class="text-center">Total Amount</th>
                                                             <th class="text-center">Status</th>
                                                             <th class="text-center"></th>
@@ -76,7 +52,7 @@
                                                             <td class="text-center">{{order[0].delivery_address}}</td>
                                                             <td class="text-center">
                                                                 {{order[0].requested_delivery_date}}</td>
-                                                            <td class="text-center">{{order[0].actual_delivery_date}}</td>
+                                                            <!-- <td class="text-center">{{order[0].actual_delivery_date}}</td> -->
                                                             <td class="text-center">€ {{'%.2f' % order[0].total}}</td>
                                                             <td class="text-center">
                                                                 <div class="badge badge-success">{{order[0].status}}</div>

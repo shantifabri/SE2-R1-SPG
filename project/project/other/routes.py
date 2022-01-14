@@ -10,7 +10,7 @@ import os
 import json
 import base64
 from dotenv import load_dotenv, find_dotenv
-
+from project.other.utils import mail_sender
 from project.models import User, Product, Client, ProductRequest, ProductInOrder, ProductInBasket, Order
 from project.forms import ProductSearch, ProductRequestForm, ClientInsertForm, AddToCartForm, TopUpForm, CheckOutForm, TopUpSearch, ProductInsertForm, ProductEditForm, CheckOutClientForm
 from project import db
@@ -19,6 +19,15 @@ import sendgrid
 from sendgrid.helpers.mail import *
 
 from . import other_blueprint
+
+from telepot.loop import MessageLoop
+import telepot
+import time
+import socket
+
+load_dotenv(verbose=True)
+TOKEN = os.getenv("TOKEN")
+bot = telepot.Bot(TOKEN)
 
 #### routes ####
 @other_blueprint.route('/')
@@ -35,6 +44,8 @@ def products():
         User
         ).filter(
             User.id == Product.farmer_id
+        ).filter(
+            Product.deleted == 0
         ).all()
     if form.validate_on_submit():
         if form.search.data == None:
@@ -46,7 +57,9 @@ def products():
             User.id == Product.farmer_id
         ).filter(
 
-            Product.name.like("%" + form.search.data + "%")
+            or_(Product.name.like("%" + form.search.data + "%"),User.company.like("%" + form.search.data + "%"))
+        ).filter(
+            Product.deleted == 0
         ).all()
     
     return render_template('products.html',products=products,form=form)
@@ -58,7 +71,7 @@ def singleproduct(product_id):
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = AddToCartForm()
     product = db.session.query(
-        Product, 
+        Product,
         User
         ).filter(
             Product.product_id == product_id
@@ -82,17 +95,16 @@ def singleproduct(product_id):
     return render_template('singleproduct.html', product=product, form=form, valid=True)
 
 @other_blueprint.route('/insertclient', methods=['GET','POST'])
-@login_required
 def insertclient():
-    if current_user.role != 'S':
-        return redirect(url_for('other.index'))
+    # if current_user.role != 'S':
+    #     return redirect(url_for('other.index'))
     # name, surname, email, phone, wallet
     time = "ZZZZ:ZZZZ:ZZ:ZZ zz ZZ"
     form = ClientInsertForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         # add the user form input which is form.'field'.data into the column which is 'field'
-        new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0)
+        new_user = User(name=form.name.data, surname=form.surname.data, role='C', email=form.email.data, password=hashed_password, company="Client", wallet=0, pending_amount=0, tg_chat_id=form.Telegram_id.data)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('other.index'))
@@ -138,63 +150,172 @@ def updateshipping(value):
 def confirmarrivals():
     farmers = db.session.query(ProductInOrder,Product,User,Order
     ).filter(
-        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, Order.status == 'CONFIRMED')
+        and_(Order.order_id == ProductInOrder.order_id, ProductInOrder.product_id == Product.product_id, Product.farmer_id == User.id, ProductInOrder.confirmed == 1)
     ).group_by(
         User.id,User.name,User.surname,User.company
     ).all()
-    products = db.session.query(Product,func.sum(Product.qty_confirmed)
+    products = db.session.query(Product, Order, ProductInOrder
     ).filter(
         Product.qty_confirmed>0
+    ).filter(
+        Order.status == "CONFIRMED"
+    ).filter(
+        Order.order_id == ProductInOrder.order_id
+    ).filter(
+        Product.product_id == ProductInOrder.product_id
+    ).filter(
+        ProductInOrder.confirmed == 1
     ).group_by(
         Product.farmer_id,Product.product_id
     ).all()
     farmerproducts = {}
-    for product in products :
+    for product in products:
         if product[0].farmer_id in farmerproducts.keys():
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[0].qty_confirmed, 'id':product[0].product_id})
         else:
             farmerproducts[product[0].farmer_id]=[]
-            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[1]})
+            farmerproducts[product[0].farmer_id].append({'name':product[0].name, 'quantity':product[0].qty_confirmed, 'id':product[0].product_id})
 
     return render_template('confirmarrivals.html', farmers=farmers, farmerproducts=farmerproducts)
+
+@other_blueprint.route('/deleteproduct/<product_id>',  methods=['GET','POST'])
+@login_required
+def deleteproduct(product_id):
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    product.deleted = 1
+    db.session.commit()
+    return redirect(url_for('other.manageproducts'))
 
 @other_blueprint.route('/updatestatus/<order_id>/<status>/<redirect_url>',  methods=['GET','POST'])
 @login_required
 def updatestatus(order_id,status,redirect_url):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
+    user = db.session.query(User).filter(User.id == order.client_id).one()
     order.status = status
+    if status == "DELIVERING":
+        subject = "Order Delivering"
+        msg = "Dear "+user.name+", your order with id: #"+str(order.order_id)+",\nfor a total price of: €"+str(order.total)+",\nis being delivered to the chosen delivery place ("+order.delivery_address+").\nMake sure to not miss your delivery!\nThanks, \nSPG Team."
+        mail_sender(subject,msg,user.email)
+        order.actual_delivery_date = session.get("date")
+
     db.session.commit()
     redirect_url = "other." + str(redirect_url)
     return redirect(url_for(redirect_url))
 
-@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>',  methods=['GET','POST'])
+@other_blueprint.route('/confirmwarehousing/<product_id>/<quantity>',  methods=['GET','POST'])
 @login_required
-def confirmorder(order_id,pio_id,product_id):
+def confirmwarehousing(product_id,quantity):
 
+    product = db.session.query(Product).filter(Product.product_id == product_id).one()
+    print(quantity)
+    
+    product.qty_warehousing += float(quantity)
+
+    products = db.session.query(
+        ProductInOrder,Order
+        ).filter(
+            ProductInOrder.order_id == Order.order_id
+        ).filter(
+            ProductInOrder.product_id == product_id
+        ).filter(
+            Order.status == "CONFIRMED"
+        ).filter(
+            ProductInOrder.confirmed == 1
+        ).all()
+    
+    for p in products:
+        p[0].confirmed=2
+    
+    db.session.commit()
+
+    p1 = db.session.query(
+        Order
+    ).filter(
+            Order.status == "CONFIRMED"
+    ).all()
+
+    for ps1 in p1:
+        p2 = db.session.query(
+            ProductInOrder
+        ).filter(
+            ProductInOrder.order_id == ps1.order_id
+        ).all()
+        
+        f = True
+    
+        for ps2 in p2:
+            if ps2.confirmed == 1:
+                f=False
+                
+        if f == True:
+            ps1.status = "WAREHOUSING"
+
+    db.session.commit()
+    return redirect(url_for('other.farmerconfirmation'))
+
+@other_blueprint.route('/confirmorder/<order_id>/<pio_id>/<product_id>/<quantity>',  methods=['GET','POST'])
+@login_required
+def confirmorder(order_id,pio_id,product_id,quantity):
+    confirm_order(order_id,pio_id,product_id,quantity)
+    return redirect(url_for('other.farmerorders'))
+
+def confirm_order(order_id,pio_id,product_id,quantity):
     order = db.session.query(Order).filter(Order.order_id == order_id).one()
     pio = db.session.query(ProductInOrder).filter(ProductInOrder.pio_id == pio_id).one()
     product = db.session.query(Product).filter(Product.product_id == product_id).one()
     user = db.session.query(User,Order).filter(User.id == Order.client_id).filter(Order.order_id == order_id).one()
     # order.status = status
     qty_remaining = product.qty_available - product.qty_confirmed
-    if pio.quantity > qty_remaining:
-        pio.quantity = qty_remaining
-    product.qty_confirmed += pio.quantity
-    pio.confirmed = True
+    print(quantity)
+#    if pio.quantity > qty_remaining:
+#        pio.quantity = qty_remaining
+    if float(quantity) > qty_remaining:
+        pio.qty_confirmed = qty_remaining
+    else:
+        pio.qty_confirmed = float(quantity)
+    product.qty_confirmed += pio.qty_confirmed
+    pio.confirmed = 1
+    
     products = db.session.query(
         ProductInOrder
         ).filter(
             ProductInOrder.order_id == order_id
         ).filter(
-            ProductInOrder.confirmed == False
+            ProductInOrder.confirmed == 0
         ).all()
     if len(products) == 0:
-        order.status = 'CONFIRMED'
-        msg = 'Dear User, the order with id ' + order_id + ' has been confirmed from the farmer!'
-        # send confirmation mail here
-        sendmail(user[0].email,"Order Confirmation",msg,"farmerorders")
+        #FIXME send email when order is confirmed
+        items = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == order.order_id).all()
+        old_total = order.total
+        if order.home_delivery == 'N':
+            new_total = 0
+        else:
+            new_total = 7.50
+        for item in items:
+            prod = db.session.query(Product).filter(Product.product_id == item.product_id).one()
+            new_total += prod.price * item.qty_confirmed
+            print(item.qty_confirmed)
+            # item.confirmed = False
+        order.total = new_total
+
+        if order.total == 0 or (order.home_delivery != 'N' and order.total == 7.50):
+            order.status = "CANCELLED"
+        
+        else:
+            if order.status == "PENDING CANCELLATION":
+                pass
+
+            else:
+                order.status = 'CONFIRMED'
+                user[0].wallet -= new_total
+                user[0].pending_amount -= old_total
+
+        try:
+            bot.sendMessage(chat_id=user[0].tg_chat_id, text='Your order number:%d is confirmed' % (order.order_id))
+        except telepot.exception.TelegramError:
+            bot.sendMessage(chat_id=473918518, text='User: %s order is confirmed but Telegram message sent failed'%(user[0].email))
+
     db.session.commit()
-    return redirect(url_for('other.farmerorders'))
 
 @other_blueprint.route('/shoppingcart', methods=['GET','POST'])
 def shoppingcart():
@@ -237,6 +358,7 @@ def shoppingcart():
         prod["name"] = val[1].name
         prod["url"] = val[1].img_url
         prod["id"] = val[0].pib_id
+        prod["qty_available"] = val[1].qty_available - val[1].qty_requested
         total += val[0].quantity * val[1].price
         products.append(prod)
     vals["subtotal"] = '%.2f' % total
@@ -269,9 +391,10 @@ def shoppingcart():
                 balance = True
                 if float(vals["total"]) > q2.wallet - q2.pending_amount:
                     balance = False
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date",datetime.datetime.now()))
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING CANCELLATION", order_date=session.get("date"))
                 else:
-                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date",datetime.datetime.now()))
+                    new_order = Order(client_id=q2.id, delivery_address=address, home_delivery=home_delivery, total=vals["total"], requested_delivery_date=form.date.data, actual_delivery_date="", status="PENDING", order_date=session.get("date"))
+                    q2.pending_amount = q2.pending_amount + float(vals["total"])
                 # When a new order is added, the amount must be added to the pending amount.
                 db.session.add(new_order)
                 db.session.commit()
@@ -279,7 +402,10 @@ def shoppingcart():
 
                 items = []
                 for prod in products:
-                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=False))
+                    items.append(ProductInOrder(product_id=prod["product_id"], quantity=prod["quantity"], order_id=new_order.order_id, confirmed=0, qty_confirmed=0))
+                    product = db.session.query(Product).filter(Product.product_id == prod["product_id"]).first()
+                    product.qty_requested = product.qty_requested + prod["quantity"]
+                    db.session.commit()
                 db.session.bulk_save_objects(items)
                 db.session.commit()
                 status_counts = db.session.query(ProductInBasket.client_id, db.func.count(ProductInBasket.product_id).label('count_id')
@@ -289,11 +415,26 @@ def shoppingcart():
 
                 if not balance:
                     # Send an email to the user to remind to top-up the wallet
+                    subject = "Insufficient Balance Reminder"
+                    msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(new_order.order_id)+" with a total of €"+str(new_order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
+                    mail_sender(subject,msg,q2.email)
+
+                    i = 1
+                    try:
+                        while 1:
+                            bot.sendMessage(chat_id=q2.tg_chat_id, text='%s' % (msg))
+                            time.sleep(10)
+                            # sleep 10s here just for test
+                            i += 1
+                            if i > 3:
+                                break
+                    except telepot.exception.TelegramError:
+                        bot.sendMessage(chat_id=473918518, text='User: %s order failed notification sent failed' % (q2.email))
                     return render_template('shoppingcart.html', values={}, form=form, valid=True, date=True, balance=balance)
 
                 return redirect(url_for('other.index'))
                 # order_id = new_order.order_id
-      
+
     return render_template('shoppingcart.html', values=vals, form=form, valid=True, date=True, balance=True)
 
 @other_blueprint.route('/manageclients', methods=['GET','POST'])
@@ -309,6 +450,13 @@ def insertproducts():
     if current_user.role != 'F':
         return redirect(url_for('other.index'))
     return render_template('insertproduct.html')
+
+@other_blueprint.route('/profile', methods=['GET','POST'])
+@login_required
+def profile():
+    # if current_user.role != 'C':
+    #     return redirect(url_for('other.index'))
+    return render_template('profile.html')
 
 @other_blueprint.route('/shoporders', methods=['GET', 'POST'])
 @login_required
@@ -337,11 +485,46 @@ def topup():
     ).all()
 
     if form.validate_on_submit():
-        # print(form.email.data)
-        db.session.query(
+        user = db.session.query(
             User
         ).filter(User.email == form.email.data
-        ).update({"wallet": (User.wallet + form.amount.data)})
+        ).one()
+        user.wallet += form.amount.data
+        try:
+            bot.sendMessage(chat_id=user.tg_chat_id,text='Your wallet topped up with %s euro' % (form.amount.data))
+        except telepot.exception.TelegramError:
+            bot.sendMessage(chat_id=473918518,text='User: %s topped up successfully but Telegram message sent failed'%(user.email))
+            # chat_id=473918518 can set as manager's userid. So manager can receive message when topup successful but
+            # telegram sent failed.
+
+        found = True
+        while(found == True):
+            order = db.session.query(
+                Order
+            ).filter(
+                user.id == Order.client_id
+            ).filter(
+                Order.status == "PENDING CANCELLATION"
+            ).filter(
+                Order.total <= (user.wallet - user.pending_amount)
+            ).all()
+            # print(order)
+            if len(order) > 0:
+                prod_in_order = db.session.query(
+                    ProductInOrder
+                ).filter(
+                    ProductInOrder.order_id == order[0].order_id
+                ).filter(
+                    ProductInOrder.confirmed == 0).all()
+                
+                if len(prod_in_order) > 0:
+                    order[0].status = "PENDING"
+                    user.pending_amount += order[0].total
+                else:
+                    order[0].status = "CONFIRMED"
+                    user.wallet -= order[0].total
+            else:
+                found = False
         db.session.commit()
 
     if form_search.validate_on_submit():
@@ -369,6 +552,8 @@ def manageproducts():
         Product
     ).filter(
         Product.farmer_id == current_user.id
+    ).filter(
+        Product.deleted == 0
     ).all()
 
     if form.validate() and request.method == "POST":
@@ -379,7 +564,7 @@ def manageproducts():
         ).all()
         filename = filenames[0] + str(len(prods)) + "." + filenames[1]
         form.image.data.save("project/static/shop_imgs/" + filename)
-        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()))
+        new_product = Product(name=form.name.data,price=form.price.data,description=form.description.data,qty_available=form.qty_available.data,qty_requested=0,qty_confirmed=0,qty_warehoused=0,farmer_id=current_user.id,img_url=filename,date=session.get("date",datetime.datetime.now()), deleted=0)
         db.session.add(new_product)
         db.session.commit()
         return redirect(url_for('other.manageproducts'))
@@ -390,6 +575,24 @@ def manageproducts():
         ).filter(Product.product_id == form_edit.product_id.data
         ).update({"name": (form_edit.name.data),"description": (form_edit.description.data),"price": (form_edit.price.data),"qty_available": (form_edit.qty_available.data)})
         db.session.commit()
+        print(form_edit.name.data)
+        print(form_edit.qty_available.data)
+        print(form_edit.product_id.data)
+
+        sendupdate = db.session.query(
+            User.tg_chat_id
+        ).filter(
+            User.tg_chat_id > 0
+        ).all()
+
+        # for telegram link, need to attention the host!
+        hostip = socket.gethostbyname(socket.gethostname())
+        for sendid in sendupdate:
+            print(sendid[0])
+            try:
+                bot.sendMessage(chat_id=sendid[0], text='Product is updated: %s, now available quantity is %s Kg, If you want to get more details, please click following link: http://%s:5000/singleproduct/%s' % (form_edit.name.data, form_edit.qty_available.data, hostip,  form_edit.product_id.data))
+            except telepot.exception.TelegramError:
+                bot.sendMessage(chat_id=473918518, text='Message notification sent failed to telegram user_id: %s .' % (sendid[0]))
     
     return render_template('manageproducts.html', products=products, form=form, form_edit=form_edit)
 
@@ -409,7 +612,7 @@ def farmerorders():
     ).filter(
         Product.farmer_id == current_user.id
     ).filter(
-        Order.status == "PENDING"
+        or_(Order.status == "PENDING", Order.status == "PENDING CANCELLATION")
     # ).filter(
     #     ProductInOrder.confirmed == False
     ).all()
@@ -456,26 +659,26 @@ def clientorders():
     for order in orders:
         prod = {}
         id = str(order[0].order_id)
-        print(id + " " + order[3].name + " " + str(order[2].quantity))
+        # print(id + " " + order[3].name + " " + str(order[2].quantity))
         prod["name"] = str(order[3].name)
         prod["product_id"] = order[3].product_id
         prod["price"] = str(order[3].price)
         prod["qty_available"] = order[3].qty_available
         prod["qty_requested"] = order[3].qty_requested
+        prod["qty_confirmed"] = order[3].qty_confirmed
         prod["order_qty"] = str(order[2].quantity)
         prod["farmer"] = order[1].company
         prod["img_url"] = order[3].img_url
 
         if id in list(client_orders.keys()):
-            print("APPEND")
             client_orders[id]["Products"].append(prod)
         else:
-            print("NEW")
+            # print("NEW")
             client_orders[id] = {}
             client_orders[id]["Order"] = order[0]
             client_orders[id]["Products"] = []
             client_orders[id]["Products"].append(prod)
-        print(client_orders[id]["Products"])
+        # print(client_orders[id]["Products"])
         # print(client_orders[order[0].order_id]["Products"])
         # print(prod)
         # print(client_orders[id])
@@ -510,8 +713,6 @@ def sendmail(email,subject,msg,redirecting):
     content = Content("text/plain", msg)
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
-    print(response.status_code)
-    print(email)
     return redirect(url_for('other.' + redirecting))
 
 @other_blueprint.route('/workerorders', methods=['GET', 'POST'])
@@ -529,9 +730,6 @@ def workerorders():
         ).all()
     return render_template('workerorders.html', orders=orders)
 
-@other_blueprint.route('/farmerorderslist', methods=['GET', 'POST'])
-def farmerorderslist():
-    return render_template('farmerorderslist.html')
 
 @other_blueprint.route('/farmerconfirmation', methods=['GET', 'POST'])
 def farmerconfirmation():
@@ -539,11 +737,12 @@ def farmerconfirmation():
         return redirect(url_for('other.index'))
     products = db.session.query(Product,ProductInOrder,User,Order,func.sum(ProductInOrder.quantity).label('quantity')
     ).filter(
-        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id)
+        and_(User.id==Product.farmer_id,ProductInOrder.product_id==Product.product_id,Order.order_id==ProductInOrder.order_id,Order.status=='CONFIRMED',Product.farmer_id==current_user.id,Product.qty_warehousing<Product.qty_confirmed)
     ).group_by(
         Product.product_id,Product.name,Product.img_url,Product.price
     ).all()
     print(products)
+    
     return render_template('farmerconfirmation.html',products=products)
 
 @other_blueprint.route('/farmerorderconfirm', methods=['GET', 'POST'])
@@ -580,6 +779,223 @@ def farmerorderconfirm():
         db.session.commit()
     
     return render_template('farmerorderconfirm.html', products=products, form=form, form_edit=form_edit)
+
+@other_blueprint.route('/confirmarrived', methods=['GET','POST'])
+@login_required
+def confirmarrived():
+    if current_user.role != 'M':
+        return redirect(url_for('other.index'))
+
+    res = request.get_json()
+    for item in res:
+        try:
+            prod_id = item["product_id"].split("_")[1]
+            prod = db.session.query(
+                Product
+            ).filter(
+                Product.product_id == prod_id
+            ).one()
+            prod.qty_warehoused = item["qty"]
+            pio = db.session.query(
+                ProductInOrder
+            ).filter(
+                ProductInOrder.product_id == prod_id
+            ).all()
+            for elem in pio:
+                elem.confirmed = 2
+        except Exception as e:
+            print(e)
+        db.session.commit()
+    
+    orders = db.session.query(
+        Order
+    ).filter(
+        Order.status == "CONFIRMED"
+    ).all()
+    for elem in orders:
+        # order_confs = db.session.query(
+        #     Order,Product,ProductInOrder
+        # ).filter(
+        #     ProductInOrder.order_id == Order.order_id
+        # ).filter(
+        #     ProductInOrder.product_id == Product.product_id
+        # ).filter(
+        #     Order.order_id == elem.order_id
+        # ).all()
+        # print(order)
+        # if len(order_confs) == 0:
+        user = db.session.query(User).filter(User.id == elem.client_id).one()
+        elem.status = "WAREHOUSED"
+        subject = "Order Warehoused"
+        msg = "Dear User, the order you submitted with id: #"+str(elem.order_id)+", with a total of €"+str(elem.total)+" has been Warehoused,\nIt will be prepared by one of our workers and brought to you according to the delivery date you have chosen.\nThanks, \nSPG Team."
+        mail_sender(subject,msg,user.email)
+            
+    db.session.commit()
+    return redirect(url_for('other.confirmarrivals'))
+
+@other_blueprint.route('/getdate', methods=['GET'])
+def getdate():
+    date = session.get('date')
+    return jsonify(date=date)
+
+@other_blueprint.route('/updatedatetime', methods=['GET','POST'])
+@login_required
+def updatedatetime():
+    new_date = request.get_json()
+    print(new_date)
+    session["date"] = new_date
+    set_session_vars()
+    return redirect(url_for('other.index'))
+
+def set_session_vars():
+    date, time = session["date"].split()
+    day, month, year = list(map(int,date.split("-")))
+    hour, minutes = list(map(int,time.split(":")))
+
+    ans = datetime.date(year, month, day)
+    session["weekday"] = ans.strftime("%A")
+    week = ans.isoweekday() # days 1 .. 7
+
+    session["place_order"] = False
+    if (week == 6 and hour >= 9) or (week == 7 and hour < 23):
+        session["place_order"] = True
+
+    session["report_avail"] = False
+    if (week == 3 and hour >= 9) or (week in range(4,6)) or (week == 6 and hour < 9):
+        for product in Product.query.all():
+            product.qty_requested = 0
+            product.qty_confirmed = 0
+            product.qty_warehousing = 0
+            product.qty_warehoused = 0
+        db.session.commit()
+        session["report_avail"] = True
+
+    session["confirm_avail"] = False
+    if (week == 7 and hour >= 23) or (week == 1 and hour < 9):
+        session["confirm_avail"] = True
+
+    session["farmer_delivery"] = False
+    if (week == 1 and hour >= 9) or (week == 2 and hour < 23):
+        session["farmer_delivery"] = True
+    
+    session["client_pickups"] = False
+    if (week == 3 and hour >= 9) or (week == 4) or (week == 5 and hour < 23):
+        session["client_pickups"] = True
+
+    # wipe client carts
+    if not session["place_order"]:
+        ProductInBasket.query.delete()
+        db.session.commit()
+
+    if (week == 1 and hour >= 9) or (week == 2) or (week == 3 and hour < 9):
+        for product in Product.query.all():
+            product.qty_available = 0
+        db.session.commit()
+
+    # cancel orders with pending cancellation past deadline
+    orders_pending_cancel = db.session.query(Order).filter(Order.status == "PENDING CANCELLATION").all()
+    for order in orders_pending_cancel:
+        order_date, order_time = order.order_date.split()
+        order_day, order_month, order_year = list(map(int,order_date.split("-")))
+        d = datetime.date(order_year, order_month, order_day)
+        next_monday = next_weekday(d, 0) # 0 = Monday
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
+        
+        if current > next_monday:
+            order.status = "CANCELLED"
+        db.session.commit()
+
+    # confirm 0 avail if past confirmation deadline
+    prod_pending_confirm = db.session.query(
+            Order, ProductInOrder
+        ).filter(
+            Order.order_id == ProductInOrder.order_id
+        ).filter(
+            ProductInOrder.confirmed == 0
+        ).all()
+
+    for order, prod in prod_pending_confirm:
+        order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
+
+        if not (session["confirm_avail"] or session["place_order"]) and current > order_date and order.status == "PENDING":
+            confirm_order(order.order_id,prod.pio_id,prod.product_id,0)
+
+    # missed orders
+    for order in Order.query.all():
+        order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
+        current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
+
+        next_saturday = next_weekday(order_date, 5)
+
+        if current >= next_saturday and order.status == "DELIVERING":
+            order.status = "MISSED"
+    db.session.commit()
+    
+def next_weekday(d, weekday):
+    days_ahead = weekday - d.weekday()
+    if days_ahead <= 0: # Target day already happened this week
+        days_ahead += 7
+    return d + datetime.timedelta(days_ahead)
+
+@other_blueprint.route('/emptycart', methods=['GET','POST'])
+@login_required
+def emptycart():
+    if current_user.role != 'C' and current_user.role != 'S':
+        return redirect(url_for('other.index'))
+    ProductInBasket.query.filter(ProductInBasket.client_id == current_user.id).delete()
+    print("DElETING CART")
+    db.session.commit() 
+    session["cart_count"] = 0
+    return redirect(url_for('other.shoppingcart'))
+
+@other_blueprint.route('/updateorder', methods=['GET','POST'])
+@login_required
+def updateorder():
+    if current_user.role != 'C':
+        return redirect(url_for('other.index'))
+
+    res = request.get_json()
+    order = db.session.query(Order).filter(Order.order_id == res["order"]).one()
+    products = db.session.query(ProductInOrder).filter(ProductInOrder.order_id == res["order"]).all()
+    print(products[0].product_id)
+    new_total = 0
+    if order.home_delivery == 'F':
+        new_total += 7.50
+    print(res["values"])
+    for item in res["values"]:
+        item_id = item["product_id"].split("_")[1]
+        print(item_id)
+        for product in products:
+            if product.product_id == int(item_id):
+                print("UPDATE")
+                product.quantity = item["qty"]
+                prod = db.session.query(Product).filter(Product.product_id == item_id).one()
+                new_total += float(item["qty"]) * prod.price
+
+    order.total = new_total
+    q2 = db.session.query(
+        User
+        ).filter(
+            User.id == order.client_id
+        ).filter(
+            User.role == "C"
+        ).first()
+    balance = True
+    if new_total > q2.wallet - q2.pending_amount:
+        balance = False
+        order.status = "PENDING CANCELLATION"
+    else:
+        order.status = "PENDING"
+    # if not balance:
+    #     # Send an email to the user to remind to top-up the wallet
+    #     subject = "Insufficient Balance Reminder"
+    #     msg = "Dear User, your balance is €" + str(round(q2.wallet-q2.pending_amount,2)) + " and is not sufficient to complete the order #"+str(order.order_id)+" with a total of €"+str(order.total)+",\nPlease make sure to charge your wallet. Thanks, \nSPG Team."
+    #     mail_sender(subject,msg,q2.email)
+    db.session.commit()
+
+
+    return redirect(url_for('other.clientorders'))
 
 ################## AUTOCOMPLETE ROUTES ##############################
 # @app.route('/autocomplete', methods=['GET'])

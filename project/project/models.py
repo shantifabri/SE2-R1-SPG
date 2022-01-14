@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     company = db.Column(db.String(40))
     wallet = db.Column(db.Float)
     pending_amount = db.Column(db.Float)
+    tg_chat_id = db.Column(db.String(50))
 
 class ProductRequest(db.Model):
     __tablename__ = "product_requests"
@@ -22,6 +23,7 @@ class ProductRequest(db.Model):
     shop_id = db.Column(db.Integer)
     quantity = db.Column(db.Float)
     timestamp = db.Column(db.String(40))
+    deleted = db.Column(db.Integer)
 
 class ProductInOrder(db.Model):
     __tablename__ = "product_in_order"
@@ -30,7 +32,8 @@ class ProductInOrder(db.Model):
     order_id = db.Column(db.Integer)
     quantity = db.Column(db.Float)
     confirmed = db.Column(db.Integer)
-
+    qty_confirmed = db.Column(db.Float)
+    
 class ProductInBasket(db.Model):
     __tablename__ = "product_in_basket"
     pib_id = db.Column(db.Integer, primary_key=True)
@@ -56,10 +59,12 @@ class Product(db.Model):
     qty_available = db.Column(db.Float)
     qty_requested = db.Column(db.Float)
     qty_confirmed = db.Column(db.Float)
+    qty_warehousing = db.Column(db.Float)
     qty_warehoused = db.Column(db.Float)
     farmer_id = db.Column(db.Integer)
     img_url = db.Column(db.String(50))
     date = db.Column(db.String(50))
+    deleted = db.Column(db.Integer) 
 
 class Order(db.Model):
     __tablename__ = "orders"
@@ -76,9 +81,11 @@ class Order(db.Model):
     # status is PENDING if the order has just been submitted,
     # status is PENDING CANCELLATION if the wallet is not enough to pay the order,
     # status is CONFIRMED if the order is confirmed from the farmer,
-    # status is WAREHOUSED if the order is delivered from the farmer and confirmed by the warehouse manager,
+    # status is WAREHOUSING if the order is delivered from the farmer to the warehouse, - not longer in use
+    # status is WAREHOUSED if the order has been received from the farmer by the warehouse manager,
     # status is PREPARED if the warehouse worker has prepared the bag with the goods,
     # status is CANCELLED if the order has been cancelled (insufficient balance),
     # status is DELIVERING if the order has been delivered from the warehouse,
-    # status is LODGED if the order has arrived to the pick-up point,
+    # status is LODGED if the order has arrived to the pick-up point, - not longer in use
     # status is DELIVERED if the order has been handed out to the client or delivered to the client address.
+    # status is MISSED if the order pickup was missed by the client

@@ -27,22 +27,6 @@
         });
     }
 </script>
-<style>
-    tbody tr:nth-child(odd) {
-        background-color: #d6f0c7;
-    }
-
-    tr {
-        text-align: center;
-        height: 53.6px;
-    }
-
-    th {
-        text-align: center;
-        height: 53.6px;
-    }
-</style>
-
 <body>
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -70,15 +54,13 @@
             <div class="padding">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
+                        <div class="cardtable">
                             <div class="card-body">
                                 <p>&nbsp;</p>
                                 <h4 class="card-title text-success" style="text-align:center">Orders handout</h4>
                                 <p>&nbsp;</p>
                                 <p class="card-description" style="text-align:center"> Please, select the order you want
                                     to hand out</p>
-                                <p>&nbsp;</p>
-                                <p>&nbsp;</p>
                                 <div class="container-fluid nolateral tb-spacing">
                                     <div class="row">
                                         <div class="main-card mb-3 card">
@@ -93,14 +75,14 @@
                                                             <th>Requested Delivery Date</th>
                                                             <th>Total Amount</th>
                                                             <th>Status</th>
-                                                            <th></th>
+                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
 
                                                     <tbody>
                                                         {% for order in orders %}
                                                         <tr>
-                                                            <td class="text-muted nomobile">#{{order[0].order_id}}</td>
+                                                            <td class="nomobile">#{{order[0].order_id}}</td>
                                                             <td>{{order[1].email}}</td>
                                                             <td>{{order[0].delivery_address}}</td>
                                                             <td>{{order[0].requested_delivery_date}}</td>
@@ -121,12 +103,12 @@
                                                                 <div class="badge badge-danger">{{order[0].status}}
                                                                 </div>
                                                                 {% else %}
-                                                                <span class="text-black-bold">{{order[0].status}}</span>
+                                                                <div class="badge badge-info">{{order[0].status}}</div>
                                                                 {% endif %}
                                                             </td>
 
                                                             <td>
-                                                                {% if order[0].status == "LODGED" %}
+                                                                {% if order[0].status == "DELIVERING" and session["client_pickups"] %}
                                                                 <button onClick="updateStatus({{order[0].order_id}})"
                                                                     type="button" class="btn btn-outline-success">
                                                                     Hand Out
