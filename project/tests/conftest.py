@@ -16,17 +16,18 @@ def test_client():
     with flask_app.test_client() as testing_client:
         # Establish an application context
         with flask_app.app_context():
-            yield testing_client  # this is where the testing happens!
+                yield testing_client  # this is where the testing happens!
 
 @pytest.fixture(scope='module')
 def init_database(test_client):
+
     db.create_all()
 
     # Insert User data
     user1 = User(name='Pat', surname='Farmer', email='patfarmer@gmail.com', role='F', password=generate_password_hash('FlaskIsAwesome', method='sha256'), company="Pat's Farm", pending_amount=0.0)
     user2 = User(name='Matt', surname='Smith', email='mattsmith@gmail.com', role='S', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
-    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30, pending_amount=0.0)
-    user4 = User(name='Ema', surname='Gow ', email='emagow@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=10, pending_amount=0.0)
+    user3 = User(name='Ella', surname='Clint', email='ellaclint@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=30, pending_amount=0.0, tg_chat_id='473918518')
+    user4 = User(name='Ema', surname='Gow ', email='emagow@gmail.com', role='C', password=generate_password_hash('UserPassword', method='sha256'), wallet=10, pending_amount=0.0, tg_chat_id='473918518')
     user5 = User(name='John', surname='Doe', email='johndoe@gmail.com', role='W', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
     user6 = User(name='Paul', surname='Right', email='paulright@gmail.com', role='M', password=generate_password_hash('UserPassword', method='sha256'), company="", pending_amount=0.0)
 
@@ -39,17 +40,17 @@ def init_database(test_client):
     db.session.commit()
 
     # Insert Product data
-    prod1 = Product(name="Bananas", price=1, description="Bananas from Ecuador", qty_available=14, qty_requested=2, farmer_id=1, img_url="https://www.kroger.com/product/images/xlarge/front/0000000004011", date="2021-11-24")
-    prod2 = Product(name="Potatoes", price=4, description="The best potatoes", qty_available=11, qty_requested=0, farmer_id=1, img_url="", date="2021-11-24")
+    prod1 = Product(name="Bananas", price=1, description="Bananas from Ecuador", qty_available=14, qty_requested=2, qty_confirmed=14, qty_warehousing=14, qty_warehoused=14, farmer_id=1, img_url="https://www.kroger.com/product/images/xlarge/front/0000000004011", date="24-11-2021 08:15", deleted=0)
+    prod2 = Product(name="Potatoes", price=4, description="The best potatoes", qty_available=11, qty_requested=0, qty_confirmed=11, qty_warehousing=11, qty_warehoused=11, farmer_id=1, img_url="", date="24-11-2021 08:15", deleted=0)
     db.session.add(prod1)
     db.session.add(prod2)
     db.session.commit()
 
     # Insert Order data
-    order1 = Order(client_id=3, delivery_address="Store", home_delivery="N", total=12, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="LODGED", order_date="2021-12-12")
-    order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PENDING", order_date="2021-12-12")
-    order3 = Order(client_id=4, delivery_address="That Street", home_delivery="Y", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
-    order4 = Order(client_id=4, delivery_address="Store", home_delivery="N", total=15, requested_delivery_date="2021-12-23", actual_delivery_date="2021-12-23", status="PREPARED", order_date="2021-12-12")
+    order1 = Order(client_id=3, delivery_address="Store", home_delivery="N", total=12, requested_delivery_date="2022-01-12", actual_delivery_date="2021-12-23", status="DELIVERING", order_date="08-01-2022 17:20")
+    order2 = Order(client_id=3, delivery_address="This Street", home_delivery="Y", total=15, requested_delivery_date="2022-01-12", actual_delivery_date="2021-12-23", status="PENDING", order_date="08-01-2022 10:30")
+    order3 = Order(client_id=4, delivery_address="That Street", home_delivery="Y", total=15, requested_delivery_date="2022-01-12", actual_delivery_date="2021-12-23", status="PREPARED", order_date="08-01-2022 14:45")
+    order4 = Order(client_id=4, delivery_address="Store", home_delivery="N", total=15, requested_delivery_date="2022-01-12", actual_delivery_date="2021-12-23", status="PREPARED", order_date="08-01-2022 16:00")
     db.session.add(order1)
     db.session.add(order2)
     db.session.add(order3)
@@ -120,3 +121,12 @@ def login_warehouse_manager_user(test_client):
     yield
 
     test_client.get('/logout', follow_redirects=True)
+
+@pytest.fixture(scope='function')
+def date_pickups(test_client):
+    test_client.post('/updatedatetime',
+                     data='12-01-2022 17:00')
+    yield
+
+    test_client.post('/updatedatetime',
+                     data='09-01-2022 17:00')

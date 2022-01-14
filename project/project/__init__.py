@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, session, render_template
+from flask import Flask, session, current_app
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -46,7 +46,10 @@ def register_blueprints(app):
     @app.before_request
     def initialize():
         if not session.get('date'):
-            session["date"] = datetime.now().strftime("%d-%m-%Y %H:%M")
+            if current_app.config['TESTING']:
+                session["date"] = "09-01-2022 17:00"
+            else:
+                session["date"] = datetime.now().strftime("%d-%m-%Y %H:%M")
             set_session_vars()
 
 

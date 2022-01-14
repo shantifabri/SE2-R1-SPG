@@ -1,6 +1,6 @@
 from flask import url_for, request
 
-def test_home_page(test_client):
+def test_home_page(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/' page is requested (GET) and no user is logged
@@ -14,7 +14,7 @@ def test_home_page(test_client):
     assert b"Sign Up" in response.data
     assert b"Log Out" not in response.data
 
-def test_home_page_post(test_client):
+def test_home_page_post(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/' page is posted to (POST)
@@ -36,7 +36,6 @@ def test_home_page_logged_as_employee(test_client, init_database, login_employee
     assert b"Manage Clients" in response.data
     assert b"Manage Orders" in response.data
     assert b"My Products" not in response.data
-    assert b"Welcome" in response.data
     assert b"Log Out" in response.data
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
@@ -53,7 +52,6 @@ def test_home_page_logged_as_farmer(test_client, init_database, login_farmer_use
     assert b"My Products" in response.data
     assert b"Confirm Orders" in response.data
     assert b"Manage Clients" not in response.data
-    assert b"Welcome" in response.data
     assert b"Log Out" in response.data
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
@@ -72,7 +70,6 @@ def test_home_page_logged_as_client(test_client, init_database, login_client_use
     assert b"My Products" not in response.data
     assert b"Manage Clients" not in response.data
     assert b"Manage Orders" not in response.data
-    assert b"Welcome" in response.data
     assert b"Log Out" in response.data
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
@@ -91,7 +88,6 @@ def test_home_page_logged_as_warehouse_employee(test_client, init_database, logi
     assert b"My Products" not in response.data
     assert b"Manage Clients" not in response.data
     assert b"Manage Orders" not in response.data
-    assert b"Welcome" in response.data
     assert b"Log Out" in response.data
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
@@ -110,7 +106,6 @@ def test_home_page_logged_as_warehouse_manager(test_client, init_database, login
     assert b"My Products" not in response.data
     assert b"Manage Clients" not in response.data
     assert b"Manage Orders" not in response.data
-    assert b"Welcome" in response.data
     assert b"Log Out" in response.data
     assert b"Log In" not in response.data
     assert b"Sign Up" not in response.data
@@ -123,7 +118,6 @@ def test_products_page(test_client, init_database):
     """
     response = test_client.get('/products')
     assert response.status_code == 200
-    assert b"Categories" in response.data
     assert b"Vegetables" in response.data
     assert b"Fruit" in response.data
     assert b'Bananas' in response.data
@@ -137,7 +131,6 @@ def test_products_page_search(test_client, init_database):
     """
     response = test_client.post('/products', data=dict(search='bananas'))
     assert response.status_code == 200
-    assert b"Categories" in response.data
     assert b"Vegetables" in response.data
     assert b"Fruit" in response.data
     assert b'Bananas' in response.data
@@ -219,7 +212,6 @@ def test_single_product_page_post(test_client, init_database, login_employee_use
                                 data=dict(quantity=2),
                                 follow_redirects=True)
     assert response.status_code == 200
-    assert b"Categories" in response.data
 
 ### Shop Employee Routes ###
 def test_manage_clients_page_logged_employee(test_client, init_database, login_employee_user):
@@ -271,17 +263,18 @@ def test_insert_clients_page_logged_employee(test_client, init_database, login_e
     assert b"Insert a new Client" in response.data
     assert b"Name" in response.data
 
-def test_insert_clients_page_unauthorized_logged(test_client, init_database, login_farmer_user):
-    """
-    GIVEN a Flask application configured for testing
-    WHEN the '/insertclient' page is requested (GET) and user is logged as unauthorized role
-    THEN check that it redirects to index and the response is valid
-    """
-    response = test_client.get('/insertclient',  follow_redirects=True)
-    assert response.status_code == 200
-    assert b"Insert a new Client" not in response.data
+# No longer a thing
+# def test_insert_clients_page_unauthorized_logged(test_client, init_database, login_farmer_user):
+#     """
+#     GIVEN a Flask application configured for testing
+#     WHEN the '/insertclient' page is requested (GET) and user is logged as unauthorized role
+#     THEN check that it redirects to index and the response is valid
+#     """
+#     response = test_client.get('/insertclient',  follow_redirects=True)
+#     assert response.status_code == 200
+#     assert b"Insert a new Client" not in response.data
 
-    assert request.path == url_for('other.index')
+#     assert request.path == url_for('other.index')
 
 def test_insert_clients_page_post_logged_employee(test_client, init_database, login_employee_user):
     """
@@ -290,12 +283,15 @@ def test_insert_clients_page_post_logged_employee(test_client, init_database, lo
     THEN check that the response is valid and redirects to index
     """
     response = test_client.post('/insertclient',
-                                data=dict(name='Donald', surname='Johnson', email='donaldjohnson@yahoo.com', password='FlaskIsGreat'),
+                                data=dict(name='Donald', surname='Johnson', email='donaldjohnson@yahoo.com', password='FlaskIsGreat', Telegram_id='473918518'),
                                 follow_redirects=True)
     assert response.status_code == 200
     assert b"Manage Clients" in response.data
-
     assert request.path == url_for('other.index')
+
+    response = test_client.get('/topup')
+    assert response.status_code == 200
+    assert b"Donald" in response.data
 
 def test_topup_page_logged_employee(test_client, init_database, login_employee_user):
     """
@@ -350,7 +346,7 @@ def test_topup_page_wallet_post_logged_employee(test_client, init_database, logi
     assert b"32.00" in response.data #client's updated value
     assert b"30.00" not in response.data #client's initial value
 
-def test_shop_orders_page_logged_employee(test_client, init_database, login_employee_user):
+def test_shop_orders_page_logged_employee(test_client, init_database, login_employee_user, date_pickups):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/shoporders' page is requested (GET) and user is logged as employee
@@ -441,6 +437,7 @@ def test_farmer_orders_page_logged_farmer(test_client, init_database, login_farm
     """
     response = test_client.get('/farmerorders')
     assert response.status_code == 200
+    # print()
     assert b"Confirm Orders" in response.data
     assert b"Bananas" in response.data
 

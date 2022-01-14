@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, url_for, session, jsonify
+from flask import render_template, request, flash, redirect, url_for, session, jsonify, current_app
 from flask_login import login_user, current_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -841,7 +841,10 @@ def getdate():
 @other_blueprint.route('/updatedatetime', methods=['GET','POST'])
 @login_required
 def updatedatetime():
-    new_date = request.get_json()
+    if current_app.config['TESTING']:
+        new_date = request.data.decode('UTF-8')
+    else:
+        new_date = request.get_json()
     print(new_date)
     session["date"] = new_date
     set_session_vars()
@@ -883,7 +886,7 @@ def set_session_vars():
         session["client_pickups"] = True
 
     # wipe client carts
-    if not session["place_order"]:
+    if not session["place_order"] and not current_app.config['TESTING']:
         ProductInBasket.query.delete()
         db.session.commit()
 
@@ -918,7 +921,7 @@ def set_session_vars():
         order_date= datetime.datetime.strptime(order.order_date, "%d-%m-%Y %H:%M").date()
         current= datetime.datetime.strptime(session["date"], "%d-%m-%Y %H:%M").date()
 
-        if not (session["confirm_avail"] or session["place_order"]) and current > order_date and order.status == "PENDING":
+        if not (session["confirm_avail"] or session["place_order"]) and current > order_date and order.status == "PENDING" and not current_app.config['TESTING']:
             confirm_order(order.order_id,prod.pio_id,prod.product_id,0)
 
     # missed orders

@@ -1,4 +1,4 @@
-def test_login_page(test_client):
+def test_login_page(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/login' page is requested (GET)
@@ -10,7 +10,7 @@ def test_login_page(test_client):
     assert b'Email' in response.data
     assert b'Password' in response.data
 
-def test_signup_page(test_client):
+def test_signup_page(test_client, init_database):
     """
     GIVEN a Flask application configured for testing
     WHEN the '/signup' page is requested (GET)
